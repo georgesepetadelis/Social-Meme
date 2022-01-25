@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/filled_button_style.xml" value="0.3106837606837607" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/ic_notifications.xml" value="0.3106837606837607" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/ic_search.xml" value="0.3106837606837607" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/outline_border_button.xml" value="0.3106837606837607" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/welcome_header_bg.xml" value="0.3106837606837607" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_account_settings.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_login.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_notifications.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_privacy_policy.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_register.xml" value="0.18974358974358974" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_reset_password.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_search_user.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_settings.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_splash.xml" value="0.2936708860759494" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_user_profile.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_video.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/activity_welcome.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/fragment_home.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/fragment_my_profile.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/fragment_new_post.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/fragment_settings.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/notification_item.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_item.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.29743589743589743" />
+        <entry key="app/src/main/res/drawable/bottom_nav_style.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/drawable/bug_icon.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/button_custom_style.xml" value="0.2123931623931624" />
+        <entry key="app/src/main/res/drawable/def.xml" value="0.2123931623931624" />
+        <entry key="app/src/main/res/drawable/default_btn_style.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/et_custom_style.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/et_round_blue.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/feedback_icon.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/header_style.xml" value="0.2123931623931624" />
+        <entry key="app/src/main/res/drawable/home_header_style.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/drawable/ic_add.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/drawable/ic_close.xml" value="0.2641350210970464" />
+        <entry key="app/src/main/res/drawable/ic_email.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/ic_feedback.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/ic_home.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/drawable/ic_notifications.xml" value="0.2641350210970464" />
+        <entry key="app/src/main/res/drawable/ic_settings.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/drawable/policy_icon.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/profile_icon.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/search_bar_stye.xml" value="0.2641350210970464" />
+        <entry key="app/src/main/res/layout/activity_account_informtion.xml" value="0.19914529914529913" />
+        <entry key="app/src/main/res/layout/activity_account_settings.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_followers_and_following.xml" value="0.2012820512820513" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.19914529914529913" />
+        <entry key="app/src/main/res/layout/activity_notifications.xml" value="0.19662447257383966" />
+        <entry key="app/src/main/res/layout/activity_password_reset.xml" value="0.19914529914529913" />
+        <entry key="app/src/main/res/layout/activity_privacy.xml" value="0.10085470085470086" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/activity_security.xml" value="0.19914529914529913" />
+        <entry key="app/src/main/res/layout/activity_select_profile_image.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_signup.xml" value="0.19914529914529913" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.15" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.24514709702257617" />
+        <entry key="app/src/main/res/layout/fragment_my_profile.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/fragment_new_post.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/loading_dialog.xml" value="0.19914529914529913" />
+        <entry key="app/src/main/res/layout/notification_item.xml" value="0.25427350427350426" />
+        <entry key="app/src/main/res/layout/post_item.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/post_options_dialog.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/splash_screen.xml" value="0.13333333333333333" />
+        <entry key="app/src/main/res/layout/user_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/user_profile_item.xml" value="0.25427350427350426" />
+        <entry key="app/src/main/res/menu/bottom_nav.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1141025641025641" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home_fragment"
+        android:title="Home"
+        android:icon="@drawable/ic_home" />
+
+    <item
+        android:id="@+id/new_post_fragment"
+        android:icon="@drawable/ic_add"
+        android:title="New post" />
+
+    <item
+        android:id="@+id/my_profile_fragment"
+        android:icon="@drawable/ic_person_white"
+        android:title="My Profile" />
+</menu>
