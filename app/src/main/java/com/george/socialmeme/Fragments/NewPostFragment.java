@@ -74,7 +74,7 @@ public class NewPostFragment extends Fragment {
             mRef.child(postId).child("postType").setValue(type);
 
             if (user.getPhotoUrl() != null) {
-                mRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl());
+                mRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
             }else {
                 mRef.child(postId).child("authorProfilePictureURL").setValue("none");
             }
@@ -136,7 +136,6 @@ public class NewPostFragment extends Fragment {
                             videoView.setVideoURI(mediaUri);
                             videoView.setMediaController(mediaController);
                             uploadPostToFirebase(mediaUri, "video");
-                            //Toast.makeText(getContext(), "video uploading...", Toast.LENGTH_SHORT).show();
                         }else {
                             Intent data = result.getData();
                             mediaUri = data.getData();
