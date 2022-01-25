@@ -29,10 +29,6 @@ public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous = false;
 
-    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("posts");
-    DatabaseReference uref = FirebaseDatabase.getInstance().getReference("users");
-
-
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener = menuItem -> {
         Fragment selectedFragment = null;
 
@@ -62,48 +58,8 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavBar.setOnNavigationItemSelectedListener(navListener);
 
-        /*
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    String name = snap.child("name").getValue(String.class);
-                    String postId = snap.child("id").getValue(String.class);
-                    uref.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot2) {
-                            for (DataSnapshot snapshot1 : snapshot2.getChildren()) {
-                                if (snapshot1.child("name").getValue(String.class).equals(name)) {
-                                    ref.child(postId).child("authorProfilePictureURL").setValue(snapshot1.child("profileImgUrl").getValue().toString());
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-
-
         if (anonymous) {
-            /*
-            MenuItem postItem = bottomNavBar.getMenu().findItem(R.id.new_post_fragment);
-            MenuItem myProfileItem = bottomNavBar.getMenu().findItem(R.id.my_profile_fragment);
-
-            postItem.setVisible(false);
-            myProfileItem.setVisible(false);*/
-
             bottomNavBar.setVisibility(View.GONE);
-
         }
 
         // Disable dark mode

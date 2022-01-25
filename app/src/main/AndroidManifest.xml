@@ -14,9 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme">
         <activity
-            android:name=".Activities.VideoActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.FollowersAndFollowingActivity"
             android:exported="false" />
         <activity
