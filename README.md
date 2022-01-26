@@ -11,4 +11,4 @@ Laugh as much as you want for free
 
 ### and much more...
 
-[Download it now in play store](https://play.google.com/store/apps/details?id=com.george.socialmeme)
+[## Download it now in play store](https://play.google.com/store/apps/details?id=com.george.socialmeme)
