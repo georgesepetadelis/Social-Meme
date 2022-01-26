@@ -49,6 +49,8 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
     void sendNotificationToUser(String type) {
 
         final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
 
         if (type.equals("follow")) {
 
@@ -66,7 +68,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New follower");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(username + " started following you");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " started following you");
                             break;
                         }
                     }
@@ -94,7 +96,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Profile screenshot");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(username + " screenshotted your profile");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " screenshotted your profile");
                             break;
                         }
                     }
@@ -106,7 +108,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                 }
             });
             
-        } else {
+        } else if (type.equals("unfollow")) {
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -122,7 +124,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Unfollow");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(username + " unfollowed you");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " unfollowed you");
                             break;
                         }
                     }
