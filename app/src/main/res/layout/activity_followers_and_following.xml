@@ -27,12 +27,12 @@
             android:id="@+id/imageButton5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:background="@null"
             app:layout_constraintBottom_toBottomOf="@+id/textView26"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView26"
-            app:srcCompat="@drawable/back_icon" />
+            app:srcCompat="@drawable/ic_back" />
 
         <TextView
             android:id="@+id/textView26"

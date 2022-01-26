@@ -54,13 +54,11 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
-        title.setOnClickListener(v -> {
-            if (displayFollowers) {
-                title.setText("Followers");
-            } else {
-                title.setText("Following");
-            }
-        });
+        if (displayFollowers) {
+            title.setText("Followers");
+        } else {
+            title.setText("Following");
+        }
 
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         final ArrayList<UserModel> usersArrayList = new ArrayList<>();
