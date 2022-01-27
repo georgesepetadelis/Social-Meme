@@ -1,11 +1,17 @@
 package com.george.socialmeme.Activities;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +46,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
     public static String userID;
     public static String username;
     public static boolean currentUserFollowsThisUser;
-
+    public int REQUEST_CODE = 3009;
     public int followers = 0;
     public int following = 0;
     LoadingDialog loadingDialog;
@@ -107,7 +113,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                     Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-            
+
         } else if (type.equals("unfollow")) {
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -144,6 +150,26 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        ActivityResultLauncher<String> requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        Toast.makeText(this, "Permission ok", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Permission req", Toast.LENGTH_SHORT).show();
+                        // Explain to the user that the feature is unavailable because the
+                        // features requires a permission that the user has denied. At the
+                        // same time, respect the user's decision. Don't link to system
+                        // settings in an effort to convince the user to change their
+                        // decision.
+                    }
+                });
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            // You can use the API that requires the permission.
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
 
         loadingDialog = LoadingDialog.Companion.get(UserProfileActivity.this);
         ImageButton backBtn = findViewById(R.id.imageButton2);
@@ -377,6 +403,6 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
 
     @Override
     public void onScreenCapturedWithDeniedPermission() {
-
+        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
     }
 }
