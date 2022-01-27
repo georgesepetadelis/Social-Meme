@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme">
         <activity
+            android:name=".Activities.UserProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.FollowersAndFollowingActivity"
             android:exported="false" />
         <activity
@@ -39,9 +42,6 @@
         <activity
             android:name=".Activities.SettingsActivity"
             android:exported="true" />
-        <activity
-            android:name=".Activities.UserProfileActivity"
-            android:exported="true" />
         <activity android:name=".Activities.SelectProfileImageActivity" />
         <activity
             android:name=".Activities.HomeActivity"
@@ -53,8 +53,8 @@
             android:name=".Activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:name=".Activities.SplashScreenActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
