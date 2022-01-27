@@ -46,7 +46,6 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
     public static String userID;
     public static String username;
     public static boolean currentUserFollowsThisUser;
-    public int REQUEST_CODE = 3009;
     public int followers = 0;
     public int following = 0;
     LoadingDialog loadingDialog;
