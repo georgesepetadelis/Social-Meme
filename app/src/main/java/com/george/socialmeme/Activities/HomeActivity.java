@@ -70,9 +70,6 @@ public class HomeActivity extends AppCompatActivity {
             bottomNavBar.setVisibility(View.GONE);
         }
 
-        // Disable dark mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         // Load default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
 
