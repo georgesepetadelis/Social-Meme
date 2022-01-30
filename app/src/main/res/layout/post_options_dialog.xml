@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:visibility="visible"
+        android:foreground="?selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -95,9 +96,6 @@
         android:id="@+id/textView22"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground"
         android:text="Download meme"
         android:textColor="@color/black"
         android:textSize="20sp"
