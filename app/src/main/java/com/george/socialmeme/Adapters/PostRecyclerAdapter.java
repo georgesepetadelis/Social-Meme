@@ -383,10 +383,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 PostOptionsDialog optionsDialog = new PostOptionsDialog();
                 optionsDialog.setPostId(id);
                 optionsDialog.setPostSourceURL(videoURL);
-                //optionsDialog.setPostImage(postImg);
-
+                optionsDialog.setPostType("video");
                 optionsDialog.setAuthor(username.getText().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
-
                 optionsDialog.show(manager, "options");
             }
         }
@@ -531,88 +529,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
         }
 
-        public Boolean verifyPermissions() {
-
-            // This will return the current Status
-            int permissionExternalMemory = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-            if (permissionExternalMemory != PackageManager.PERMISSION_GRANTED) {
-
-                String[] STORAGE_PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                // If permission not granted then ask for permission real time.
-                ActivityCompat.requestPermissions(activity, STORAGE_PERMISSIONS, 1);
-                return false;
-            }
-
-            return true;
-
-        }
-
-        void downloadImage(String imageURL) {
-
-            if (!verifyPermissions()) {
-                return;
-            }
-
-            ContextWrapper contextWrapper = new ContextWrapper(context);
-            File imagesDir = contextWrapper.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-            File file = new File(imagesDir, System.currentTimeMillis() + ".png");
-
-            Glide.with(context)
-                    .load(imageURL)
-                    .into(new CustomTarget<Drawable>() {
-
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                        }
-
-                        @Override
-                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                            super.onLoadFailed(errorDrawable);
-
-                            Toast.makeText(context, "Failed to Download Image! Please try again later.", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Drawable> transition) {
-                            Bitmap bitmap = ((BitmapDrawable) resource).getBitmap();
-                            Toast.makeText(context, "Saving Image...", Toast.LENGTH_SHORT).show();
-                            saveImage(bitmap, imagesDir, file.getName());
-                        }
-                    });
-
-        }
-
-        private void saveImage(Bitmap image, File storageDir, String imageFileName) {
-
-            boolean successDirCreated = true;
-            if (!storageDir.exists()) {
-                try {
-                    storageDir.mkdir();
-                } catch (Exception e) {
-                    Toast.makeText(activity, "Failed to make folder!" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            if (successDirCreated) {
-                File imageFile = new File(storageDir, imageFileName);
-                String savedImagePath = imageFile.getAbsolutePath();
-                try {
-                    OutputStream fOut = new FileOutputStream(imageFile);
-                    image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-                    fOut.close();
-                    Toast.makeText(activity, "Image Saved in: " + savedImagePath, Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(activity, "Error while saving image! " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-
-            } else {
-                Toast.makeText(activity, "Failed to make folder!", Toast.LENGTH_SHORT).show();
-            }
-        }
-
         public void updateLikes(String postID, boolean isNotLiked) {
             postRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -729,9 +645,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                     optionsDialog.setPostId(id);
                     optionsDialog.setPostImage(postImg);
                     optionsDialog.setPostSourceURL(postImageURL);
-
+                    optionsDialog.setPostType("image");
                     optionsDialog.setAuthor(username.getText().toString().equals(user.getDisplayName()));
-
                     optionsDialog.show(manager, "options");
                 }
 
