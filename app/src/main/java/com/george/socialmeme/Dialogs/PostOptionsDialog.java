@@ -168,34 +168,18 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
         context.sendBroadcast(scanIntent);
     }
 
-    public String getPostType() {
-        return postType;
-    }
-
     public void setPostType(String postType) {
         this.postType = postType;
     }
-
     public void setAuthor(boolean author) {
         isAuthor = author;
     }
-
     public void setPostId(String postId) {
         this.postId = postId;
     }
-
-    public ImageView getPostImage() {
-        return postImage;
-    }
-
     public void setPostImage(ImageView postImage) {
         this.postImage = postImage;
     }
-
-    public String getPostSourceURL() {
-        return postSourceURL;
-    }
-
     public void setPostSourceURL(String postSourceURL) {
         this.postSourceURL = postSourceURL;
     }
