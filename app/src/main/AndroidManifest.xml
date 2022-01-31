@@ -29,9 +29,6 @@
             android:name=".Activities.PrivacyPolicyActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.ResetPasswordActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.WelcomeActivity"
             android:exported="false" />
         <activity
