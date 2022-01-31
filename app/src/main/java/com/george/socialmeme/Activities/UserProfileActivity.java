@@ -1,29 +1,27 @@
 package com.george.socialmeme.Activities;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.akexorcist.screenshotdetection.ScreenshotDetectionDelegate;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
-import com.george.socialmeme.R;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
+import com.george.socialmeme.Observers.ScreenShotContentObserver;
+import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,13 +33,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
+import java.io.File;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
 
-public class UserProfileActivity extends AppCompatActivity implements ScreenshotDetectionDelegate.ScreenshotDetectionListener {
+public class UserProfileActivity extends AppCompatActivity {
 
     public static String userID;
     public static String username;
@@ -49,15 +47,15 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
     public int followers = 0;
     public int following = 0;
     LoadingDialog loadingDialog;
-    ScreenshotDetectionDelegate screenshotDetectionDelegate = new ScreenshotDetectionDelegate(this, this);
+    private ScreenShotContentObserver screenShotContentObserver;
 
-    void sendNotificationToUser(String type) {
+    void sendNotificationToUser(String notificationType) {
 
         final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        if (type.equals("follow")) {
+        if (notificationType.equals("follow")) {
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -71,7 +69,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New follower");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("notificationType").setValue("new_follower");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " started following you");
                             break;
@@ -85,7 +83,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                 }
             });
 
-        } if (type.equals("screenshot")) {
+        } if (notificationType.equals("screenshot")) {
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -99,7 +97,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Profile screenshot");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("notificationType").setValue("profile_screenshot");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " screenshotted your profile");
                             break;
@@ -113,7 +111,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                 }
             });
 
-        } else if (type.equals("unfollow")) {
+        } else if (notificationType.equals("unfollow")) {
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -127,7 +125,7 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Unfollow");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("notificationType").setValue("unfollow");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " unfollowed you");
                             break;
@@ -146,29 +144,56 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getContentResolver().registerContentObserver(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                true,
+                screenShotContentObserver
+        );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            getContentResolver().unregisterContentObserver(screenShotContentObserver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            getContentResolver().unregisterContentObserver(screenShotContentObserver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        ActivityResultLauncher<String> requestPermissionLauncher =
-                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                    if (isGranted) {
-                        Toast.makeText(this, "Permission ok", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Permission req", Toast.LENGTH_SHORT).show();
-                        // Explain to the user that the feature is unavailable because the
-                        // features requires a permission that the user has denied. At the
-                        // same time, respect the user's decision. Don't link to system
-                        // settings in an effort to convince the user to change their
-                        // decision.
-                    }
-                });
+        HandlerThread handlerThread = new HandlerThread("content_observer");
+        handlerThread.start();
+        final Handler handler = new Handler(handlerThread.getLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+            }
+        };
 
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            // You can use the API that requires the permission.
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
+        screenShotContentObserver = new ScreenShotContentObserver(handler, this) {
+            @Override
+            protected void onScreenShot(String path, String fileName) {
+                File file = new File(path); // this is the file of screenshot image
+                sendNotificationToUser("screenshot");
+            }
+        };
 
         loadingDialog = LoadingDialog.Companion.get(UserProfileActivity.this);
         ImageButton backBtn = findViewById(R.id.imageButton2);
@@ -376,32 +401,4 @@ public class UserProfileActivity extends AppCompatActivity implements Screenshot
         CustomIntent.customType(UserProfileActivity.this, "right-to-left");
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        screenshotDetectionDelegate.startScreenshotDetection();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        screenshotDetectionDelegate.stopScreenshotDetection();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        screenshotDetectionDelegate.startScreenshotDetection();
-    }
-
-    @Override
-    public void onScreenCaptured(@NonNull String s) {
-        sendNotificationToUser("screenshot");
-        Toast.makeText(UserProfileActivity.this, "Profile Screenshotted", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onScreenCapturedWithDeniedPermission() {
-        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-    }
 }
