@@ -41,7 +41,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
     void updateUsernameOnUserPosts(String oldName, String newName) {
 
         DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
-
         postsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
