@@ -7,7 +7,9 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +34,7 @@ import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,13 +55,11 @@ import maes.tech.intentanim.CustomIntent;
 public class PostOptionsDialog extends AppCompatDialogFragment {
 
     boolean isAuthor = false;
-    String postId, postSourceURL;
+    String postId, postSourceURL, postType, authorName;
     ImageView postImage;
-    View deleteView = getView().findViewById(R.id.view7);
     DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
     DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reports");
     LoadingDialog progressDialog;
-    String postType;
 
     ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -68,6 +69,40 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
                     downloadMemeToGallery();
                 }
             });
+
+    void sendPostSavedNotificationToUser() {
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                String notificationID = usersRef.push().getKey();
+                String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
+
+                for (DataSnapshot snap : snapshot.getChildren()) {
+
+                    if (snap.child("name").getValue().toString().equals(authorName)) {
+                        String postAuthorID = snap.child("id").getValue().toString();
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Meme saved");
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     @NonNull
     @NotNull
@@ -83,11 +118,13 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view);
 
+        View deleteView = view.findViewById(R.id.view7);
+
         // Hide report view is the logged in user is post author
         if (isAuthor) {
             reportView.setVisibility(View.GONE);
             view.findViewById(R.id.imageView5).setVisibility(View.GONE);
-            view.findViewById(R.id.textView46);
+            view.findViewById(R.id.textView46).setVisibility(View.GONE);
         }
 
         // If the current logged in user is not the author
@@ -99,20 +136,15 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
         }
 
         // Check if the postType equals to Video to hide download view
-        // because video downloading is not yet available
-        if (postType.equals("image")) {
+        // because video downloading is not available
+        if (postType.equals("video")) {
             view.findViewById(R.id.imageView9).setVisibility(View.GONE);
             view.findViewById(R.id.textView22).setVisibility(View.GONE);
             view.findViewById(R.id.save_post_btn).setVisibility(View.GONE);
         }
 
         downloadMemeView.setOnClickListener(view12 -> {
-
-            // Request permission to save meme to device storage
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
-
+            downloadMemeToGallery();
         });
 
         reportView.setOnClickListener(view1 -> {
@@ -154,6 +186,10 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
             fos.close();
             scanFile(getContext(), Uri.fromFile(file));
             Toast.makeText(getContext(), "Meme saved in: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+
+            // send notification to user
+            sendPostSavedNotificationToUser();
+
         } catch (FileNotFoundException e) {
             Toast.makeText(getActivity(), "File not found", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
@@ -182,5 +218,8 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
     }
     public void setPostSourceURL(String postSourceURL) {
         this.postSourceURL = postSourceURL;
+    }
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 }
