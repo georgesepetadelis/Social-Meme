@@ -49,6 +49,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
                 holder.notificationIcon.setImageResource(R.drawable.ic_person);
                 break;
             case "profile_screenshot":
+            case "post_save":
                 holder.notificationIcon.setImageResource(R.drawable.ic_camera);
         }
 
