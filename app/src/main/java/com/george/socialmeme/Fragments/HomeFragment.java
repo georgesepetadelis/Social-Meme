@@ -104,8 +104,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                progressDialog.hide();
-
                 for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
 
                     PostModel postModel = new PostModel();
@@ -121,6 +119,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 recyclerAdapter.notifyDataSetChanged();
+                progressDialog.hide();
 
             }
 
