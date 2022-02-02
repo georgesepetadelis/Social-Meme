@@ -73,6 +73,17 @@
             app:layout_constraintEnd_toStartOf="@+id/imageButton8"
             app:layout_constraintTop_toTopOf="@+id/imageButton8" />
 
+        <View
+            android:id="@+id/view5"
+            android:layout_width="130dp"
+            android:layout_height="55dp"
+            android:focusable="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toTopOf="@+id/andExoPlayerView"
+            app:layout_constraintEnd_toEndOf="@+id/textView27"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
