@@ -23,7 +23,6 @@
             android:layout_height="35dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:foreground="?selectableItemBackground"
             android:src="@drawable/profile_icon"
             app:layout_constraintBottom_toTopOf="@+id/post_image"
             app:layout_constraintEnd_toStartOf="@+id/post_username"
@@ -90,11 +89,12 @@
         <View
             android:id="@+id/view_profile"
             android:layout_width="200dp"
-            android:layout_height="50dp"
+            android:layout_height="55dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toTopOf="@+id/post_image"
+            app:layout_constraintEnd_toEndOf="@+id/post_username"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
