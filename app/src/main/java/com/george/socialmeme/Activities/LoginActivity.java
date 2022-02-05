@@ -114,8 +114,6 @@ public class LoginActivity extends AppCompatActivity {
             dialog.setView(email_et);
             dialog.setPositiveButton("OK", (dialogInterface, i) -> {
 
-                progressDialog.show();
-
                 if (!email_et.getText().toString().isEmpty()) {
                     sendResetPasswordLink(email_et.getText().toString());
                 }
@@ -150,6 +148,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendResetPasswordLink(String email) {
+
+        progressDialog.show();
+
         mAuth.sendPasswordResetEmail(email).addOnSuccessListener(task -> {
 
             progressDialog.hide();
@@ -242,16 +243,14 @@ public class LoginActivity extends AppCompatActivity {
 
             Toast.makeText(LoginActivity.this, "Signed in as " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
 
-            progressDialog.hide();
-
         } else {
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Error")
                     .setMessage(errorMsg.getMessage())
                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                     .show();
-            progressDialog.hide();
         }
+        progressDialog.hide();
     }
 
 }

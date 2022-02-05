@@ -1,22 +1,17 @@
 package com.george.socialmeme.Dialogs;
 
-import android.Manifest;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,14 +20,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.github.loadingview.LoadingDialog;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -66,7 +57,7 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
                 if (!isGranted) {
                     Toast.makeText(getActivity(), "Permission denied, can't save meme to gallery", Toast.LENGTH_SHORT).show();
                 } else {
-                    downloadMemeToGallery();
+                    savePictureToDeviceStorage();
                 }
             });
 
@@ -135,16 +126,12 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
             view.findViewById(R.id.textView48).setVisibility(View.GONE);
         }
 
-        // Check if the postType equals to Video to hide download view
-        // because video downloading is not available
-        if (postType.equals("video")) {
-            view.findViewById(R.id.imageView9).setVisibility(View.GONE);
-            view.findViewById(R.id.textView22).setVisibility(View.GONE);
-            view.findViewById(R.id.save_post_btn).setVisibility(View.GONE);
-        }
-
         downloadMemeView.setOnClickListener(view12 -> {
-            downloadMemeToGallery();
+            if (postType.equals("image")) {
+                savePictureToDeviceStorage();
+            } else {
+                saveVideoToDeviceStorage();
+            }
         });
 
         reportView.setOnClickListener(view1 -> {
@@ -173,12 +160,31 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
         return builder.create();
     }
 
-    private void downloadMemeToGallery() {
+    private void saveVideoToDeviceStorage() {
+
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(postSourceURL));
+        request.setDescription("Downloading video");
+        request.setTitle("Downloading " + authorName + " post");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, postId + ".mp4");
+        DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(getContext().DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
+
+        Toast.makeText(getActivity(), "Download started...", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void savePictureToDeviceStorage() {
 
         postImage.buildDrawingCache();
         Bitmap bmp = postImage.getDrawingCache();
         File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File file = new File(storageLoc, System.currentTimeMillis() + ".jpg");
+        File file = new File(storageLoc, postId + ".jpg");
 
         try {
             FileOutputStream fos = new FileOutputStream(file);
