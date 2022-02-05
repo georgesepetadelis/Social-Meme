@@ -11,8 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layoutDescription="@xml/activity_welcome_xml_constraintlayout_scene">
+        android:layout_height="wrap_content">
 
 
         <View
