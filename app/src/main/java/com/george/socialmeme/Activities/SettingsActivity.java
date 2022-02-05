@@ -62,7 +62,10 @@ public class SettingsActivity extends AppCompatActivity {
             feedback_et.setHint("Tell us your opinion");
             dialog.setView(feedback_et);
             dialog.setPositiveButton("Okay", (dialogInterface, i) -> {
-                feedbackRef.child(user.getUid()).child(feedback_et.getText().toString());
+                if (!feedback_et.getText().toString().isEmpty()) {
+                    feedbackRef.child(user.getUid()).child(feedback_et.getText().toString());
+                }
+
                 dialogInterface.dismiss();
                 Toast.makeText(SettingsActivity.this, "Feedback report succeed!", Toast.LENGTH_SHORT).show();
             }).setNegativeButton("Cancel", (dialogInterface, i) -> {
@@ -82,7 +85,9 @@ public class SettingsActivity extends AppCompatActivity {
             bug_et.setHint("Please describe the issue");
             dialog.setView(bug_et);
             dialog.setPositiveButton("Okay", (dialogInterface, i) -> {
-                bugRef.child(user.getUid()).child(bug_et.getText().toString());
+                if (!bug_et.getText().toString().isEmpty()) {
+                    bugRef.child(user.getUid()).child(bug_et.getText().toString());
+                }
                 dialogInterface.dismiss();
                 Toast.makeText(SettingsActivity.this, "Bug report succeed!", Toast.LENGTH_SHORT).show();
             }).setNegativeButton("Cancel", (dialogInterface, i) -> {
