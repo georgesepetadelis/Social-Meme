@@ -12,7 +12,7 @@ import java.io.File;
 
 public abstract class ScreenShotContentObserver extends ContentObserver {
 
-    private Context context;
+    private final Context context;
     private boolean isFromEdit = false;
     private String previousPath;
 

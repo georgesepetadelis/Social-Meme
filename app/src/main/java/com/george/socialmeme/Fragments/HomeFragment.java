@@ -56,6 +56,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -67,7 +68,6 @@ public class HomeFragment extends Fragment {
         searchView = view.findViewById(R.id.search_view);
         ImageButton enterSearchView = view.findViewById(R.id.enter_search_button);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
 
         AdView mAdView = view.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -104,6 +104,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
+                progressDialog.hide();
+
                 for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
 
                     PostModel postModel = new PostModel();
@@ -119,7 +121,6 @@ public class HomeFragment extends Fragment {
                 }
 
                 recyclerAdapter.notifyDataSetChanged();
-                progressDialog.hide();
 
             }
 
@@ -137,6 +138,8 @@ public class HomeFragment extends Fragment {
 
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     if (snap.child("name").getValue().toString().equals(searchView.getText().toString())) {
+
+                        sendProfileVisitNotification();
                         userFound = true;
                         UserProfileActivity.username = searchView.getText().toString();
                         UserProfileActivity.userID = snap.child("id").getValue().toString();
@@ -144,8 +147,6 @@ public class HomeFragment extends Fragment {
                         Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                         getActivity().startActivity(intent);
                         CustomIntent.customType(getActivity(), "left-to-right");
-
-                        //sendProfileVisitNotification();
 
                         break;
                     }
