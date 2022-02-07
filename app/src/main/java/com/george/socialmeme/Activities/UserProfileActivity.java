@@ -227,8 +227,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
-
-
         showFollowersView.setOnClickListener(v -> {
             FollowersAndFollowingActivity.userID = userID;
             FollowersAndFollowingActivity.displayFollowers = true;
