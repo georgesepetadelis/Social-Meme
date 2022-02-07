@@ -1,5 +1,6 @@
 package com.george.socialmeme.Activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,10 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,10 +23,12 @@ import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,10 +50,40 @@ public class LoginActivity extends AppCompatActivity {
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK || result.getResultCode() == RC_SIGN_IN) {
+
+                        Intent data = result.getData();
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+
+                        try {
+                            // Google Sign In was successful, authenticate with Firebase
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                            firebaseAuthWithGoogle(account.getIdToken());
+                        } catch (ApiException e) {
+                            progressDialog.hide();
+                            new AlertDialog.Builder(LoginActivity.this)
+                                    .setTitle("Error")
+                                    .setMessage(e.getLocalizedMessage())
+                                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                    .show();
+                        }
+                    }else {
+                        Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
 
     void googleSignIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        someActivityResultLauncher.launch(signInIntent);
+        //startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     void singIn(String email, String password) {
@@ -173,29 +210,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                progressDialog.hide();
-                new AlertDialog.Builder(LoginActivity.this)
-                        .setTitle("Error")
-                        .setMessage(e.getMessage())
-                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                        .show();
-            }
-        }
-    }
-
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
@@ -246,7 +260,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Error")
-                    .setMessage(errorMsg.getMessage())
+                    .setMessage(errorMsg.getLocalizedMessage())
                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                     .show();
         }
