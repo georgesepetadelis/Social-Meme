@@ -227,10 +227,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
-        if (user.getUid().equals(userID)) {
-            followBtn.setVisibility(View.GONE);
-            userFollowsCurrentUserTextView.setVisibility(View.GONE);
-        }
+
 
         showFollowersView.setOnClickListener(v -> {
             FollowersAndFollowingActivity.userID = userID;
@@ -250,6 +247,11 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 String profilePictureURL = "none";
+
+                if (snapshot.child(userID).child("id").getValue(String.class).equals(user.getUid())) {
+                    followBtn.setVisibility(View.GONE);
+                    userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                }
 
                 if (snapshot.child(userID).child("profileImgUrl").exists()) {
                     profilePictureURL = snapshot.child(userID).child("profileImgUrl").getValue(String.class);
