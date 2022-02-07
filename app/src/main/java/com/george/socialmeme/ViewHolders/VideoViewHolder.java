@@ -19,6 +19,7 @@ import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Dialogs.PostOptionsDialog;
 import com.george.socialmeme.R;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
