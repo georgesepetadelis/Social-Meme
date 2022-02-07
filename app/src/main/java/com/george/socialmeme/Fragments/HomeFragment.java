@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment {
         ImageButton notificationsBtn = view.findViewById(R.id.notificationsButton);
 
         searchView = view.findViewById(R.id.search_view);
-        ImageButton enterSearchView = view.findViewById(R.id.enter_search_button);
+        ImageButton searchUserButton = view.findViewById(R.id.enter_search_button);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         AdView mAdView = view.findViewById(R.id.adView);
@@ -95,7 +95,7 @@ public class HomeFragment extends Fragment {
         progressDialog = LoadingDialog.Companion.get(getActivity());
 
         searchView.setVisibility(View.GONE);
-        enterSearchView.setVisibility(View.GONE);
+        searchUserButton.setVisibility(View.GONE);
 
         progressDialog.show();
 
@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        enterSearchView.setOnClickListener(v -> usersRef.addValueEventListener(new ValueEventListener() {
+        searchUserButton.setOnClickListener(v -> usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -194,10 +194,10 @@ public class HomeFragment extends Fragment {
                 YoYo.with(Techniques.FadeInUp)
                         .duration(500)
                         .repeat(0)
-                        .playOn(enterSearchView);
+                        .playOn(searchUserButton);
 
                 searchView.setVisibility(View.GONE);
-                enterSearchView.setVisibility(View.GONE);
+                searchUserButton.setVisibility(View.GONE);
 
             }else {
                 // search is open
@@ -212,7 +212,7 @@ public class HomeFragment extends Fragment {
 
                 // show and animate search view
                 searchView.setVisibility(View.VISIBLE);
-                enterSearchView.setVisibility(View.VISIBLE);
+                searchUserButton.setVisibility(View.VISIBLE);
 
                 YoYo.with(Techniques.FadeInDown)
                         .duration(500)
@@ -222,7 +222,7 @@ public class HomeFragment extends Fragment {
                 YoYo.with(Techniques.FadeInDown)
                         .duration(500)
                         .repeat(0)
-                        .playOn(enterSearchView);
+                        .playOn(searchUserButton);
 
                 // display keyboard to type
                 ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
@@ -242,15 +242,15 @@ public class HomeFragment extends Fragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot1) {
 
-                for (DataSnapshot snap : snapshot.getChildren()) {
+                for (DataSnapshot userSnapshot : snapshot1.getChildren()) {
 
-                    if (snap.child("name").getValue().toString().equals(searchView.getText().toString())) {
-                        String postAuthorID = snap.child("id").getValue().toString();
+                    if (userSnapshot.child("name").getValue().toString().equals(searchView.getText().toString())) {
+                        Toast.makeText(getContext(), "User found", Toast.LENGTH_SHORT).show();
+                        String postAuthorID = userSnapshot.child("id").getValue().toString();
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
@@ -263,7 +263,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
