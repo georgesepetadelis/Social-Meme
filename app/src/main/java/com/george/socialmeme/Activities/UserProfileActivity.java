@@ -55,7 +55,34 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        if (notificationType.equals("follow")) {
+        if (notificationType.equals("profile_visit")) {
+
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    String notificationID = usersRef.push().getKey();
+                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
+
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        if (snap.child("name").getValue().toString().equals(username)) {
+                            String postAuthorID = snap.child("id").getValue().toString();
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } if (notificationType.equals("follow")) {
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -177,6 +204,8 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        sendNotificationToUser("profile_visit");
 
         HandlerThread handlerThread = new HandlerThread("content_observer");
         handlerThread.start();
