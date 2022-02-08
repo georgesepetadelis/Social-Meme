@@ -56,64 +56,32 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         this.context = context;
     }
 
-    void sendNotificationToUser(String notificationType) {
+    void sendLikeNotificationToUser() {
 
-        if (notificationType.equals("profileVisitor")) {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String notificationID = usersRef.push().getKey();
+                String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
-                    String notificationID = usersRef.push().getKey();
-                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-
-                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
-                            break;
-                        }
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
+                        String postAuthorID = snap.child("id").getValue().toString();
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New like");
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " liked your post");
+                        break;
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } else {
-
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    String notificationID = usersRef.push().getKey();
-                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New like");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " liked your post");
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -210,8 +178,6 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 context.startActivity(intent);
                 CustomIntent.customType(context, "left-to-right");
 
-                sendNotificationToUser("profileVisitor");
-
             }
 
         });
@@ -263,7 +229,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                             // Update likes to DB
                             updateLikes(id, true);
 
-                            sendNotificationToUser("like");
+                            sendLikeNotificationToUser();
 
                         }
                     }
