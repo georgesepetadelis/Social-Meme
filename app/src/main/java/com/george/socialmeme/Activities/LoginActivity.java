@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
@@ -74,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                                     .show();
                         }
                     }else {
+                        progressDialog.hide();
                         Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -126,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
         Button submit = findViewById(R.id.submit_login);
         TextView resetPasswordTV = findViewById(R.id.textView6);
         TextView register = findViewById(R.id.register_login);
-        SignInButton googleSignInBtn = findViewById(R.id.signInButton);
+        ConstraintLayout googleSignInBtn = findViewById(R.id.signInButton);
 
         // Google sign config
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
