@@ -257,15 +257,19 @@ public class UserProfileActivity extends AppCompatActivity {
         backBtn.setOnClickListener(v -> onBackPressed());
 
         showFollowersView.setOnClickListener(v -> {
-            FollowersAndFollowingActivity.userID = userID;
-            FollowersAndFollowingActivity.displayFollowers = true;
-            openUsersList();
+            if (followers != 0) {
+                FollowerInfoActivity.userID = userID;
+                FollowerInfoActivity.displayFollowers = true;
+                openUsersList();
+            }
         });
 
         showFollowingUsersView.setOnClickListener(v -> {
-            FollowersAndFollowingActivity.userID = userID;
-            FollowersAndFollowingActivity.displayFollowers = false;
-            openUsersList();
+            if (following != 0) {
+                FollowerInfoActivity.userID = userID;
+                FollowerInfoActivity.displayFollowers = false;
+                openUsersList();
+            }
         });
 
         // Load profile data
@@ -418,7 +422,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void openUsersList() {
-        Intent intent = new Intent(UserProfileActivity.this, FollowersAndFollowingActivity.class);
+        Intent intent = new Intent(UserProfileActivity.this, FollowerInfoActivity.class);
         startActivity(intent);
         CustomIntent.customType(UserProfileActivity.this, "left-to-right");
     }
