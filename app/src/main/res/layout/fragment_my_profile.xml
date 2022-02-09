@@ -163,6 +163,30 @@
                 app:layout_constraintTop_toTopOf="@+id/my_profile_image"
                 app:layout_constraintVertical_bias="1.0" />
 
+            <View
+                android:id="@+id/showFollowersView_Profile"
+                android:layout_width="80dp"
+                android:layout_height="60dp"
+                app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
+                android:foreground="?selectableItemBackgroundBorderless"
+                android:focusable="true"
+                android:clickable="true"
+                app:layout_constraintEnd_toEndOf="@+id/textView13"
+                app:layout_constraintStart_toStartOf="@+id/textView13"
+                app:layout_constraintTop_toTopOf="@+id/textView13" />
+
+            <View
+                android:id="@+id/showFollowingView_Profile"
+                android:layout_width="80dp"
+                android:layout_height="60dp"
+                android:foreground="?selectableItemBackgroundBorderless"
+                android:focusable="true"
+                android:clickable="true"
+                app:layout_constraintBottom_toBottomOf="@+id/following_my_profile"
+                app:layout_constraintEnd_toEndOf="@+id/textView15"
+                app:layout_constraintStart_toStartOf="@+id/textView15"
+                app:layout_constraintTop_toTopOf="@+id/textView15" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
