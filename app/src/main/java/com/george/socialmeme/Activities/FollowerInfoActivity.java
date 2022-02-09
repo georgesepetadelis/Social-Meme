@@ -6,15 +6,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.george.socialmeme.Adapters.FollowingAndFollowersRecyclerAdapter;
-import com.george.socialmeme.Adapters.PostRecyclerAdapter;
-import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
@@ -28,7 +24,7 @@ import java.util.ArrayList;
 
 import maes.tech.intentanim.CustomIntent;
 
-public class FollowersAndFollowingActivity extends AppCompatActivity {
+public class FollowerInfoActivity extends AppCompatActivity {
 
     LoadingDialog progressDialog;
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
@@ -41,7 +37,7 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-        CustomIntent.customType(FollowersAndFollowingActivity.this, "right-to-left");
+        CustomIntent.customType(FollowerInfoActivity.this, "right-to-left");
     }
 
     @Override
@@ -62,8 +58,8 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
 
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         final ArrayList<UserModel> usersArrayList = new ArrayList<>();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(FollowersAndFollowingActivity.this);
-        final RecyclerView.Adapter recyclerAdapter = new FollowingAndFollowersRecyclerAdapter(FollowersAndFollowingActivity.this, usersArrayList);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(FollowerInfoActivity.this);
+        final RecyclerView.Adapter recyclerAdapter = new FollowingAndFollowersRecyclerAdapter(FollowerInfoActivity.this, usersArrayList);
 
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
@@ -71,8 +67,7 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        progressDialog = LoadingDialog.Companion.get(FollowersAndFollowingActivity.this);
-
+        progressDialog = LoadingDialog.Companion.get(FollowerInfoActivity.this);
         progressDialog.show();
 
         usersRef.addValueEventListener(new ValueEventListener() {
@@ -88,25 +83,33 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
 
                         UserModel userModel = new UserModel();
                         userModel.setFollowers(String.valueOf(snapshot.child(userID).child("followers").getChildrenCount()));
-                        userModel.setUserID(snap.getValue(String.class));
-
 
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
 
-                            if (snapshot1.child("id").getValue(String.class).equals(snap.getValue(String.class))) {
-                                userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
+                            // Confirm that the user exists
+                            if (snapshot.child(snap.getValue(String.class)).exists()) {
 
-                                if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
-                                    userModel.setProfilePictureURL(snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
-                                } else if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class) == null) {
-                                    userModel.setProfilePictureURL("none");
+                                userModel.setUserID(snap.getValue(String.class));
+
+                                if (snapshot1.child("id").getValue(String.class).equals(snap.getValue(String.class))) {
+                                    userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
+
+                                    if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
+                                        userModel.setProfilePictureURL(snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
+                                    } else if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class) == null) {
+                                        userModel.setProfilePictureURL("none");
+                                    }
+
+                                    usersArrayList.add(userModel);
+
                                 }
 
+                            } else {
+                                // Delete current user node if the user not exists
+                                usersRef.child(userID).child("followers").child(snap.getValue(String.class)).removeValue();
                             }
 
                         }
-
-                        usersArrayList.add(userModel);
 
                     }
 
@@ -116,23 +119,33 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
 
                         UserModel userModel = new UserModel();
                         userModel.setFollowers(String.valueOf(snapshot.child(userID).child("following").getChildrenCount()));
-                        userModel.setUserID(snap.getValue(String.class));
 
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
 
-                            if (snapshot1.child("id").getValue(String.class).equals(snap.getValue(String.class))) {
-                                userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
+                            // Confirm that the user exists
+                            if (snapshot.child(snap.getValue(String.class)).exists()) {
 
-                                if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
-                                    userModel.setProfilePictureURL(snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
-                                } else {
-                                    userModel.setProfilePictureURL("none");
+                                userModel.setUserID(snap.getValue(String.class));
+
+                                if (snapshot1.child("id").getValue(String.class).equals(snap.getValue(String.class))) {
+                                    userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
+
+                                    if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
+                                        userModel.setProfilePictureURL(snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
+                                    } else {
+                                        userModel.setProfilePictureURL("none");
+                                    }
+
+                                    usersArrayList.add(userModel);
+
                                 }
+
+                            } else {
+                                // Delete current user node if the user not exists
+                                usersRef.child(userID).child("followers").child(snap.getValue(String.class)).removeValue();
                             }
 
                         }
-
-                        usersArrayList.add(userModel);
 
                     }
 
@@ -144,7 +157,7 @@ public class FollowersAndFollowingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(FollowersAndFollowingActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(FollowerInfoActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
