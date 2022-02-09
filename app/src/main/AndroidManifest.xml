@@ -23,7 +23,7 @@
             android:name=".Activities.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.FollowersAndFollowingActivity"
+            android:name=".Activities.FollowerInfoActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.NotificationsActivity"
