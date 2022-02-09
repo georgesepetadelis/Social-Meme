@@ -11,14 +11,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
@@ -31,6 +38,7 @@ import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -69,8 +77,27 @@ public class HomeFragment extends Fragment {
         ImageButton searchUserButton = view.findViewById(R.id.enter_search_button);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
         AdView mAdView = view.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
+
+        TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
+        usernameLoadingScreen.setText(user.getDisplayName());
+        Glide.with(getContext()).load(user.getPhotoUrl().toString()).into((ImageView) view.findViewById(R.id.my_profile_image));
+
+        // Animate text on loading screen
+        YoYo.with(Techniques.FadeInUp)
+                .duration(1000)
+                .repeat(0)
+                .playOn(view.findViewById(R.id.textView39));
+
+        YoYo.with(Techniques.FadeInUp)
+                .duration(1000)
+                .repeat(0)
+                .playOn(view.findViewById(R.id.textView40));
+
 
         if (isAdded()) {
             mAdView.loadAd(adRequest);
@@ -97,14 +124,22 @@ public class HomeFragment extends Fragment {
         searchView.setVisibility(View.GONE);
         searchUserButton.setVisibility(View.GONE);
 
-        progressDialog.show();
+        ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.GONE);
+
 
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                progressDialog.hide();
+                new Handler().postDelayed(() -> {
+                    YoYo.with(Techniques.SlideOutDown)
+                            .duration(2000)
+                            .repeat(0)
+                            .playOn(view.findViewById(R.id.constraintLayout2));
+                    view.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                    ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+                }, 2500);
 
                 for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
 
