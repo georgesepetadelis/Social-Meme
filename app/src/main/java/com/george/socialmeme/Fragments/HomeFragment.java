@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        searchUserButton.setOnClickListener(v -> usersRef.addValueEventListener(new ValueEventListener() {
+        searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -139,7 +139,6 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     if (snap.child("name").getValue().toString().equals(searchView.getText().toString())) {
 
-                        sendProfileVisitNotification();
                         userFound = true;
                         UserProfileActivity.username = searchView.getText().toString();
                         UserProfileActivity.userID = snap.child("id").getValue().toString();
