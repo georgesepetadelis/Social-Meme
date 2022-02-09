@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.george.socialmeme.Activities.FollowerInfoActivity;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.SettingsActivity;
@@ -53,25 +54,22 @@ import maes.tech.intentanim.CustomIntent;
 public class MyProfileFragment extends Fragment {
 
     LoadingDialog progressDialog;
-    public int followers = 0;
-    public int following = 0;
-    private Uri imgUri;
-    CircleImageView img;
+    CircleImageView profilePicture;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageReference = storage.getReference();
     DatabaseReference userRef;
 
+    private int followers = 0;
+    private int following = 0;
 
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-
                 Intent data = result.getData();
-
                 if (result.getResultCode() == Activity.RESULT_OK && data != null) {
-                    imgUri = data.getData();
-                    //img.setImageURI(imgUri);
-                    uploadToFirebase(imgUri);
+                    Uri imgUri = data.getData();
+                    profilePicture.setImageURI(imgUri);
+                    uploadProfilePictureToFirebase(imgUri);
                 }
             });
 
@@ -81,7 +79,7 @@ public class MyProfileFragment extends Fragment {
         return mime.getExtensionFromMimeType(cr.getType(mUri));
     }
 
-    private void uploadToFirebase(Uri uri) {
+    private void uploadProfilePictureToFirebase(Uri uri) {
 
         // Show loading dialog
         progressDialog.show();
@@ -97,41 +95,37 @@ public class MyProfileFragment extends Fragment {
         }
 
         StorageReference fileRef = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(uri));
-
         fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
 
-            // update profile picture url on Firebase Real-Time DB
+            // Update profile picture URL on Firebase Real-Time DB
             userRef.child("profileImgUrl").setValue(uri1.toString());
 
-            // update profile picture url on FirebaseAuth
+            // Update profile picture URL on FirebaseAuth
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setPhotoUri(uri1).build();
-            user.updateProfile(profileUpdates);
+            user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
 
-            // update profile picture on all user posts
-            DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
-            postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue(String.class).equals(user.getDisplayName())) {
-                            postsRef.child(snap.child("id").getValue(String.class)).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                // Update profile picture URL on all user posts
+                DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
+                postsRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snap : snapshot.getChildren()) {
+                            if (snap.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                postsRef.child(snap.child("id").getValue(String.class)).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             });
 
-            getActivity().finish();
-            startActivity(new Intent(getActivity(), HomeActivity.class));
-            CustomIntent.customType(getActivity(), "left-to-right");
-
             Toast.makeText(getActivity(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
-
 
         })).addOnFailureListener(e -> Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()).addOnCompleteListener(task -> {
             progressDialog.hide();
@@ -147,9 +141,11 @@ public class MyProfileFragment extends Fragment {
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        CircleImageView profilePicture = view.findViewById(R.id.my_profile_image);
+        profilePicture = view.findViewById(R.id.my_profile_image);
         TextView username = view.findViewById(R.id.username_my_profile);
         ImageButton settings = view.findViewById(R.id.settings_btn);
+        View showFollowersView = view.findViewById(R.id.showFollowersView_Profile);
+        View showFollowingUsersView = view.findViewById(R.id.showFollowingView_Profile);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -185,6 +181,25 @@ public class MyProfileFragment extends Fragment {
 
         progressDialog = LoadingDialog.Companion.get(getActivity());
 
+        showFollowersView.setOnClickListener(view1 -> {
+            if (followers != 0) {
+                FollowerInfoActivity.userID = user.getUid();
+                FollowerInfoActivity.displayFollowers = true;
+                Intent intent = new Intent(getActivity(), FollowerInfoActivity.class);
+                startActivity(intent);
+                CustomIntent.customType(getActivity(), "left-to-right");
+            }
+        });
+
+        showFollowingUsersView.setOnClickListener(view12 -> {
+            if (following != 0) {
+                FollowerInfoActivity.userID = user.getUid();
+                FollowerInfoActivity.displayFollowers = false;
+                Intent intent = new Intent(getActivity(), FollowerInfoActivity.class);
+                startActivity(intent);
+                CustomIntent.customType(getActivity(), "left-to-right");
+            }
+        });
 
         profilePicture.setOnClickListener(v -> {
             Intent intent = new Intent();
