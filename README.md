@@ -2,12 +2,14 @@
 # Social Meme
 Laugh as much as you want for free
 
-## With Social Meme you can
+## Features
 
 - Upload all of your memes for free and fast
-- See who viewed your profile
+- Save Memes to your device
+- See who visited or screenshoted your profile, who saved your memes or who following you
 - Follow your friends
 - Sign in anonymously
+- Sign in with Google
 
 ### and much more...
 
