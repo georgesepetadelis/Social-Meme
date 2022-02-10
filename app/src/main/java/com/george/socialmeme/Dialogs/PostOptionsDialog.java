@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -110,6 +111,11 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
         builder.setView(view);
 
         View deleteView = view.findViewById(R.id.view7);
+        TextView downloadTV = view.findViewById(R.id.textView22);
+
+        if (postType.equals("video")) {
+            downloadTV.setText("Download video");
+        }
 
         // Hide report view is the logged in user is post author
         if (isAuthor) {
