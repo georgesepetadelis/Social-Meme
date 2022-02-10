@@ -42,8 +42,8 @@
             android:id="@+id/andExoPlayerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:andexo_show_full_screen="true"
             android:layout_marginTop="16dp"
+            app:andexo_show_full_screen="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,13 +75,13 @@
 
         <View
             android:id="@+id/view5"
-            android:layout_width="130dp"
+            android:layout_width="200dp"
             android:layout_height="55dp"
             android:focusable="true"
             android:foreground="?selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toTopOf="@+id/andExoPlayerView"
             app:layout_constraintEnd_toEndOf="@+id/textView27"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/circleImageView2"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
