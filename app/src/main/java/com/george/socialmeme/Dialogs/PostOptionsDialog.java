@@ -3,6 +3,7 @@ package com.george.socialmeme.Dialogs;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -148,22 +149,34 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
 
 
         deleteView.setOnClickListener(v -> {
-            progressDialog.show();
 
-            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(postSourceURL);
-            storageReference.delete()
-                    .addOnSuccessListener(unused -> Toast.makeText(getContext(), "Post deleted", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-
-            postsRef.child(postId).removeValue().addOnCompleteListener(task -> progressDialog.hide());
-
-            getActivity().finish();
-            startActivity(new Intent(getActivity(), HomeActivity.class));
-            CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Are you sure?")
+                    .setMessage("Are you sure you want to delete this meme?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> deletePost())
+                    .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .show();
 
         });
 
         return builder.create();
+    }
+
+    private void deletePost() {
+
+        progressDialog.show();
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(postSourceURL);
+        storageReference.delete()
+                .addOnSuccessListener(unused -> Toast.makeText(getContext(), "Post deleted", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        postsRef.child(postId).removeValue().addOnCompleteListener(task -> progressDialog.hide());
+
+        getActivity().finish();
+        startActivity(new Intent(getActivity(), HomeActivity.class));
+        CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+
     }
 
     private void saveVideoToDeviceStorage() {
