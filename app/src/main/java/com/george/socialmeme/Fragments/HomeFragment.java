@@ -84,17 +84,26 @@ public class HomeFragment extends Fragment {
         AdRequest adRequest = new AdRequest.Builder().build();
 
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
-        usernameLoadingScreen.setText(user.getDisplayName());
-        Glide.with(getContext()).load(user.getPhotoUrl().toString()).into((ImageView) view.findViewById(R.id.my_profile_image));
+
+        if (!HomeActivity.anonymous) {
+            usernameLoadingScreen.setText(user.getDisplayName());
+
+            if (user.getPhotoUrl() != null) {
+                Glide.with(getContext()).load(user.getPhotoUrl().toString()).into((ImageView) view.findViewById(R.id.my_profile_image));
+            }
+
+        }else {
+            usernameLoadingScreen.setText("Anonymous User");
+        }
 
         // Animate text on loading screen
         YoYo.with(Techniques.FadeInUp)
-                .duration(1000)
+                .duration(800)
                 .repeat(0)
                 .playOn(view.findViewById(R.id.textView39));
 
         YoYo.with(Techniques.FadeInUp)
-                .duration(1000)
+                .duration(800)
                 .repeat(0)
                 .playOn(view.findViewById(R.id.textView40));
 
@@ -126,20 +135,20 @@ public class HomeFragment extends Fragment {
 
         ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.GONE);
 
-
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
                 new Handler().postDelayed(() -> {
-                    YoYo.with(Techniques.SlideOutDown)
-                            .duration(2000)
-                            .repeat(0)
-                            .playOn(view.findViewById(R.id.constraintLayout2));
                     view.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                    ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
-                }, 2500);
+                    try {
+                        ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+                    } catch (Exception exception) {
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), HomeActivity.class));
+                    }
+                }, 2000);
 
                 for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
 
