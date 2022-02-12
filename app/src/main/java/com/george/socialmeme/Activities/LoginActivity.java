@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                                     .show();
                         }
-                    }else {
+                    } else {
                         progressDialog.hide();
                         Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     }
@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
             new AlertDialog.Builder(LoginActivity.this)
                     .setIcon(R.drawable.success_icon)
                     .setTitle("Email send")
-                    .setMessage("Reset password link has been send on this email address \n" + email)
+                    .setMessage("Reset password link has been send on this email address\n" + email)
                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
 
         }).addOnFailureListener(e -> {
@@ -214,35 +214,30 @@ public class LoginActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        updateUI(user, null);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        updateUI(null, task.getException());
-
-                    }
-                });
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "GoogleSignIn:success");
+                FirebaseUser user = mAuth.getCurrentUser();
+                updateUI(user, null);
+            } else {
+                // If sign-in fails, display a message to the user.
+                updateUI(null, task.getException());
+            }
+        });
     }
 
     private void updateUI(FirebaseUser user, Exception errorMsg) {
         progressDialog.hide();
 
         if (user != null) {
-
             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (!snapshot.child(user.getUid()).exists()) {
                         usersRef.child(user.getUid()).child("id").setValue(user.getUid());
                         usersRef.child(user.getUid()).child("name").setValue(user.getDisplayName());
-                        usersRef.child(user.getUid()).child("email").setValue(user.getEmail());
                         usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
                     }
                 }
@@ -256,8 +251,6 @@ public class LoginActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
-
-            Toast.makeText(LoginActivity.this, "Signed in as " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
 
         } else {
             new AlertDialog.Builder(LoginActivity.this)

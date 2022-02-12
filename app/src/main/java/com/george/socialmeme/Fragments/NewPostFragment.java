@@ -49,7 +49,7 @@ public class NewPostFragment extends Fragment {
     private ImageView img;
     private static String mediaType;
     private VideoView videoView;
-    private Button upload_post, select_img, selectVideo;
+    private Button upload_post;
     final private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     final private FirebaseUser user = mAuth.getCurrentUser();
     LoadingDialog loadingDialog;
@@ -104,9 +104,9 @@ public class NewPostFragment extends Fragment {
 
         loadingDialog = LoadingDialog.Companion.get(getActivity());
         img = view.findViewById(R.id.imageView3);
-        select_img = view.findViewById(R.id.select_img_btn);
+        Button select_img = view.findViewById(R.id.select_img_btn);
         upload_post = view.findViewById(R.id.upload_post_btn);
-        selectVideo = view.findViewById(R.id.select_video_btn);
+        Button selectVideo = view.findViewById(R.id.select_video_btn);
         videoView = view.findViewById(R.id.videoView);
 
         if (HomeActivity.anonymous) {

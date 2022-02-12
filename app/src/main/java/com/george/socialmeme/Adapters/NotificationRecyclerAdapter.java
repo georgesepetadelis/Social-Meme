@@ -29,7 +29,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
     @Override
     public NotificationRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_item, parent, false);
-        return new NotificationRecyclerAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
         return postList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView notificationIcon;
         TextView notificationTitle, notificationDate, notificationMessage;

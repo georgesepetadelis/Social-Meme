@@ -281,7 +281,8 @@ public class MyProfileFragment extends Fragment {
             });
         }else {
             username.setText("Anonymous User");
-            settings.setEnabled(false);
+            settings.setVisibility(View.GONE);
+            profilePicture.setEnabled(false);
         }
 
         return view;

@@ -104,12 +104,14 @@
                 android:id="@+id/select_video_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:text="Select Video"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/select_img_btn"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/select_img_btn"
                 app:layout_constraintTop_toTopOf="@+id/select_img_btn" />
 
             <VideoView
