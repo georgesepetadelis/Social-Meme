@@ -31,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public static boolean anonymous = false;
+    public static boolean anonymous;
 
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener = menuItem -> {
         Fragment selectedFragment = null;
@@ -65,10 +65,6 @@ public class HomeActivity extends AppCompatActivity {
         final BottomNavigationView bottomNavBar = findViewById(R.id.bottom_nav);
 
         bottomNavBar.setOnNavigationItemSelectedListener(navListener);
-
-        if (anonymous) {
-            bottomNavBar.setVisibility(View.GONE);
-        }
 
         // Load default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
