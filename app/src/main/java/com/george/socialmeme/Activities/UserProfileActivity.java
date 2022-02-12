@@ -96,7 +96,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New follower");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("notificationType").setValue("new_follower");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " started following you");
                             break;
@@ -124,7 +124,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Profile screenshot");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("notificationType").setValue("profile_screenshot");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " screenshotted your profile");
                             break;
@@ -152,7 +152,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Unfollow");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("notificationType").setValue("unfollow");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " unfollowed you");
                             break;
@@ -279,7 +279,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 String profilePictureURL = "none";
 
-                if (snapshot.child(userID).child("id").getValue(String.class).equals(user.getUid())) {
+                if (snapshot.child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
                     followBtn.setVisibility(View.GONE);
                     userFollowsCurrentUserTextView.setVisibility(View.GONE);
                 }
