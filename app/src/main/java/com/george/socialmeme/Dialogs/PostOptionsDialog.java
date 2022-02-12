@@ -185,16 +185,17 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
         request.setDescription("Downloading video");
         request.setTitle("Downloading " + authorName + " post");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            request.allowScanningByMediaScanner();
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        }
+        request.allowScanningByMediaScanner();
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, postId + ".mp4");
-        DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(getContext().DOWNLOAD_SERVICE);
+        getContext();
+        DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
 
         Toast.makeText(getActivity(), "Download started...", Toast.LENGTH_SHORT).show();
+
+        sendPostSavedNotificationToUser();
 
     }
 
