@@ -61,7 +61,7 @@ public class NewPostFragment extends Fragment {
 
                     new AlertDialog.Builder(getContext())
                             .setTitle("Upload new meme")
-                            .setMessage("Are you sure you want to upload this file?\nFilename: " + result.getData().getData().getPath())
+                            .setMessage("Are you sure you want to upload this file?\nFile: " + result.getData().getData().getPath())
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -137,7 +137,7 @@ public class NewPostFragment extends Fragment {
         if (HomeActivity.anonymous) {
             new AlertDialog.Builder(getContext())
                     .setTitle("Sign in required")
-                    .setMessage("You need to sign in with a Social Meme account to upload your memes!")
+                    .setMessage("You need to sign in to upload memes!")
                     .setPositiveButton("Okay", (dialogInterface, i) -> {
                         getActivity().finish();
                         startActivity(new Intent(getActivity(), RegisterActivity.class));
