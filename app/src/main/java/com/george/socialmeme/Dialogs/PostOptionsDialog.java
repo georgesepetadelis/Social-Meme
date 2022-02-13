@@ -183,7 +183,7 @@ public class PostOptionsDialog extends AppCompatDialogFragment {
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(postSourceURL));
         request.setDescription("Downloading video");
-        request.setTitle("Downloading " + authorName + " post");
+        request.setTitle("Downloading " + authorName + "'s post");
 
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
