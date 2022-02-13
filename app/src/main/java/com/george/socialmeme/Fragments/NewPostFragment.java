@@ -3,6 +3,7 @@ package com.george.socialmeme.Fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -48,11 +50,37 @@ public class NewPostFragment extends Fragment {
     private Uri mediaUri;
     private ImageView img;
     private static String mediaType;
-    private VideoView videoView;
-    private Button upload_post;
     final private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     final private FirebaseUser user = mAuth.getCurrentUser();
     LoadingDialog loadingDialog;
+
+
+    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Upload new meme")
+                            .setMessage("Are you sure you want to upload this file?\nFilename: " + result.getData().getData().getPath())
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (mediaType.equals("video")) {
+                                        Intent data = result.getData();
+                                        mediaUri = data.getData();
+                                        uploadPostToFirebase(mediaUri, "video");
+                                    }else {
+                                        Intent data = result.getData();
+                                        mediaUri = data.getData();
+                                        uploadPostToFirebase(mediaUri, "image");
+                                    }
+                                }
+                            })
+                            .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                            .show();
+                }
+            });
+
 
     private String getFileExtension(Uri mUri) {
         ContentResolver cr = getActivity().getContentResolver();
@@ -88,7 +116,6 @@ public class NewPostFragment extends Fragment {
                 .addOnProgressListener(snapshot -> loadingDialog.show())
                 .addOnFailureListener(e -> {
             loadingDialog.hide();
-            upload_post.setEnabled(false);
             Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
         });
     }
@@ -104,10 +131,8 @@ public class NewPostFragment extends Fragment {
 
         loadingDialog = LoadingDialog.Companion.get(getActivity());
         img = view.findViewById(R.id.imageView3);
-        Button select_img = view.findViewById(R.id.select_img_btn);
-        upload_post = view.findViewById(R.id.upload_post_btn);
-        Button selectVideo = view.findViewById(R.id.select_video_btn);
-        videoView = view.findViewById(R.id.videoView);
+        ConstraintLayout select_img = view.findViewById(R.id.select_img_btn);
+        ConstraintLayout selectVideo = view.findViewById(R.id.select_video_btn);
 
         if (HomeActivity.anonymous) {
             new AlertDialog.Builder(getContext())
@@ -121,29 +146,6 @@ public class NewPostFragment extends Fragment {
                     .setCancelable(false)
                     .show();
         }
-
-        upload_post.setEnabled(false);
-
-        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        if (mediaType.equals("video")) {
-                            MediaController mediaController = new MediaController(getActivity());
-                            Intent data = result.getData();
-                            mediaUri = data.getData();
-                            img.setImageURI(mediaUri);
-                            videoView.setVideoURI(mediaUri);
-                            videoView.setMediaController(mediaController);
-                            uploadPostToFirebase(mediaUri, "video");
-                        }else {
-                            Intent data = result.getData();
-                            mediaUri = data.getData();
-                            img.setImageURI(mediaUri);
-                            upload_post.setEnabled(true);
-                        }
-                    }
-                });
 
         selectVideo.setOnClickListener(view1 -> {
             mediaType = "video";
@@ -159,14 +161,6 @@ public class NewPostFragment extends Fragment {
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             someActivityResultLauncher.launch(intent);
-        });
-
-        upload_post.setOnClickListener(v -> {
-            if (mediaUri != null) {
-                uploadPostToFirebase(mediaUri, "image");
-            }else {
-                Toast.makeText(getActivity(), "Please select image or video.", Toast.LENGTH_SHORT).show();
-            }
         });
 
         return view;
