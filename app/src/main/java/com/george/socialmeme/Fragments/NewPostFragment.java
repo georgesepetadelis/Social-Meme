@@ -90,11 +90,12 @@ public class NewPostFragment extends Fragment {
 
     private void uploadPostToFirebase(Uri uri, String type) {
 
-        StorageReference fileRef = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(uri));
+        String postId = mRef.push().getKey();
+
+        StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
         fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
             loadingDialog.hide();
             UploadPostModel model = new UploadPostModel(uri1.toString());
-            String postId = mRef.push().getKey();
             mRef.child(postId).setValue(model);
             mRef.child(postId).child("name").setValue(user.getDisplayName());
             mRef.child(postId).child("likes").setValue("0");
