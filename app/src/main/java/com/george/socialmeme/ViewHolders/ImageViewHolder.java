@@ -30,6 +30,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 
+import java.util.Calendar;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
 
@@ -65,12 +67,16 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 String notificationID = usersRef.push().getKey();
                 String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
+                Calendar calendar = Calendar.getInstance();
+                int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                int currentMinutes = calendar.get(Calendar.MINUTE);
+
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
                         String postAuthorID = snap.child("id").getValue().toString();
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New like");
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " liked your post");
                         break;
                     }
