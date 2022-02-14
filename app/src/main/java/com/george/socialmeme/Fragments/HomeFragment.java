@@ -160,9 +160,16 @@ public class HomeFragment extends Fragment {
                     postModel.setProfileImgUrl(snap.child("authorProfilePictureURL").getValue(String.class));
                     postModel.setPostType(snap.child("postType").getValue(String.class));
 
-                    postModelArrayList.add(postModel);
-
+                    // Show post in recycler adapter only if the user is not blocked
+                    if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(snap.child("name").getValue(String.class)).exists()) {
+                        postModelArrayList.add(postModel);
+                    }
                 }
+
+                if (snapshot.child("users").child(user.getUid()).child("blockedUsers").exists()) {
+                    System.out.println(snapshot.child("users").child(user.getUid()).child("blockedUsers"));
+                }
+
 
                 recyclerAdapter.notifyDataSetChanged();
 
