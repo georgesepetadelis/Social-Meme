@@ -83,7 +83,9 @@
             android:id="@+id/adView3"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintTop_toBottomOf="@+id/button"
-            motion:layout_constraintBottom_toBottomOf="parent" />
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintVertical_bias="0.0"
+            motion:layout_constraintHorizontal_bias="0.493" />
         <Constraint
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,6 +93,16 @@
             motion:layout_constraintTop_toBottomOf="@+id/button"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintBottom_toBottomOf="parent" />
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintVertical_bias="0.0"
+            motion:layout_constraintHorizontal_bias="0.493" />
+        <Constraint
+            android:layout_height="wrap_content"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="230dp"
+            motion:layout_constraintTop_toBottomOf="@+id/cardView6"
+            android:id="@+id/button" />
     </ConstraintSet>
 </MotionScene>
