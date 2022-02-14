@@ -309,7 +309,7 @@
             android:id="@+id/adView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="23dp"
             android:layout_marginBottom="32dp"
             app:adSize="BANNER"
             app:adUnitId="ca-app-pub-9627755439548346/8213283972"
