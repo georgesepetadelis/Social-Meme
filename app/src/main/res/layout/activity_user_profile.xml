@@ -51,8 +51,8 @@
 
         <TextView
             android:id="@+id/following_my_profile3"
-            android:layout_width="8dp"
-            android:layout_height="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="0"
             android:textSize="17sp"
@@ -90,6 +90,8 @@
             android:layout_marginStart="12dp"
             android:background="@null"
             android:clickable="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="@+id/textView11"
             app:layout_constraintStart_toStartOf="@+id/toolbar"
             app:layout_constraintTop_toTopOf="@+id/textView11"
@@ -213,6 +215,34 @@
             app:layout_constraintStart_toStartOf="@+id/textView19"
             app:layout_constraintTop_toTopOf="@+id/textView19"
             app:layout_constraintVertical_bias="0.548" />
+
+        <ImageButton
+            android:id="@+id/block_user_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+            app:layout_constraintEnd_toEndOf="@+id/toolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_block" />
+
+        <ImageButton
+            android:id="@+id/report_user_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/block_user_btn"
+            app:layout_constraintEnd_toStartOf="@+id/block_user_btn"
+            app:layout_constraintTop_toTopOf="@+id/block_user_btn"
+            app:srcCompat="@drawable/ic_report" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

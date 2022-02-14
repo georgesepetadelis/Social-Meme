@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +49,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public int following = 0;
     LoadingDialog loadingDialog;
     private ScreenShotContentObserver screenShotContentObserver;
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
     void sendNotificationToUser(String notificationType) {
 
@@ -226,6 +228,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
         loadingDialog = LoadingDialog.Companion.get(UserProfileActivity.this);
         ImageButton backBtn = findViewById(R.id.imageButton2);
+        ImageButton blockUserBtn = findViewById(R.id.block_user_btn);
+        ImageButton reportUserBtn = findViewById(R.id.report_user_btn);
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
         TextView username_tv = findViewById(R.id.textView12);
         Button followBtn = findViewById(R.id.follow_btn);
@@ -251,10 +255,51 @@ public class UserProfileActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        // show loading dialog
+        // Check if logged-in user has blocked current user
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child(user.getUid()).child("blockedUsers").child(userID).exists()) {
+                    new AlertDialog.Builder(UserProfileActivity.this)
+                            .setTitle("Blocked user")
+                            .setMessage("You have blocked this user. You want to unblock this user?")
+                            .setPositiveButton("Yes", (dialogInterface, i) ->
+                                    usersRef.child(user.getUid()).child("blockedUsers").child(userID).removeValue().addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    dialogInterface.dismiss();
+                                    Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                    onBackPressed();
+                                }
+                            })).setNegativeButton("No", (dialogInterface, i) -> {
+                                dialogInterface.dismiss();
+                                onBackPressed();
+                            })
+                            .setCancelable(false)
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Show loading dialog
         loadingDialog.show();
 
         backBtn.setOnClickListener(v -> onBackPressed());
+        reportUserBtn.setOnClickListener(view -> reportUser());
+
+        blockUserBtn.setOnClickListener(view ->
+                new AlertDialog.Builder(UserProfileActivity.this)
+                .setTitle("Are you sure?")
+                .setMessage("Are you sure you want to block " + username + " ?.\nIf you block this user you won't be able to see any memes from this user.")
+                .setPositiveButton("Yes", (dialogInterface, i) -> blockUser())
+                .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                .show());
 
         showFollowersView.setOnClickListener(v -> {
             if (followers != 0) {
@@ -419,6 +464,37 @@ public class UserProfileActivity extends AppCompatActivity {
             });
         });
 
+    }
+
+    private void reportUser() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reports");
+        reportsRef.child(user.getDisplayName()).setValue(username).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                new AlertDialog.Builder(UserProfileActivity.this)
+                        .setTitle("User Reported")
+                        .setMessage(username + " has been reported. Thanks for keeping Social Meme community safe")
+                        .setPositiveButton("Okay", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .show();
+            }else {
+                Toast.makeText(this, "Error: Can't report user, try again later", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void blockUser() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        usersRef.child(user.getUid()).child("blockedUsers").child(username).setValue(userID).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                sendNotificationToUser("block");
+                Toast.makeText(UserProfileActivity.this, "User blocked", Toast.LENGTH_SHORT).show();
+                onBackPressed();
+            }else {
+                Toast.makeText(UserProfileActivity.this, "Can't block this user", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void openUsersList() {
