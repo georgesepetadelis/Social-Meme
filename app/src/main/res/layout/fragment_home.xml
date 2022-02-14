@@ -74,7 +74,7 @@
 
                 <com.google.android.gms.ads.AdView
                     android:id="@+id/adView"
-                    android:layout_width="320dp"
+                    android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
@@ -155,7 +155,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
