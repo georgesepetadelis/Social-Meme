@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     tools:context=".Fragments.MyProfileFragment">
 
     <View
@@ -79,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="108dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="40dp"
                 android:text="Followers"
                 android:textColor="@color/black"
                 android:textSize="18sp"
@@ -142,13 +143,12 @@
                 android:id="@+id/recyclerView_my_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="190dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView17"
+                app:layout_constraintTop_toBottomOf="@+id/adView5"
                 tools:listitem="@layout/post_item" />
 
             <ImageView
@@ -187,6 +187,17 @@
                 app:layout_constraintStart_toStartOf="@+id/textView15"
                 app:layout_constraintTop_toTopOf="@+id/textView15" />
 
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:adSize="BANNER"
+                app:adUnitId="ca-app-pub-9627755439548346/9659272134"
+                app:layout_constraintBottom_toTopOf="@+id/recyclerView_my_profile"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -201,9 +212,9 @@
         android:clickable="true"
         android:foreground="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_settings"
-        app:layout_constraintBottom_toBottomOf="@+id/textView10"
+        app:layout_constraintBottom_toBottomOf="@+id/view6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView10"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/view6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

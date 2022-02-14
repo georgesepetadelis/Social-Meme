@@ -30,6 +30,8 @@ import com.george.socialmeme.Activities.SettingsActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.github.loadingview.LoadingDialog;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -149,6 +151,10 @@ public class MyProfileFragment extends Fragment {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
+
+        AdView mAdView = view.findViewById(R.id.adView5);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         TextView followersCounter = view.findViewById(R.id.followers_my_profile);
         TextView followingCounter = view.findViewById(R.id.following_my_profile);
