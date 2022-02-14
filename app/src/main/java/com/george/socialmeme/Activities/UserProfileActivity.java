@@ -24,6 +24,8 @@ import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Observers.ScreenShotContentObserver;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -66,12 +69,16 @@ public class UserProfileActivity extends AppCompatActivity {
                     String notificationID = usersRef.push().getKey();
                     String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
+                    Calendar calendar = Calendar.getInstance();
+                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int currentMinutes = calendar.get(Calendar.MINUTE);
+
                     for (DataSnapshot snap : snapshot.getChildren()) {
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
                             break;
                         }
@@ -93,13 +100,17 @@ public class UserProfileActivity extends AppCompatActivity {
                     String notificationID = usersRef.push().getKey();
                     String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
+                    Calendar calendar = Calendar.getInstance();
+                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int currentMinutes = calendar.get(Calendar.MINUTE);
+
                     for (DataSnapshot snap : snapshot.getChildren()) {
 
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New follower");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " started following you");
                             break;
                         }
@@ -121,13 +132,17 @@ public class UserProfileActivity extends AppCompatActivity {
                     String notificationID = usersRef.push().getKey();
                     String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
+                    Calendar calendar = Calendar.getInstance();
+                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int currentMinutes = calendar.get(Calendar.MINUTE);
+
                     for (DataSnapshot snap : snapshot.getChildren()) {
 
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Profile screenshot");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " screenshotted your profile");
                             break;
                         }
@@ -149,13 +164,17 @@ public class UserProfileActivity extends AppCompatActivity {
                     String notificationID = usersRef.push().getKey();
                     String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
+                    Calendar calendar = Calendar.getInstance();
+                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int currentMinutes = calendar.get(Calendar.MINUTE);
+
                     for (DataSnapshot snap : snapshot.getChildren()) {
 
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Unfollow");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " unfollowed you");
                             break;
                         }
@@ -239,6 +258,10 @@ public class UserProfileActivity extends AppCompatActivity {
         TextView userFollowsCurrentUserTextView = findViewById(R.id.textView28);
         View showFollowersView = findViewById(R.id.view11);
         View showFollowingUsersView = findViewById(R.id.view12);
+
+        AdView mAdView = findViewById(R.id.adView4);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
