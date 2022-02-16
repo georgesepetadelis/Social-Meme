@@ -116,6 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
             android:text="Username"
+            android:foreground="?selectableItemBackgroundBorderless"
             android:textColor="@color/black"
             android:textSize="25sp"
             android:textStyle="bold"

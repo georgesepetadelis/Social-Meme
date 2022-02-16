@@ -1,5 +1,7 @@
 package com.george.socialmeme.ViewHolders;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -141,6 +143,11 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
 
         });
 
+        openProfileView.setOnLongClickListener(view -> {
+            copyUsernameToClipboard();
+            return false;
+        });
+
         sContainer.setOnLongClickListener(v -> {
             showPostDialog();
             return false;
@@ -218,6 +225,15 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
             optionsDialog.setAuthorName(username.getText().toString());
             optionsDialog.show(manager, "options");
         }
+    }
+    
+    void copyUsernameToClipboard() {
+
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("username", username.getText().toString());
+        clipboard.setPrimaryClip(clip);
+
+        Toast.makeText(context, "Username copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
     void sendLikeNotificationToUser() {

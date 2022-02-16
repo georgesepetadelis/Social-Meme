@@ -1,5 +1,8 @@
 package com.george.socialmeme.Activities;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -221,6 +224,15 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
+    void copyUsernameToClipboard() {
+
+        ClipboardManager clipboard = (ClipboardManager) UserProfileActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("username", username);
+        clipboard.setPrimaryClip(clip);
+
+        Toast.makeText(UserProfileActivity.this, "Username copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -277,6 +289,11 @@ public class UserProfileActivity extends AppCompatActivity {
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        username_tv.setOnLongClickListener(view -> {
+            copyUsernameToClipboard();
+            return false;
+        });
 
         // Check if logged-in user has blocked current user
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
