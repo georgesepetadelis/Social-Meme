@@ -11,7 +11,7 @@
         android:id="@+id/view6"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:background="@drawable/home_header_style"
+        android:background="#0099ff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,17 +23,17 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-black"
         android:gravity="center_horizontal"
         android:text="My Profile"
         android:textColor="@color/white"
         android:textSize="43sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_goneMarginTop="10dp" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView2"
@@ -52,7 +52,7 @@
                 android:id="@+id/my_profile_image"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="52dp"
                 android:src="@drawable/profile_icon"
                 android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
@@ -216,5 +216,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView10"
         app:layout_constraintTop_toTopOf="@+id/view6" />
+
+    <View
+        android:id="@+id/view8"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/ic_wave_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
