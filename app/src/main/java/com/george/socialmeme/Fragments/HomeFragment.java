@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -55,9 +57,59 @@ public class HomeFragment extends Fragment {
     LoadingDialog progressDialog;
     final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     boolean isSearchOpen = false;
-    final private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     private EditText searchView;
-    
+    ArrayList<PostModel> postModelArrayList;
+    RecyclerView recyclerView;
+
+    void loadPosts(View fragmentView, FirebaseUser user, ArrayList<PostModel> postModelArrayList, RecyclerView.Adapter postsAdapter, boolean isRefresh) {
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                new Handler().postDelayed(() -> {
+                    fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                    ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+                }, 2000);
+
+
+                for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
+
+                    PostModel postModel = new PostModel();
+                    postModel.setId(snap.child("id").getValue(String.class));
+                    postModel.setImgUrl(snap.child("imgUrl").getValue(String.class));
+                    postModel.setLikes(snap.child("likes").getValue(String.class));
+                    postModel.setName(snap.child("name").getValue(String.class));
+                    postModel.setProfileImgUrl(snap.child("authorProfilePictureURL").getValue(String.class));
+                    postModel.setPostType(snap.child("postType").getValue(String.class));
+
+                    // Show post in recycler adapter only if the user is not blocked
+                    if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(snap.child("name").getValue(String.class)).exists()) {
+                        postModelArrayList.add(postModel);
+                    }
+                }
+
+                if (snapshot.child("users").child(user.getUid()).child("blockedUsers").exists()) {
+                    System.out.println(snapshot.child("users").child(user.getUid()).child("blockedUsers"));
+                }
+
+
+                postsAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,8 +154,8 @@ public class HomeFragment extends Fragment {
             notificationsBtn.setVisibility(View.GONE);
         }
 
-        final RecyclerView recyclerView = view.findViewById(R.id.home_recycler_view);
-        final ArrayList<PostModel> postModelArrayList = new ArrayList<>();
+        recyclerView = view.findViewById(R.id.home_recycler_view);
+        postModelArrayList = new ArrayList<>();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
@@ -120,46 +172,8 @@ public class HomeFragment extends Fragment {
 
         ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.GONE);
 
-        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+        loadPosts(view, user, postModelArrayList, recyclerAdapter, false);
 
-                new Handler().postDelayed(() -> {
-                    view.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                    ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
-                }, 2000);
-
-                for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
-
-                    PostModel postModel = new PostModel();
-                    postModel.setId(snap.child("id").getValue(String.class));
-                    postModel.setImgUrl(snap.child("imgUrl").getValue(String.class));
-                    postModel.setLikes(snap.child("likes").getValue(String.class));
-                    postModel.setName(snap.child("name").getValue(String.class));
-                    postModel.setProfileImgUrl(snap.child("authorProfilePictureURL").getValue(String.class));
-                    postModel.setPostType(snap.child("postType").getValue(String.class));
-
-                    // Show post in recycler adapter only if the user is not blocked
-                    if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(snap.child("name").getValue(String.class)).exists()) {
-                        postModelArrayList.add(postModel);
-                    }
-                }
-
-                if (snapshot.child("users").child(user.getUid()).child("blockedUsers").exists()) {
-                    System.out.println(snapshot.child("users").child(user.getUid()).child("blockedUsers"));
-                }
-
-
-                recyclerAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);
