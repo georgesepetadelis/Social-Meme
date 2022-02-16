@@ -20,6 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme">
         <activity
+            android:name=".Activities.PostsOfTheMonthActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.UserProfileActivity"
             android:exported="false" />
         <activity
