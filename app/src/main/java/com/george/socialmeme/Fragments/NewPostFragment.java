@@ -132,8 +132,8 @@ public class NewPostFragment extends Fragment {
 
         loadingDialog = LoadingDialog.Companion.get(getActivity());
         img = view.findViewById(R.id.imageView3);
-        ConstraintLayout select_img = view.findViewById(R.id.select_img_btn);
-        ConstraintLayout selectVideo = view.findViewById(R.id.select_video_btn);
+        View select_img = view.findViewById(R.id.select_img_btn);
+        View selectVideo = view.findViewById(R.id.select_video_btn);
 
         if (HomeActivity.anonymous) {
             new AlertDialog.Builder(getContext())
