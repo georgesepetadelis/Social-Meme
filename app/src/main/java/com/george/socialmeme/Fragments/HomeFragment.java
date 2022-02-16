@@ -15,9 +15,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -30,6 +27,7 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.NotificationsActivity;
+import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
@@ -38,7 +36,6 @@ import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -70,11 +67,13 @@ public class HomeFragment extends Fragment {
 
         MobileAds.initialize(getContext(), initializationStatus -> {System.out.println("ADS: Home ad init completed");});
 
+        TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
         ImageButton notificationsBtn = view.findViewById(R.id.notificationsButton);
-
-        searchView = view.findViewById(R.id.search_view);
         ImageButton searchUserButton = view.findViewById(R.id.enter_search_button);
+        View postsOfTheMonthBtn = view.findViewById(R.id.posts_of_the_month_btn);
+        searchView = view.findViewById(R.id.search_view);
+
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -82,8 +81,6 @@ public class HomeFragment extends Fragment {
 
         AdView mAdView = view.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-
-        TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
 
         if (!HomeActivity.anonymous) {
             usernameLoadingScreen.setText(user.getDisplayName());
@@ -95,18 +92,6 @@ public class HomeFragment extends Fragment {
         }else {
             usernameLoadingScreen.setText("Anonymous User");
         }
-
-        // Animate text on loading screen
-        YoYo.with(Techniques.FadeInUp)
-                .duration(800)
-                .repeat(0)
-                .playOn(view.findViewById(R.id.textView39));
-
-        YoYo.with(Techniques.FadeInUp)
-                .duration(800)
-                .repeat(0)
-                .playOn(view.findViewById(R.id.textView40));
-
 
         if (isAdded()) {
             mAdView.loadAd(adRequest);
@@ -142,12 +127,7 @@ public class HomeFragment extends Fragment {
 
                 new Handler().postDelayed(() -> {
                     view.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                    try {
-                        ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
-                    } catch (Exception exception) {
-                        getActivity().finish();
-                        startActivity(new Intent(getActivity(), HomeActivity.class));
-                    }
+                    ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
                 }, 2000);
 
                 for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
@@ -179,6 +159,12 @@ public class HomeFragment extends Fragment {
             public void onCancelled(@NonNull @NotNull DatabaseError error) {
                 Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
             }
+        });
+
+        postsOfTheMonthBtn.setOnClickListener(view13 -> {
+            Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);
+            startActivity(intent);
+            CustomIntent.customType(getContext(), "left-to-right");
         });
 
         searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -283,39 +269,6 @@ public class HomeFragment extends Fragment {
         });
 
         return view;
-    }
-
-    private void sendProfileVisitNotification() {
-
-        String notificationID = usersRef.push().getKey();
-        String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot1) {
-
-                for (DataSnapshot userSnapshot : snapshot1.getChildren()) {
-
-                    if (userSnapshot.child("name").getValue().toString().equals(searchView.getText().toString())) {
-                        Toast.makeText(getContext(), "User found", Toast.LENGTH_SHORT).show();
-                        String postAuthorID = userSnapshot.child("id").getValue().toString();
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
-                        break;
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 }
