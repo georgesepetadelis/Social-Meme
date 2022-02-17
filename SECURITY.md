@@ -12,4 +12,4 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-You can report a vulnerability from app settings (Settings -> Report Bug)
+You can report a vulnerability from app settings (My profile -> Settings -> Report Bug/Vulnerability)
