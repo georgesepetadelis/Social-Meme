@@ -59,6 +59,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 }else {
                     initializeNightModeSharedPref();
+                    HomeActivity.showLoadingScreen = true;
                     startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
                 }
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");

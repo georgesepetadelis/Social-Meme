@@ -33,24 +33,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
     public static boolean isDarkModeEnabled;
-
-    private final BottomNavigationView.OnNavigationItemSelectedListener navListener = menuItem -> {
-        Fragment selectedFragment = null;
-
-        switch (menuItem.getItemId()) {
-            case R.id.home_fragment:
-                selectedFragment = new HomeFragment();
-                break;
-            case R.id.new_post_fragment:
-                selectedFragment = new NewPostFragment();
-                break;
-            case R.id.my_profile_fragment:
-                selectedFragment = new MyProfileFragment();
-                break;
-        }
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-        return true;
-    };
+    public static boolean showLoadingScreen;
 
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);

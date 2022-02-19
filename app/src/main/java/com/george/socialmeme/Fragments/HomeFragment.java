@@ -63,6 +63,12 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
 
     void loadPosts(View fragmentView, FirebaseUser user, ArrayList<PostModel> postModelArrayList, RecyclerView.Adapter postsAdapter, boolean isRefresh) {
+
+        if (isRefresh) {
+            fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+            ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+        }
+
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -71,6 +77,7 @@ public class HomeFragment extends Fragment {
                 new Handler().postDelayed(() -> {
                     fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
                     ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+                    HomeActivity.showLoadingScreen = false;
                 }, 2000);
 
 
@@ -166,9 +173,14 @@ public class HomeFragment extends Fragment {
 
         ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.GONE);
 
-        loadPosts(view, user, postModelArrayList, recyclerAdapter, false);
+        if (HomeActivity.showLoadingScreen) {
+            loadPosts(view, user, postModelArrayList, recyclerAdapter, false);
+        }else {
+            loadPosts(view, user, postModelArrayList, recyclerAdapter, true);
+        }
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
+            Toast.makeText(getContext(), "State is: " + HomeActivity.showLoadingScreen, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);
             startActivity(intent);
             CustomIntent.customType(getContext(), "left-to-right");
