@@ -96,6 +96,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (HomeActivity.isDarkModeEnabled) {
+            setTheme(R.style.AppTheme_Base_Night);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
 

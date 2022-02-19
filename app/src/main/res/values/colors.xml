@@ -7,5 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="main">#3986F9</color>
+    <color name="main">#0099ff</color>
+    <color name="main_dark">#002776</color>
+
+    <!--Night Color-->
+    <color name="colorPrimaryNight">#212121</color>
+    <color name="colorPrimaryDarkNight">#000000</color>
+    <color name="colorAccentNight">#f44336</color>
+    <color name="primaryTitleColorNight">#FFFFFF</color>
+    <color name="primaryDescriptionColorNight">#B3FFFFFF</color>
+    <color name="primaryDateColorNight">#B3FFFFFF</color>
+    <color name="primaryBackgroundColorNight">#303030</color>
+    <color name="primaryCardBackgroundColorNight">#424242</color>
+    <color name="actionBarColorDark">#002AFF</color>
+    <color name="cardBackgroundColorDark">#636363</color>
+    <color name="titleTextColor">#A5A5A5</color>
+
 </resources>

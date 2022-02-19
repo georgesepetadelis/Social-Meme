@@ -90,6 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/adView3"
+            android:layout_marginTop="32dp"
             motion:layout_constraintTop_toBottomOf="@+id/button"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
@@ -104,5 +105,10 @@
             android:layout_width="230dp"
             motion:layout_constraintTop_toBottomOf="@+id/cardView6"
             android:id="@+id/button" />
+        <Constraint
+            motion:layout_editor_absoluteY="455dp"
+            android:id="@+id/cardView9"
+            motion:layout_constraintStart_toStartOf="@+id/cardView6"
+            motion:layout_constraintEnd_toEndOf="@+id/cardView6" />
     </ConstraintSet>
 </MotionScene>

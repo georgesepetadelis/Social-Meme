@@ -12,6 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sContainer"
         android:layout_width="match_parent"
+        android:background="?attr/cardBackgroundColor"
         android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -21,7 +22,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/profile_icon"
+            android:src="@drawable/user"
             app:layout_constraintEnd_toStartOf="@+id/textView27"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="username"
+            android:textColor="?attr/titleTextColor"
             android:textSize="17sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/circleImageView2"
@@ -67,6 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="0"
+            android:textColor="?attr/titleTextColor"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageButton8"

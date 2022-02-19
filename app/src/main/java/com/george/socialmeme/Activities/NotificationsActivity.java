@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -42,9 +43,16 @@ public class NotificationsActivity extends AppCompatActivity {
         finish();
         CustomIntent.customType(NotificationsActivity.this, "right-to-left");
     }
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (isNightModeEnabled()) {
+            setTheme(R.style.AppTheme_Base_Night);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
 

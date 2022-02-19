@@ -29,6 +29,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.NotificationsActivity;
 import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
+import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
@@ -93,7 +94,6 @@ public class HomeFragment extends Fragment {
                     System.out.println(snapshot.child("users").child(user.getUid()).child("blockedUsers"));
                 }
 
-
                 postsAdapter.notifyDataSetChanged();
 
             }
@@ -103,12 +103,6 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
     }
 
     @Override
@@ -173,7 +167,6 @@ public class HomeFragment extends Fragment {
         ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.GONE);
 
         loadPosts(view, user, postModelArrayList, recyclerAdapter, false);
-
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);

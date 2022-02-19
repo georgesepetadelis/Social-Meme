@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/background"
     tools:context=".Activities.AccountSettingsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +15,7 @@
             android:id="@+id/toolbar3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/actionBarTheme"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +53,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="George Sepetadelis"
+            android:text="username"
+            android:textColor="?attr/textFillColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView30" />
@@ -63,10 +65,11 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
+            android:textColor="?attr/textFillColor"
             app:layout_constraintEnd_toEndOf="@+id/username_settings"
             app:layout_constraintStart_toStartOf="@+id/username_settings"
             app:layout_constraintTop_toBottomOf="@+id/textView31"
-            tools:text="giorgossepetadelis11@Gmail.com" />
+            tools:text="email@email.com" />
 
         <TextView
             android:id="@+id/textView30"
@@ -74,6 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Username"
+            android:textColor="?attr/titleTextColor"
             app:layout_constraintBottom_toTopOf="@+id/username_settings"
             app:layout_constraintStart_toStartOf="@+id/username_settings"
             app:layout_constraintTop_toBottomOf="@+id/toolbar3" />
@@ -84,6 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Email"
+            android:textColor="?attr/titleTextColor"
             app:layout_constraintBottom_toTopOf="@+id/email_settings"
             app:layout_constraintStart_toStartOf="@+id/email_settings"
             app:layout_constraintTop_toBottomOf="@+id/username_settings" />

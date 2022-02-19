@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/block_user_item_menu"
+        android:icon="@drawable/ic_block"
+        android:title="Block user" />
+
+    <item
+        android:id="@+id/report_user_item_menu"
+        android:icon="@drawable/ic_report"
+        android:title="Report user" />
+
+</menu>

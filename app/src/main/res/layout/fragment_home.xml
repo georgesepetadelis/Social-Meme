@@ -5,8 +5,8 @@
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
     android:orientation="vertical"
+    android:background="?attr/background"
     tools:context=".Activities.HomeActivity">
 
     <View
@@ -22,6 +22,7 @@
         android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="?attr/background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view3">
@@ -83,7 +84,8 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:background="?attr/cardBackgroundColor">
 
                         <ImageView
                             android:id="@+id/imageView12"
@@ -102,7 +104,7 @@
                             android:layout_marginStart="10dp"
                             android:fontFamily="sans-serif-black"
                             android:text="Posts of the month"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/textFillColor"
                             android:textSize="22sp"
                             android:textStyle="bold"
                             app:layout_constraintStart_toEndOf="@+id/imageView12"
@@ -114,6 +116,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-black"
                             android:text="The 3 most liked posts of the month"
+                            android:textColor="?attr/titleTextColor"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                             app:layout_constraintStart_toStartOf="@+id/textView42"
@@ -154,9 +157,9 @@
 
     <ImageButton
         android:id="@+id/notificationsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="8dp"
         android:background="@null"
         android:clickable="true"
@@ -168,9 +171,10 @@
 
     <ImageButton
         android:id="@+id/searchPersonButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
         android:background="@null"
         android:clickable="true"
         android:foreground="?selectableItemBackgroundBorderless"
@@ -220,11 +224,29 @@
         app:layout_constraintTop_toTopOf="@+id/search_view"
         app:srcCompat="@drawable/ic_appintro_arrow" />
 
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-black"
+        android:gravity="center_horizontal"
+        android:text="Home"
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/notificationsButton"
+        app:layout_constraintStart_toEndOf="@+id/searchPersonButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="?attr/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -242,12 +264,10 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/my_profile_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:layout_marginTop="140dp"
-            android:clickable="true"
-            android:foreground="?selectableItemBackgroundBorderless"
-            android:src="@drawable/profile_icon"
+            android:src="@drawable/user"
             app:civ_border_color="#FF000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -259,7 +279,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Welcome"
-            android:textColor="@color/black"
+            android:textColor="?attr/textFillColor"
             android:textSize="35sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -271,7 +291,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="username"
-            android:textColor="#6A6A6A"
+            android:textColor="?attr/titleTextColor"
             android:textSize="38sp"
             android:textStyle="bold|italic"
             app:layout_constraintEnd_toEndOf="parent"
@@ -284,6 +304,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:text="Please Wait..."
+            android:textColor="?attr/titleTextColor"
             android:textSize="23sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -291,24 +312,6 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center_horizontal"
-        android:text="Home"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/white"
-        android:textSize="50sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/notificationsButton"
-        app:layout_constraintStart_toEndOf="@+id/searchPersonButton"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,10 +8,12 @@
     android:layout_margin="12dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="8dp"
+    android:background="?attr/cardBackgroundColor"
     android:layout_marginBottom="30dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/second_container"
+        android:background="?attr/cardBackgroundColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?selectableItemBackgroundBorderless"
@@ -23,7 +25,7 @@
             android:layout_height="35dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/profile_icon"
+            android:src="@drawable/user"
             app:layout_constraintBottom_toTopOf="@+id/post_image"
             app:layout_constraintEnd_toStartOf="@+id/post_username"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,6 +41,7 @@
             android:text="username"
             android:textSize="17sp"
             android:textStyle="bold"
+            android:textColor="?attr/titleTextColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.038"
             app:layout_constraintStart_toStartOf="parent"
@@ -80,6 +83,7 @@
             android:text="0"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="?attr/titleTextColor"
             app:layout_constraintBottom_toBottomOf="@+id/likeBtn"
             app:layout_constraintEnd_toStartOf="@+id/likeBtn"
             app:layout_constraintHorizontal_bias="1.0"

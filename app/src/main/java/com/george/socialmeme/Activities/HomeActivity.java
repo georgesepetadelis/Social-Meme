@@ -1,11 +1,10 @@
 package com.george.socialmeme.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -16,10 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
-import com.george.socialmeme.R;
 import com.george.socialmeme.Fragments.HomeFragment;
-import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
+import com.george.socialmeme.Fragments.NewPostFragment;
+import com.george.socialmeme.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
+    public static boolean isDarkModeEnabled;
 
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener = menuItem -> {
         Fragment selectedFragment = null;
@@ -51,8 +51,20 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     };
 
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (isNightModeEnabled()) {
+            // Using force apply because HomeActivity contains fragments
+            Resources.Theme theme = super.getTheme();
+            theme.applyStyle(R.style.AppTheme_Base_Night, true);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -61,7 +73,6 @@ public class HomeActivity extends AppCompatActivity {
         window.setStatusBarColor(Color.BLUE);
 
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
         final BottomNavigationView bottomNavBar = findViewById(R.id.bottom_nav);
 
         bottomNavBar.setOnNavigationItemSelectedListener(navListener);

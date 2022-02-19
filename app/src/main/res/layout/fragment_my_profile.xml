@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="?attr/background"
     tools:context=".Fragments.MyProfileFragment">
 
     <View
@@ -50,10 +50,10 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/my_profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
                 android:layout_marginTop="52dp"
-                android:src="@drawable/profile_icon"
+                android:src="@drawable/user"
                 android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 app:civ_border_color="#FF000000"
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="username"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -82,7 +82,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="40dp"
                 android:text="Followers"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/textView15"
@@ -97,6 +97,7 @@
                 android:text="0"
                 android:textSize="17sp"
                 android:textStyle="bold"
+                android:textColor="?attr/titleTextColor"
                 app:layout_constraintEnd_toEndOf="@+id/textView13"
                 app:layout_constraintStart_toStartOf="@+id/textView13"
                 app:layout_constraintTop_toBottomOf="@+id/textView13" />
@@ -108,7 +109,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="108dp"
                 android:text="Following"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -122,6 +123,7 @@
                 android:text="0"
                 android:textSize="17sp"
                 android:textStyle="bold"
+                android:textColor="?attr/titleTextColor"
                 app:layout_constraintEnd_toEndOf="@+id/textView15"
                 app:layout_constraintStart_toStartOf="@+id/textView15"
                 app:layout_constraintTop_toBottomOf="@+id/textView15" />
@@ -133,7 +135,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="Memes"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"

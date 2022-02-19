@@ -1,12 +1,10 @@
 package com.george.socialmeme.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,18 +30,22 @@ public class SplashScreenActivity extends AppCompatActivity {
         return activeNetwork != null && activeNetwork.isConnected();
     }
 
+    void initializeNightModeSharedPref() {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        if (!sharedPref.contains("dark_mode")) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("dark_mode", false);
+            editor.apply();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.WHITE);
-
-        // Disable device dark mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
 
         new Handler().postDelayed(() -> {
 
@@ -54,6 +58,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 }else {
+                    initializeNightModeSharedPref();
                     startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
                 }
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");

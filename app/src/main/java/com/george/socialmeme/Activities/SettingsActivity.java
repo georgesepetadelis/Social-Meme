@@ -1,10 +1,14 @@
 package com.george.socialmeme.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
@@ -33,8 +37,38 @@ public class SettingsActivity extends AppCompatActivity {
         CustomIntent.customType(SettingsActivity.this, "right-to-left");
     }
 
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
+
+    void updateNightModeState() {
+
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        if (isNightModeEnabled()) {
+            // Disable night mode
+            editor.putBoolean("dark_mode", false);
+        }else {
+            // Enable Night mode
+            editor.putBoolean("dark_mode", true);
+        }
+        editor.apply();
+
+        finish();
+        Intent intent = new Intent(SettingsActivity.this, SplashScreenActivity.class);
+        startActivity(intent);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (isNightModeEnabled()) {
+            setTheme(R.style.AppTheme_Base_Night);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
@@ -54,6 +88,19 @@ public class SettingsActivity extends AppCompatActivity {
         CardView bugReport = findViewById(R.id.cardView3);
         CardView feedback = findViewById(R.id.cardView5);
         CardView privacyPolicy = findViewById(R.id.cardView6);
+        SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
+        nightModeSwitch.setChecked(isNightModeEnabled());
+
+        nightModeSwitch.setOnClickListener(view -> {
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Restart required")
+                    .setMessage("You need to restart Social Meme to apply new settings")
+                    .setPositiveButton("Restart now", (dialogInterface, i) -> updateNightModeState())
+                    .setNegativeButton("Later", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .show();
+
+        });
 
         privacyPolicy.setOnClickListener(view -> {
             startActivity(new Intent(SettingsActivity.this, PrivacyPolicyActivity.class));

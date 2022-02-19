@@ -85,7 +85,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
 
         backBtn.setOnClickListener(view -> onBackPressed());
 
-        rootRef.addValueEventListener(new ValueEventListener() {
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 

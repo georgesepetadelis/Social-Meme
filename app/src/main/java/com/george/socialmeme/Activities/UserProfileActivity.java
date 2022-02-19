@@ -1,14 +1,18 @@
 package com.george.socialmeme.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -18,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -234,7 +239,42 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_profile_options_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.report_user_item_menu:
+                reportUser();
+                break;
+            case R.id.block_user_item_menu:
+                new AlertDialog.Builder(UserProfileActivity.this)
+                        .setTitle("Are you sure?")
+                        .setMessage("Are you sure you want to block " + username + " ?.\nIf you block this user you won't be able to see any memes from this user.")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> blockUser())
+                        .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (isNightModeEnabled()) {
+            setTheme(R.style.AppTheme_Base_Night);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
@@ -249,6 +289,8 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
 
+
+
         screenShotContentObserver = new ScreenShotContentObserver(handler, this) {
             @Override
             protected void onScreenShot(String path, String fileName) {
@@ -259,14 +301,19 @@ public class UserProfileActivity extends AppCompatActivity {
 
         loadingDialog = LoadingDialog.Companion.get(UserProfileActivity.this);
         ImageButton backBtn = findViewById(R.id.imageButton2);
-        ImageButton blockUserBtn = findViewById(R.id.block_user_btn);
-        ImageButton reportUserBtn = findViewById(R.id.report_user_btn);
+        ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
         TextView username_tv = findViewById(R.id.textView12);
         Button followBtn = findViewById(R.id.follow_btn);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
         TextView followersCounter = findViewById(R.id.followers_my_profile3);
         TextView followingCounter = findViewById(R.id.following_my_profile3);
+
+        TextView goldTrophiesCount = findViewById(R.id.gold_trophies_count);
+        TextView silverTrophiesCount = findViewById(R.id.silver_trophies_count);
+        TextView bronzeTrophiesCount = findViewById(R.id.bronze_trophies_count);
+
         TextView userFollowsCurrentUserTextView = findViewById(R.id.textView28);
         View showFollowersView = findViewById(R.id.view11);
         View showFollowingUsersView = findViewById(R.id.view12);
@@ -290,56 +337,25 @@ public class UserProfileActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
+        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
+        postsOfTheMonthInfo.setOnClickListener(view -> {
+            Intent intent = new Intent(UserProfileActivity.this, PostsOfTheMonthActivity.class);
+            startActivity(intent);
+            CustomIntent.customType(UserProfileActivity.this, "left-to-right");
+        });
+
         username_tv.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
             return false;
-        });
-
-        // Check if logged-in user has blocked current user
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child(user.getUid()).child("blockedUsers").child(userID).exists()) {
-                    new AlertDialog.Builder(UserProfileActivity.this)
-                            .setTitle("Blocked user")
-                            .setMessage("You have blocked this user. You want to unblock this user?")
-                            .setPositiveButton("Yes", (dialogInterface, i) ->
-                                    usersRef.child(user.getUid()).child("blockedUsers").child(userID).removeValue().addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    dialogInterface.dismiss();
-                                    Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
-                                }else {
-                                    Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
-                                    onBackPressed();
-                                }
-                            })).setNegativeButton("No", (dialogInterface, i) -> {
-                                dialogInterface.dismiss();
-                                onBackPressed();
-                            })
-                            .setCancelable(false)
-                            .show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
         });
 
         // Show loading dialog
         loadingDialog.show();
 
         backBtn.setOnClickListener(v -> onBackPressed());
-        reportUserBtn.setOnClickListener(view -> reportUser());
-
-        blockUserBtn.setOnClickListener(view ->
-                new AlertDialog.Builder(UserProfileActivity.this)
-                .setTitle("Are you sure?")
-                .setMessage("Are you sure you want to block " + username + " ?.\nIf you block this user you won't be able to see any memes from this user.")
-                .setPositiveButton("Yes", (dialogInterface, i) -> blockUser())
-                .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
 
         showFollowersView.setOnClickListener(v -> {
             if (followers != 0) {
@@ -361,6 +377,28 @@ public class UserProfileActivity extends AppCompatActivity {
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                // Check if logged-in user has blocked current user
+                if (snapshot.child(user.getUid()).child("blockedUsers").child(userID).exists()) {
+                    new AlertDialog.Builder(UserProfileActivity.this)
+                            .setTitle("Blocked user")
+                            .setMessage("You have blocked this user. You want to unblock this user?")
+                            .setPositiveButton("Yes", (dialogInterface, i) ->
+                                    usersRef.child(user.getUid()).child("blockedUsers").child(userID).removeValue().addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            dialogInterface.dismiss();
+                                            Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                        }else {
+                                            Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                            onBackPressed();
+                                        }
+                                    })).setNegativeButton("No", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                        onBackPressed();
+                    })
+                            .setCancelable(false)
+                            .show();
+                }
 
                 String profilePictureURL = "none";
 
@@ -411,6 +449,19 @@ public class UserProfileActivity extends AppCompatActivity {
                 if (snapshot.child(userID).child("followers").exists()) {
                     followers = (int) snapshot.child(userID).child("followers").getChildrenCount();
                     followersCounter.setText(String.format("%d", followers));
+                }
+
+                // Load user trophies
+                if (snapshot.child(userID).child("trophies").exists()) {
+
+                    String goldTrophies = snapshot.child(userID).child("trophies").child("gold").getValue(String.class);
+                    String silverTrophies = snapshot.child(userID).child("trophies").child("silver").getValue(String.class);
+                    String bronzeTrophies = snapshot.child(userID).child("trophies").child("bronze").getValue(String.class);
+
+                    goldTrophiesCount.setText(goldTrophies);
+                    silverTrophiesCount.setText(silverTrophies);
+                    bronzeTrophiesCount.setText(bronzeTrophies);
+
                 }
 
             }
