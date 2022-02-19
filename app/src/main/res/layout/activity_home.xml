@@ -11,28 +11,27 @@
     android:alpha="5"
     android:background="#C5C5C5">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_nav"
-        android:background="@drawable/bottom_nav_style"
-        app:itemTextColor="@color/white"
-        app:itemIconTint="@color/white"
-        app:itemTextAppearanceActive="@color/black"
-        android:padding="3dp"
-        app:itemRippleColor="@color/teal_200" />
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="0dp"
         android:background="#E1E1E1" />
+
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        app:cnb_iconSize="32dp"
+        app:cnb_menuResource="@menu/bottom_nav"
+        app:cnb_unselectedColor="#616161"
+        app:cnb_badgeColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bottom_nav_style"
+        android:padding="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </RelativeLayout>
 

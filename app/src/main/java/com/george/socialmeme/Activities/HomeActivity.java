@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -73,9 +74,24 @@ public class HomeActivity extends AppCompatActivity {
         window.setStatusBarColor(Color.BLUE);
 
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        final BottomNavigationView bottomNavBar = findViewById(R.id.bottom_nav);
+        final ChipNavigationBar bottomNavBar = findViewById(R.id.bottom_nav);
 
-        bottomNavBar.setOnNavigationItemSelectedListener(navListener);
+        bottomNavBar.setOnItemSelectedListener(id -> {
+            Fragment selectedFragment = new HomeFragment();
+
+            switch (id) {
+                case R.id.home_fragment:
+                    selectedFragment = new HomeFragment();
+                    break;
+                case R.id.new_post_fragment:
+                    selectedFragment = new NewPostFragment();
+                    break;
+                case R.id.my_profile_fragment:
+                    selectedFragment = new MyProfileFragment();
+                    break;
+            }
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        });
 
         // Load default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();

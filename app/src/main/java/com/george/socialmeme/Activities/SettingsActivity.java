@@ -42,7 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
         return sharedPref.getBoolean("dark_mode", false);
     }
 
-    void updateNightModeState() {
+    void updateNightModeState(boolean restartNow) {
 
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -56,9 +56,11 @@ public class SettingsActivity extends AppCompatActivity {
         }
         editor.apply();
 
-        finish();
-        Intent intent = new Intent(SettingsActivity.this, SplashScreenActivity.class);
-        startActivity(intent);
+        if (restartNow) {
+            finish();
+            Intent intent = new Intent(SettingsActivity.this, SplashScreenActivity.class);
+            startActivity(intent);
+        }
 
     }
 
@@ -96,8 +98,11 @@ public class SettingsActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle("Restart required")
                     .setMessage("You need to restart Social Meme to apply new settings")
-                    .setPositiveButton("Restart now", (dialogInterface, i) -> updateNightModeState())
-                    .setNegativeButton("Later", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .setPositiveButton("Restart now", (dialogInterface, i) -> updateNightModeState(true))
+                    .setNegativeButton("Later", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                        updateNightModeState(false);
+                    })
                     .show();
 
         });

@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/background"
     tools:context=".Activities.PostsOfTheMonthActivity">
-
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="?attr/actionBarTheme"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Posts of the month"
+        android:text="Post's of the month"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="1st Place - Gold Trophy"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView17"
@@ -95,8 +95,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="17dp"
                 android:fontFamily="sans-serif-black"
-                android:text="Posts of the month"
-                android:textColor="@color/black"
+                android:text="Post's of the month"
+                android:textColor="?attr/textFillColor"
                 android:textSize="32sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -130,7 +130,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="8dp">
+                    android:padding="8dp"
+                    android:background="?attr/cardBackgroundColor">
 
                     <TextView
                         android:id="@+id/textView61"
@@ -139,7 +140,7 @@
                         android:text="Rewards"
                         android:textStyle="bold"
                         android:textSize="30sp"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textFillColor"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -149,6 +150,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:text="@string/rewards_text"
+                        android:textColor="?attr/titleTextColor"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/textView61"
                         app:layout_constraintTop_toBottomOf="@+id/textView61" />
@@ -171,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:text="2nd Place - Silver Trophy"
                 android:layout_marginStart="10dp"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView18"
@@ -204,7 +206,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3rd Place - Bronze Trophy"
-                android:textColor="@color/black"
+                android:textColor="?attr/textFillColor"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginStart="10dp"

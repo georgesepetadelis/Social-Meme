@@ -41,16 +41,16 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
 
         switch (postList.get(position).getType()) {
             case "like":
-                holder.notificationIcon.setImageResource(R.drawable.ic_thumb_up_filled);
+                holder.notificationIcon.setImageResource(R.drawable.ic_like_modern);
                 break;
             case "profile_visit":
             case "new_follower":
             case "unfollow":
-                holder.notificationIcon.setImageResource(R.drawable.ic_person);
+                holder.notificationIcon.setImageResource(R.drawable.user);
                 break;
             case "profile_screenshot":
             case "post_save":
-                holder.notificationIcon.setImageResource(R.drawable.ic_camera);
+                holder.notificationIcon.setImageResource(R.drawable.ic_camera_modern);
         }
 
     }

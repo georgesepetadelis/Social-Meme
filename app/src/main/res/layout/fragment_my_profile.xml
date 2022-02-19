@@ -50,9 +50,10 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/my_profile_image"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginTop="52dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="62dp"
+                android:elevation="12dp"
                 android:src="@drawable/user"
                 android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
@@ -160,6 +161,7 @@
                 android:layout_marginStart="90dp"
                 android:foregroundTint="@color/white"
                 android:src="@drawable/ic_add"
+                android:elevation="13dp"
                 app:layout_constraintBottom_toBottomOf="@+id/my_profile_image"
                 app:layout_constraintStart_toStartOf="@+id/my_profile_image"
                 app:layout_constraintTop_toTopOf="@+id/my_profile_image"

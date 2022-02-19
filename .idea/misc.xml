@@ -37,9 +37,11 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/ic_close.xml" value="0.1565" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/ic_notifications.xml" value="0.2145" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/ic_search.xml" value="0.2145" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/progress_bar_style_gradient.xml" value="0.3025" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_account_settings.xml" value="0.1" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_home.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_login.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_notifications.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_privacy_policy.xml" value="0.27586206896551724" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_settings.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_top_posts.xml" value="0.23513513513513515" />
@@ -52,6 +54,7 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/menu/bottom_nav.xml" value="0.27586206896551724" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/menu/user_profile_options_menu.xml" value="0.25" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_upload.xml" value="0.211" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_video.xml" value="0.211" />

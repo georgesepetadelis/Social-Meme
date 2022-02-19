@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -34,8 +35,18 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
         CustomIntent.customType(PostsOfTheMonthActivity.this, "right-to-left");
     }
 
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (isNightModeEnabled()) {
+            setTheme(R.style.AppTheme_Base_Night);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts_of_the_month);
 

@@ -103,7 +103,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:fontFamily="sans-serif-black"
-                            android:text="Posts of the month"
+                            android:text="Post's of the month"
                             android:textColor="?attr/textFillColor"
                             android:textSize="22sp"
                             android:textStyle="bold"
@@ -115,7 +115,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-black"
-                            android:text="The 3 most liked posts of the month"
+                            android:text="The 3 most liked post's of the month"
                             android:textColor="?attr/titleTextColor"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView12"
@@ -247,17 +247,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/background"
+        app:layoutDescription="@xml/fragment_home_xml_constraintlayout2_scene"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ProgressBar
             android:id="@+id/progressBar2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
             app:layout_constraintBottom_toTopOf="@+id/textView41"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -267,6 +269,7 @@
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_marginTop="140dp"
+            android:elevation="12dp"
             android:src="@drawable/user"
             app:civ_border_color="#FF000000"
             app:layout_constraintEnd_toEndOf="parent"

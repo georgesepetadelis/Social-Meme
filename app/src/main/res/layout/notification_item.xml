@@ -12,16 +12,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/cardBackgroundColor"
         android:padding="8dp">
 
         <ImageView
             android:id="@+id/notification_icon"
             android:layout_width="45dp"
-            android:layout_height="46dp"
+            android:layout_height="45dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/feedback_icon" />
+            app:srcCompat="@drawable/ic_like_modern" />
 
         <TextView
             android:id="@+id/notification_title"
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Like"
-            android:textColor="@color/black"
+            android:textColor="?attr/textFillColor"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/notification_icon"
@@ -41,6 +42,7 @@
             android:layout_height="wrap_content"
             android:text="username liked your post"
             android:textStyle="bold"
+            android:textColor="?attr/titleTextColor"
             app:layout_constraintBottom_toBottomOf="@+id/notification_icon"
             app:layout_constraintStart_toStartOf="@+id/notification_title"
             app:layout_constraintTop_toBottomOf="@+id/notification_title"
@@ -51,7 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="01-02-2022"
+            android:text="01-02-2022 16:20"
+            android:textColor="?attr/titleTextColor"
             app:layout_constraintBottom_toBottomOf="@+id/notification_title"
             app:layout_constraintStart_toEndOf="@+id/notification_title"
             app:layout_constraintTop_toTopOf="@+id/notification_title" />
