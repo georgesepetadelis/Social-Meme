@@ -1,9 +1,12 @@
 package com.george.socialmeme.Activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,6 +23,7 @@ import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
+import com.george.socialmeme.Receivers.DailyNotificationReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,6 +50,27 @@ public class HomeActivity extends AppCompatActivity {
         return sharedPref.getBoolean("dark_mode", false);
     }
 
+    private void registerDailyNotification() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 18);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 0);
+
+        Intent intent = new Intent(getApplicationContext(), DailyNotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 100,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        SharedPreferences sharedPref = getSharedPreferences("daily_notification_registered", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("daily_notification_registered", true);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -64,6 +89,14 @@ public class HomeActivity extends AppCompatActivity {
 
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         bottomNavBar = findViewById(R.id.bottom_nav);
+
+        // Check if daily notification broadcast receiver has been registered
+        SharedPreferences sharedPref = getSharedPreferences("daily_notification_registered", MODE_PRIVATE);
+        boolean notificationBroadcastRegistered = sharedPref.getBoolean("daily_notification_registered", false);
+
+        if (!notificationBroadcastRegistered) {
+            registerDailyNotification();
+        }
 
         bottomNavBar.setOnItemSelectedListener(id -> {
             Fragment selectedFragment = new HomeFragment();
@@ -97,7 +130,6 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(new Intent(HomeActivity.this, LoginActivity.class));
                     }).show());
         }
-
 
     }
 }

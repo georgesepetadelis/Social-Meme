@@ -1,8 +1,12 @@
 package com.george.socialmeme.Activities;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -21,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.george.socialmeme.R;
+import com.george.socialmeme.Receivers.DailyNotificationReceiver;
 import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -85,7 +90,6 @@ public class LoginActivity extends AppCompatActivity {
     void googleSignIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         someActivityResultLauncher.launch(signInIntent);
-        //startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     void singIn(String email, String password) {
@@ -99,13 +103,35 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
             HomeActivity.anonymous = false;
+            registerDailyNotification();
         }).addOnFailureListener(e -> {
             progressDialog.hide();
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Whoops!")
-                    .setMessage(e.getMessage())
+                    .setMessage(e.getLocalizedMessage())
                     .setPositiveButton("Okay", (dialog, which) -> dialog.dismiss()).show();
         });
+
+    }
+
+    private void registerDailyNotification() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 18);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 0);
+
+        Intent intent = new Intent(getApplicationContext(), DailyNotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 100,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        SharedPreferences sharedPref = getSharedPreferences("daily_notification_registered", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("daily_notification_registered", true);
 
     }
 

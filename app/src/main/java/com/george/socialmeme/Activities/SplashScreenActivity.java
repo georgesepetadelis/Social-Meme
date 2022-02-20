@@ -25,8 +25,6 @@ import maes.tech.intentanim.CustomIntent;
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
 
-
-
     public boolean checkInternetConnection() {
         ConnectivityManager cm = (ConnectivityManager) SplashScreenActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -67,8 +65,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
-                }else {
+                } else {
+
                     initializeNightModeSharedPref();
+
                     SharedPreferences sharedPref = getSharedPreferences("current_app_version", Context.MODE_PRIVATE);
                     if (!sharedPref.getString("current_app_version", "2.0.6").equals(BuildConfig.VERSION_NAME)) {
                         saveCurrentAppVersionToSharedPrefs();
@@ -86,14 +86,13 @@ public class SplashScreenActivity extends AppCompatActivity {
                         .setMessage("No internet connection. Please check your internet connection and try again")
                         .setCancelable(false)
                         .setPositiveButton("Retry", (dialog, which) -> {
-                            // restart current activity
+                            // Restart activity
                             Intent intent = getIntent();
                             finish();
                             startActivity(intent);
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                         }).show();
             }
-
         }, 1000);
     }
 }

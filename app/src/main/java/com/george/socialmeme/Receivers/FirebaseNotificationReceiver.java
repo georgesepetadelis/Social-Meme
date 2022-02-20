@@ -1,4 +1,4 @@
-package com.george.socialmeme.Services;
+package com.george.socialmeme.Receivers;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,7 +11,7 @@ import com.george.socialmeme.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-public class FirebaseNotificationService extends FirebaseMessagingService {
+public class FirebaseNotificationReceiver extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
