@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.george.socialmeme.Activities.FollowerInfoActivity;
+import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
+import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.SettingsActivity;
@@ -148,6 +150,7 @@ public class MyProfileFragment extends Fragment {
         ImageButton settings = view.findViewById(R.id.settings_btn);
         View showFollowersView = view.findViewById(R.id.showFollowersView_Profile);
         View showFollowingUsersView = view.findViewById(R.id.showFollowingView_Profile);
+        ImageButton postsOfTheMonthInfo = view.findViewById(R.id.imageButton9);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -158,6 +161,16 @@ public class MyProfileFragment extends Fragment {
 
         TextView followersCounter = view.findViewById(R.id.followers_my_profile);
         TextView followingCounter = view.findViewById(R.id.following_my_profile);
+
+        TextView goldTrophiesCount = view.findViewById(R.id.gold_trophies_count);
+        TextView silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
+        TextView bronzeTrophiesCount = view.findViewById(R.id.bronze_trophies_count);
+
+        postsOfTheMonthInfo.setOnClickListener(view13 -> {
+            Intent intent = new Intent(getContext(), PostsOfTheMonthActivity.class);
+            startActivity(intent);
+            CustomIntent.customType(getContext(), "left-to-right");
+        });
 
         settings.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SettingsActivity.class);
@@ -224,7 +237,7 @@ public class MyProfileFragment extends Fragment {
             // Set username
             username.setText(user.getDisplayName());
 
-            // Load profile picture & following\followers counter
+            // Load profile picture & following\followers counter and user trophies
             usersRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
                 @SuppressLint("DefaultLocale")
                 @Override
@@ -243,6 +256,18 @@ public class MyProfileFragment extends Fragment {
 
                     if (user.getPhotoUrl() != null) {
                         Glide.with(getContext()).load(user.getPhotoUrl().toString()).into(profilePicture);
+                    }
+
+                    if (snapshot.child("trophies").exists()) {
+
+                        String goldTrophies = snapshot.child(user.getUid()).child("trophies").child("gold").getValue(String.class);
+                        String silverTrophies = snapshot.child(user.getUid()).child("trophies").child("silver").getValue(String.class);
+                        String bronzeTrophies = snapshot.child(user.getUid()).child("trophies").child("bronze").getValue(String.class);
+
+                        goldTrophiesCount.setText(goldTrophies);
+                        silverTrophiesCount.setText(silverTrophies);
+                        bronzeTrophiesCount.setText(bronzeTrophies);
+
                     }
 
                 }
