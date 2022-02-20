@@ -4,17 +4,21 @@
     <item
         android:id="@+id/home_fragment"
         android:title="Home"
-        app:cnb_iconColor="@color/white"
-        app:cnb_backgroundColor="#007BFF"
-        android:icon="@drawable/ic_home" />
+        app:cnb_iconColor="#0040FF"
+        app:cnb_backgroundColor="@color/white"
+        android:icon="@drawable/home_modern" />
 
     <item
         android:id="@+id/new_post_fragment"
-        android:icon="@drawable/ic_add"
+        app:cnb_iconColor="#0040FF"
+        app:cnb_backgroundColor="@color/white"
+        android:icon="@drawable/add_modern"
         android:title="New post" />
 
     <item
         android:id="@+id/my_profile_fragment"
-        android:icon="@drawable/ic_person_white"
+        app:cnb_iconColor="#0040FF"
+        app:cnb_backgroundColor="@color/white"
+        android:icon="@drawable/profile_modern"
         android:title="My Profile" />
 </menu>

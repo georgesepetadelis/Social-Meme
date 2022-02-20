@@ -241,13 +241,6 @@ public class MyProfileFragment extends Fragment {
                         followersCounter.setText(String.format("%d", followers));
                     }
 
-                    /*
-                    if (snapshot.child("profileImgUrl").exists() && !snapshot.child("profileImgUrl").getValue().toString().equals("none")) {
-                        if (isAdded()) {
-                            Glide.with(getContext()).load(snapshot.child("profileImgUrl").getValue().toString()).into(profilePicture);
-                        }
-                    }*/
-
                     if (user.getPhotoUrl() != null) {
                         Glide.with(getContext()).load(user.getPhotoUrl().toString()).into(profilePicture);
                     }

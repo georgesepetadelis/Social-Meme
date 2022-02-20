@@ -62,54 +62,57 @@ public class HomeFragment extends Fragment {
     ArrayList<PostModel> postModelArrayList;
     RecyclerView recyclerView;
 
-    void loadPosts(View fragmentView, FirebaseUser user, ArrayList<PostModel> postModelArrayList, RecyclerView.Adapter postsAdapter, boolean isRefresh) {
+    void loadPosts(View fragmentView, FirebaseUser user, ArrayList<PostModel> postModelArrayList, RecyclerView.Adapter postsAdapter, boolean isRefresh, boolean getDataFromDB) {
 
         if (isRefresh) {
             fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
             ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
         }
 
-        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+        if (postModelArrayList.isEmpty() && getDataFromDB) {
+            Toast.makeText(getContext(), "Data from db", Toast.LENGTH_SHORT).show();
+            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                new Handler().postDelayed(() -> {
-                    fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                    ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
-                    HomeActivity.showLoadingScreen = false;
-                }, 2000);
+                    new Handler().postDelayed(() -> {
+                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                        //((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                        HomeActivity.showLoadingScreen = false;
+                    }, 2000);
 
 
-                for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
+                    for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
 
-                    PostModel postModel = new PostModel();
-                    postModel.setId(snap.child("id").getValue(String.class));
-                    postModel.setImgUrl(snap.child("imgUrl").getValue(String.class));
-                    postModel.setLikes(snap.child("likes").getValue(String.class));
-                    postModel.setName(snap.child("name").getValue(String.class));
-                    postModel.setProfileImgUrl(snap.child("authorProfilePictureURL").getValue(String.class));
-                    postModel.setPostType(snap.child("postType").getValue(String.class));
+                        PostModel postModel = new PostModel();
+                        postModel.setId(snap.child("id").getValue(String.class));
+                        postModel.setImgUrl(snap.child("imgUrl").getValue(String.class));
+                        postModel.setLikes(snap.child("likes").getValue(String.class));
+                        postModel.setName(snap.child("name").getValue(String.class));
+                        postModel.setProfileImgUrl(snap.child("authorProfilePictureURL").getValue(String.class));
+                        postModel.setPostType(snap.child("postType").getValue(String.class));
 
-                    // Show post in recycler adapter only if the user is not blocked
-                    if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(snap.child("name").getValue(String.class)).exists()) {
-                        postModelArrayList.add(postModel);
+                        // Show post in recycler adapter only if the user is not blocked
+                        if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(snap.child("name").getValue(String.class)).exists()) {
+                            postModelArrayList.add(postModel);
+                        }
                     }
+
+                    HomeActivity.savedPostsModelArrayList = postModelArrayList;
+
+                    postsAdapter.notifyDataSetChanged();
+
                 }
 
-                if (snapshot.child("users").child(user.getUid()).child("blockedUsers").exists()) {
-                    System.out.println(snapshot.child("users").child(user.getUid()).child("blockedUsers"));
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
                 }
+            });
+        }
 
-                postsAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -156,7 +159,15 @@ public class HomeFragment extends Fragment {
         }
 
         recyclerView = view.findViewById(R.id.home_recycler_view);
-        postModelArrayList = new ArrayList<>();
+
+        if (HomeActivity.savedPostsModelArrayList == null) {
+            postModelArrayList = new ArrayList<>();
+            Toast.makeText(getContext(), "New data", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getContext(), "Saved data", Toast.LENGTH_SHORT).show();
+            postModelArrayList = HomeActivity.savedPostsModelArrayList;
+        }
+
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
@@ -171,12 +182,11 @@ public class HomeFragment extends Fragment {
         searchView.setVisibility(View.GONE);
         searchUserButton.setVisibility(View.GONE);
 
-        ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.GONE);
-
+        HomeActivity.bottomNavBar.setVisibility(View.GONE);
         if (HomeActivity.showLoadingScreen) {
-            loadPosts(view, user, postModelArrayList, recyclerAdapter, false);
+            loadPosts(view, user, postModelArrayList, recyclerAdapter, false, true);
         }else {
-            loadPosts(view, user, postModelArrayList, recyclerAdapter, true);
+            loadPosts(view, user, postModelArrayList, recyclerAdapter, true, false);
         }
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {

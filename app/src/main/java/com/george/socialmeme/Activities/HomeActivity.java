@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
+import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,11 +30,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
+import java.util.ArrayList;
+
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
     public static boolean isDarkModeEnabled;
     public static boolean showLoadingScreen;
+    public static ChipNavigationBar bottomNavBar;
+    public static ArrayList<PostModel> savedPostsModelArrayList = null;
 
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
@@ -57,7 +62,7 @@ public class HomeActivity extends AppCompatActivity {
         window.setStatusBarColor(Color.BLUE);
 
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        final ChipNavigationBar bottomNavBar = findViewById(R.id.bottom_nav);
+        bottomNavBar = findViewById(R.id.bottom_nav);
 
         bottomNavBar.setOnItemSelectedListener(id -> {
             Fragment selectedFragment = new HomeFragment();
@@ -78,6 +83,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Load default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+        bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
         if (!anonymous) {
             final FirebaseUser user = mAuth.getCurrentUser();
