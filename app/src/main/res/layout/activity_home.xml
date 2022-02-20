@@ -28,7 +28,7 @@
         app:cnb_badgeColor="@color/white"
         app:cnb_iconSize="32dp"
         app:cnb_menuResource="@menu/bottom_nav"
-        app:cnb_unselectedColor="#616161"
+        app:cnb_unselectedColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

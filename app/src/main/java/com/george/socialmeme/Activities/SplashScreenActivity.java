@@ -15,6 +15,7 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,14 +25,23 @@ import maes.tech.intentanim.CustomIntent;
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
 
+
+
     public boolean checkInternetConnection() {
         ConnectivityManager cm = (ConnectivityManager) SplashScreenActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnected();
     }
 
+    void saveCurrentAppVersionToSharedPrefs() {
+        SharedPreferences sharedPref = getSharedPreferences("current_app_version", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        String versionName = BuildConfig.VERSION_NAME;
+        editor.putString("current_app_version", versionName);
+    }
+
     void initializeNightModeSharedPref() {
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
         if (!sharedPref.contains("dark_mode")) {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("dark_mode", false);
@@ -59,6 +69,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 }else {
                     initializeNightModeSharedPref();
+                    SharedPreferences sharedPref = getSharedPreferences("current_app_version", Context.MODE_PRIVATE);
+                    if (!sharedPref.getString("current_app_version", "2.0.6").equals(BuildConfig.VERSION_NAME)) {
+                        saveCurrentAppVersionToSharedPrefs();
+                        HomeActivity.showWhatsNewMessage = true;
+                    }
+
                     HomeActivity.showLoadingScreen = true;
                     startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
                 }

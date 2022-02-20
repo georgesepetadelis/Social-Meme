@@ -10,16 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +48,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
@@ -66,23 +70,18 @@ public class HomeFragment extends Fragment {
 
         if (isRefresh) {
             fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-            ((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
+            ((HomeActivity) getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
         }
 
-        if (postModelArrayList.isEmpty() && getDataFromDB) {
-            Toast.makeText(getContext(), "Data from db", Toast.LENGTH_SHORT).show();
+        if (getDataFromDB) {
+
+            if (!postModelArrayList.isEmpty()) {
+                postModelArrayList.clear();
+            }
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                    new Handler().postDelayed(() -> {
-                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                        //((HomeActivity)getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
-                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                        HomeActivity.showLoadingScreen = false;
-                    }, 2000);
-
 
                     for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
 
@@ -104,6 +103,23 @@ public class HomeFragment extends Fragment {
 
                     postsAdapter.notifyDataSetChanged();
 
+                    recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            // At this point the layout is complete and the
+                            // dimensions of recyclerView and any child views
+                            // are known.
+                            recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            new Handler().postDelayed(() -> {
+                                fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                                HomeActivity.showLoadingScreen = false;
+                            }, 1200);
+
+                        }
+                    });
+
                 }
 
                 @Override
@@ -121,8 +137,14 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        MobileAds.initialize(getContext(), initializationStatus -> {System.out.println("ADS: Home ad init completed");});
+        AdView mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
 
+        if (isAdded()) {
+            mAdView.loadAd(adRequest);
+        }
+
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
         ImageButton notificationsBtn = view.findViewById(R.id.notificationsButton);
@@ -135,36 +157,22 @@ public class HomeFragment extends Fragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        AdView mAdView = view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-
         if (!HomeActivity.anonymous) {
             usernameLoadingScreen.setText(user.getDisplayName());
-
             if (user.getPhotoUrl() != null) {
                 Glide.with(getContext()).load(user.getPhotoUrl().toString()).into((ImageView) view.findViewById(R.id.my_profile_image));
             }
-
-        }else {
-            usernameLoadingScreen.setText("Anonymous User");
-        }
-
-        if (isAdded()) {
-            mAdView.loadAd(adRequest);
-        }
-
-        if (HomeActivity.anonymous) {
+        } else {
             searchUserBtn.setVisibility(View.GONE);
             notificationsBtn.setVisibility(View.GONE);
+            usernameLoadingScreen.setText("Anonymous User");
         }
 
         recyclerView = view.findViewById(R.id.home_recycler_view);
 
         if (HomeActivity.savedPostsModelArrayList == null) {
             postModelArrayList = new ArrayList<>();
-            Toast.makeText(getContext(), "New data", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(getContext(), "Saved data", Toast.LENGTH_SHORT).show();
+        } else {
             postModelArrayList = HomeActivity.savedPostsModelArrayList;
         }
 
@@ -182,10 +190,26 @@ public class HomeFragment extends Fragment {
         searchView.setVisibility(View.GONE);
         searchUserButton.setVisibility(View.GONE);
 
+        if (HomeActivity.showWhatsNewMessage) {
+            FirebaseInAppMessaging.getInstance().triggerEvent("new_version_open");
+        }
+
+        // Avoid data refresh on every swipe down
+        ScrollView scrollView = view.findViewById(R.id.scrollView3);
+        scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
+                swipeRefreshLayout.setEnabled(scrollY <= 5));
+
+        // Re-load data
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            swipeRefreshLayout.setRefreshing(true);
+            loadPosts(view, user, postModelArrayList, recyclerAdapter, true, true);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+
         HomeActivity.bottomNavBar.setVisibility(View.GONE);
         if (HomeActivity.showLoadingScreen) {
             loadPosts(view, user, postModelArrayList, recyclerAdapter, false, true);
-        }else {
+        } else {
             loadPosts(view, user, postModelArrayList, recyclerAdapter, true, false);
         }
 
@@ -264,7 +288,7 @@ public class HomeFragment extends Fragment {
                 searchView.setVisibility(View.GONE);
                 searchUserButton.setVisibility(View.GONE);
 
-            }else {
+            } else {
                 // search is open
                 searchUserBtn.setImageResource(R.drawable.ic_close);
                 isSearchOpen = true;

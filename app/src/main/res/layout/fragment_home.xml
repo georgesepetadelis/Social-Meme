@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
@@ -9,312 +9,319 @@
     android:background="?attr/background"
     tools:context=".Activities.HomeActivity">
 
-    <View
-        android:id="@+id/view3"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:background="#0099ff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ScrollView
-        android:id="@+id/scrollView3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?attr/background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view3">
-
-        <RelativeLayout
-            android:id="@+id/root_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:alpha="55">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/home_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="130dp"
-                    android:background="@null"
-                    android:nestedScrollingEnabled="false"
-                    android:padding="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
-                    tools:itemCount="12"
-                    tools:listitem="@layout/post_item" />
-
-                <com.google.android.gms.ads.AdView
-                    android:id="@+id/adView"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="150dp"
-                    app:adSize="BANNER"
-                    app:adUnitId="ca-app-pub-9627755439548346/3338134348"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/home_recycler_view" />
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="5dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="8dp"
-                    app:layout_constraintBottom_toTopOf="@+id/home_recycler_view"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="?attr/cardBackgroundColor">
-
-                        <ImageView
-                            android:id="@+id/imageView12"
-                            android:layout_width="55dp"
-                            android:layout_height="55dp"
-                            android:layout_marginStart="8dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/trophy" />
-
-                        <TextView
-                            android:id="@+id/textView42"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="sans-serif-black"
-                            android:text="Post's of the month"
-                            android:textColor="?attr/textFillColor"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@+id/imageView12"
-                            app:layout_constraintTop_toTopOf="@+id/imageView12" />
-
-                        <TextView
-                            android:id="@+id/textView45"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-black"
-                            android:text="The 3 most liked post's of the month"
-                            android:textColor="?attr/titleTextColor"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="@+id/imageView12"
-                            app:layout_constraintStart_toStartOf="@+id/textView42"
-                            app:layout_constraintTop_toBottomOf="@+id/textView42" />
-
-                        <ImageView
-                            android:id="@+id/imageView14"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="13dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="1.0"
-                            app:layout_constraintStart_toEndOf="@+id/imageView12"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/ic_arrow_forward" />
-
-                        <View
-                            android:id="@+id/posts_of_the_month_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:foreground="?selectableItemBackgroundBorderless"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </RelativeLayout>
-
-    </ScrollView>
-
-    <ImageButton
-        android:id="@+id/notificationsButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="8dp"
-        android:background="@null"
-        android:clickable="true"
-        android:foreground="?selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@+id/view3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_notifications" />
-
-    <ImageButton
-        android:id="@+id/searchPersonButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:background="@null"
-        android:clickable="true"
-        android:foreground="?selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@+id/notificationsButton"
-        app:layout_constraintStart_toStartOf="@+id/view3"
-        app:layout_constraintTop_toTopOf="@+id/notificationsButton"
-        app:srcCompat="@drawable/ic_search" />
-
-    <EditText
-        android:id="@+id/search_view"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/search_bar_stye"
-        android:elevation="10dp"
-        android:hint="Search for user"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
-
-    <View
-        android:id="@+id/view14"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:background="@drawable/ic_wave_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view3" />
-
-    <ImageButton
-        android:id="@+id/enter_search_button"
-        android:layout_width="51dp"
-        android:layout_height="41dp"
-        android:layout_marginEnd="8dp"
-        android:background="@null"
-        android:elevation="10dp"
-        android:foreground="?selectableItemBackgroundBorderless"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/search_view"
-        app:layout_constraintEnd_toEndOf="@+id/search_view"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/search_view"
-        app:layout_constraintTop_toTopOf="@+id/search_view"
-        app:srcCompat="@drawable/ic_appintro_arrow" />
-
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center_horizontal"
-        android:text="Home"
-        android:textColor="@color/white"
-        android:textSize="50sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/notificationsButton"
-        app:layout_constraintStart_toEndOf="@+id/searchPersonButton"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/background"
-        app:layoutDescription="@xml/fragment_home_xml_constraintlayout2_scene"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content">
 
-        <ProgressBar
-            android:id="@+id/progressBar2"
+        <View
+            android:id="@+id/view3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
-            app:layout_constraintBottom_toTopOf="@+id/textView41"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/my_profile_image"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
-            android:layout_marginTop="140dp"
-            android:elevation="12dp"
-            android:src="@drawable/user"
-            app:civ_border_color="#FF000000"
+            android:layout_height="65dp"
+            android:background="#0099ff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textView39"
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:id="@+id/scrollView3"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Welcome"
-            android:textColor="?attr/textFillColor"
-            android:textSize="35sp"
-            android:textStyle="bold"
+            android:background="?attr/background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/my_profile_image" />
+            app:layout_constraintTop_toBottomOf="@+id/view3">
 
-        <TextView
-            android:id="@+id/textView40"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="username"
-            android:textColor="?attr/titleTextColor"
-            android:textSize="38sp"
-            android:textStyle="bold|italic"
+            <RelativeLayout
+                android:id="@+id/root_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="55">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/home_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="130dp"
+                        android:background="@null"
+                        android:nestedScrollingEnabled="false"
+                        android:padding="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:itemCount="12"
+                        tools:listitem="@layout/post_item" />
+
+                    <com.google.android.gms.ads.AdView
+                        android:id="@+id/adView"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="150dp"
+                        app:adSize="BANNER"
+                        app:adUnitId="ca-app-pub-9627755439548346/3338134348"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/home_recycler_view" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="5dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp"
+                        app:layout_constraintBottom_toTopOf="@+id/home_recycler_view"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/cardBackgroundColor">
+
+                            <ImageView
+                                android:id="@+id/imageView12"
+                                android:layout_width="55dp"
+                                android:layout_height="55dp"
+                                android:layout_marginStart="8dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/trophy" />
+
+                            <TextView
+                                android:id="@+id/textView42"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="Post's of the month"
+                                android:textColor="?attr/textFillColor"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toEndOf="@+id/imageView12"
+                                app:layout_constraintTop_toTopOf="@+id/imageView12" />
+
+                            <TextView
+                                android:id="@+id/textView45"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="The 3 most liked post's of the month"
+                                android:textColor="?attr/titleTextColor"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="@+id/imageView12"
+                                app:layout_constraintStart_toStartOf="@+id/textView42"
+                                app:layout_constraintTop_toBottomOf="@+id/textView42" />
+
+                            <ImageView
+                                android:id="@+id/imageView14"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="13dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="1.0"
+                                app:layout_constraintStart_toEndOf="@+id/imageView12"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/ic_arrow_forward" />
+
+                            <View
+                                android:id="@+id/posts_of_the_month_btn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?selectableItemBackgroundBorderless"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+        <ImageButton
+            android:id="@+id/notificationsButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="8dp"
+            android:background="@null"
+            android:clickable="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="@+id/view3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_notifications" />
+
+        <ImageButton
+            android:id="@+id/searchPersonButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:background="@null"
+            android:clickable="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="@+id/notificationsButton"
+            app:layout_constraintStart_toStartOf="@+id/view3"
+            app:layout_constraintTop_toTopOf="@+id/notificationsButton"
+            app:srcCompat="@drawable/ic_search" />
+
+        <EditText
+            android:id="@+id/search_view"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/search_bar_stye"
+            android:elevation="10dp"
+            android:hint="Search for user"
+            android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView39" />
+            app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+        <View
+            android:id="@+id/view14"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_wave_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view3" />
+
+        <ImageButton
+            android:id="@+id/enter_search_button"
+            android:layout_width="51dp"
+            android:layout_height="41dp"
+            android:layout_marginEnd="8dp"
+            android:background="@null"
+            android:elevation="10dp"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/search_view"
+            app:layout_constraintEnd_toEndOf="@+id/search_view"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/search_view"
+            app:layout_constraintTop_toTopOf="@+id/search_view"
+            app:srcCompat="@drawable/ic_appintro_arrow" />
 
         <TextView
-            android:id="@+id/textView41"
+            android:id="@+id/textView9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:text="Please Wait..."
-            android:textColor="?attr/titleTextColor"
-            android:textSize="23sp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center_horizontal"
+            android:text="Home"
+            android:textColor="@color/white"
+            android:textSize="50sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/notificationsButton"
+            app:layout_constraintStart_toEndOf="@+id/searchPersonButton"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/background"
+            app:layoutDescription="@xml/fragment_home_xml_constraintlayout2_scene"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="invisible">
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
+                app:layout_constraintBottom_toTopOf="@+id/textView41"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/my_profile_image"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="140dp"
+                android:elevation="12dp"
+                android:src="@drawable/user"
+                app:civ_border_color="#FF000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView39"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Welcome"
+                android:textColor="?attr/textFillColor"
+                android:textSize="35sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/my_profile_image" />
+
+            <TextView
+                android:id="@+id/textView40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="username"
+                android:textColor="?attr/titleTextColor"
+                android:textSize="38sp"
+                android:textStyle="bold|italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView39" />
+
+            <TextView
+                android:id="@+id/textView41"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:text="Please Wait..."
+                android:textColor="?attr/titleTextColor"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -37,6 +37,7 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean anonymous;
     public static boolean isDarkModeEnabled;
     public static boolean showLoadingScreen;
+    public static boolean showWhatsNewMessage;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsModelArrayList = null;
 
