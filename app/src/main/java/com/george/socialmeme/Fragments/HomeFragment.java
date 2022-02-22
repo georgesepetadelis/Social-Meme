@@ -214,7 +214,6 @@ public class HomeFragment extends Fragment {
         }
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
-            Toast.makeText(getContext(), "State is: " + HomeActivity.showLoadingScreen, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);
             startActivity(intent);
             CustomIntent.customType(getContext(), "left-to-right");

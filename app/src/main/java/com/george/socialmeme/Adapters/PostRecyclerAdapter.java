@@ -2,28 +2,15 @@ package com.george.socialmeme.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
-import com.george.socialmeme.Dialogs.PostOptionsDialog;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.ImageViewHolder;
@@ -36,16 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
-import com.potyvideo.library.AndExoPlayerView;
 import com.potyvideo.library.globalEnums.EnumAspectRatio;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
-import maes.tech.intentanim.CustomIntent;
 
 public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
@@ -152,7 +135,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                     if (!HomeActivity.anonymous) {
 
                         // check if current post is liked from this user
-                        if (snapshot.child(imageViewHolder.id).hasChild(user.getUid())) {
+                        if (snapshot.child(imageViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
                             imageViewHolder.like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
 
@@ -175,7 +158,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
 
             // Get current post id set username, authorID, profile picture URL, postType, likes and post image URL
-            imageViewHolder.id = postList.get(position).getId();
+            imageViewHolder.postID = postList.get(position).getId();
             imageViewHolder.username.setText(postList.get(position).getName());
             imageViewHolder.userID = postList.get(position).getAuthorID();
             imageViewHolder.like_counter_tv.setText(postList.get(position).getLikes());

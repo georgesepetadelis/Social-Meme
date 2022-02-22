@@ -1,5 +1,6 @@
 package com.george.socialmeme.Receivers;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -38,11 +39,10 @@ public class DailyNotificationReceiver extends BroadcastReceiver {
 
 
         final String CHANNEL_ID = "MAIN";
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Main", NotificationManager.IMPORTANCE_HIGH);
+        @SuppressLint("WrongConstant") NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Main", NotificationManager.IMPORTANCE_MAX);
         context.getSystemService(NotificationManager.class).createNotificationChannel(channel);
 
         // Check if the user has notifications
-        boolean userHasNotifications = false;
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());

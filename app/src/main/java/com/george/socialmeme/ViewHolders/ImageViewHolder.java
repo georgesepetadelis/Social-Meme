@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Dialogs.PostOptionsDialog;
 import com.george.socialmeme.R;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,13 +43,13 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
 
     public Context context;
     public CardView container;
-    public String id, postImageURL, userID;
+    public String postID, postImageURL, userID;
     public TextView username, like_counter_tv;
     public ImageView postImg;
-    public ImageButton like_btn;
+    public ImageButton like_btn, show_comments_btn;
     public CircleImageView profileImage;
     public boolean isLiked = false;
-    public View openUserProfileView;
+    public ConstraintLayout openUserProfileView;
 
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
@@ -166,9 +168,12 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         username = itemView.findViewById(R.id.post_username);
         postImg = itemView.findViewById(R.id.post_image);
         like_btn = itemView.findViewById(R.id.likeBtn);
+        show_comments_btn = itemView.findViewById(R.id.show_comments_btn);
         like_counter_tv = itemView.findViewById(R.id.like_counter);
         openUserProfileView = itemView.findViewById(R.id.view_profile);
         likesRef.keepSynced(true);
+
+        show_comments_btn.setOnClickListener(view -> showComments(postID, itemView));
 
         openUserProfileView.setOnClickListener(v -> {
 
@@ -209,7 +214,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             if (!HomeActivity.anonymous) {
                 FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
                 PostOptionsDialog optionsDialog = new PostOptionsDialog();
-                optionsDialog.setPostId(id);
+                optionsDialog.setPostId(postID);
                 optionsDialog.setPostImage(postImg);
                 optionsDialog.setPostSourceURL(postImageURL);
                 optionsDialog.setPostType("image");
@@ -235,21 +240,21 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                     if (isLiked) {
-                        if (snapshot.child(id).hasChild(user.getUid())) {
+                        if (snapshot.child(postID).hasChild(user.getUid())) {
                             // Post is liked from this user, so user wants to unlike this post
                             like_btn.setImageResource(R.drawable.ic_thump_up_outline);
-                            likesRef.child(id).child(user.getUid()).removeValue();
+                            likesRef.child(postID).child(user.getUid()).removeValue();
                             isLiked = false;
 
                             // Update likes to DB
-                            updateLikes(id, false);
+                            updateLikes(postID, false);
                         } else {
                             // Post is not liked from ths user, so the user wants to like this post
                             like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
-                            likesRef.child(id).child(user.getUid()).setValue("true");
+                            likesRef.child(postID).child(user.getUid()).setValue("true");
 
                             // Update likes to DB
-                            updateLikes(id, true);
+                            updateLikes(postID, true);
 
                             sendLikeNotificationToUser();
 
@@ -265,6 +270,24 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             });
         });
 
+
+    }
+
+    private void showComments(String postID, View itemView) {
+
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.Theme_SocialMeme);
+        View bottomSheetView = LayoutInflater.from(context.getApplicationContext())
+                .inflate(R.layout.comments_bottom_sheet,
+                        (ConstraintLayout)itemView.findViewById(R.id.bottom_sheet_container));
+
+        bottomSheetView.findViewById(R.id.imageButton11).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomSheetDialog.dismiss();
+            }
+        });
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
 
     }
 }
