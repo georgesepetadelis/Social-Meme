@@ -59,6 +59,7 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Queue;
 
 import maes.tech.intentanim.CustomIntent;
@@ -70,6 +71,7 @@ public class HomeFragment extends Fragment {
     boolean isSearchOpen = false;
     private EditText searchView;
     ArrayList<PostModel> postModelArrayList;
+    ArrayList<PostModel> loadedPostsArrayList;
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
 
@@ -77,6 +79,56 @@ public class HomeFragment extends Fragment {
     int totalItems = 0, lastVisibleItem = 0;
     boolean isLoading = false, isMaxData = false;
     String lastKey = "", lastNode = "";
+
+    int lastLoadedIndex = 0;
+
+    void loadMorePosts() {
+        for (int i = 0; i < 3; i++) {
+            if (lastLoadedIndex + 1 < postModelArrayList.size()) {
+                PostModel postModel = postModelArrayList.get(lastLoadedIndex + 1);
+                loadedPostsArrayList.add(postModel);
+                recyclerAdapter.notifyDataSetChanged();
+                lastLoadedIndex = lastLoadedIndex + 1;
+            }
+        }
+    }
+
+    void loadAllPosts(View fragmentView) {
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
+        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                new Handler().postDelayed(() -> {
+                    fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                    HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                    HomeActivity.showLoadingScreen = false;
+                }, 1200);
+
+                int itemsLoaded = 0;
+
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    PostModel postModel = postSnapshot.getValue(PostModel.class);
+                    postModelArrayList.add(postModel);
+                    recyclerAdapter.notifyDataSetChanged();
+                }
+                Collections.reverse(postModelArrayList);
+                Log.i("TEST", "firts is " + postModelArrayList.get(0).getId());
+                Log.i("TEST", "LAST is " + postModelArrayList.get(postModelArrayList.size() - 1).getId());
+
+                for (int i = 0; i < 3; i++) {
+                    loadedPostsArrayList.add(postModelArrayList.get(i));
+                    lastLoadedIndex++;
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     void getLastKeyFromFirebase() {
 
@@ -231,6 +283,8 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.home_recycler_view);
 
+        loadedPostsArrayList = new ArrayList<>();
+
         if (HomeActivity.savedPostsModelArrayList == null) {
             postModelArrayList = new ArrayList<>();
         } else {
@@ -238,12 +292,12 @@ public class HomeFragment extends Fragment {
         }
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
+        recyclerAdapter = new PostRecyclerAdapter(loadedPostsArrayList, getContext(), getActivity());
 
         //layoutManager.setReverseLayout(true);
         //layoutManager.setStackFromEnd(true);
         recyclerView.setAdapter(recyclerAdapter);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
         progressDialog = LoadingDialog.Companion.get(getActivity());
@@ -275,8 +329,12 @@ public class HomeFragment extends Fragment {
                 totalItems = layoutManager.getItemCount();
                 lastVisibleItem = layoutManager.findLastVisibleItemPosition();
 
+                loadMorePosts();
+
                 if (!isLoading && totalItems <= ((lastVisibleItem + ITEM_LOAD_COUNT))) {
-                    loadPosts(view, user, false, true);
+                    //loadPosts(view, user, false, true);
+
+                    Toast.makeText(getActivity(), "Scroll", Toast.LENGTH_SHORT).show();
                     isLoading = true;
                 }
 
@@ -284,7 +342,9 @@ public class HomeFragment extends Fragment {
         });
 
         HomeActivity.bottomNavBar.setVisibility(View.GONE);
-        loadPosts(view, user, !HomeActivity.showLoadingScreen, true);
+        //loadPosts(view, user, !HomeActivity.showLoadingScreen, true);
+        loadAllPosts(view);
+        //loadMorePosts();
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);

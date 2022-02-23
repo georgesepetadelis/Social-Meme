@@ -2,6 +2,7 @@ package com.george.socialmeme.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
