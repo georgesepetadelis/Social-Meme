@@ -44,6 +44,16 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         return 0;
     }
 
+    public void addAll(List<PostModel> newPosts) {
+        int initSize = postList.size();
+        postList.addAll(newPosts);
+        notifyItemRangeChanged(initSize, postList.size());
+    }
+
+    public String getLastItemID() {
+        return postList.get(postList.size() - 1).getId();
+    }
+
     public PostRecyclerAdapter(ArrayList<PostModel> postModelArrayList, Context context, Activity activity) {
         this.postList = postModelArrayList;
         this.context = context;

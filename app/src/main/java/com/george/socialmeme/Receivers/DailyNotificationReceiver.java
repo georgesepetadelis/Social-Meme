@@ -35,7 +35,7 @@ public class DailyNotificationReceiver extends BroadcastReceiver {
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 100, homeIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_IMMUTABLE);
 
 
         final String CHANNEL_ID = "MAIN";

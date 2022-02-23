@@ -14,6 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.os.Parcelable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +51,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
 import com.google.gson.Gson;
@@ -54,6 +59,7 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Queue;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -65,8 +71,38 @@ public class HomeFragment extends Fragment {
     private EditText searchView;
     ArrayList<PostModel> postModelArrayList;
     RecyclerView recyclerView;
+    PostRecyclerAdapter recyclerAdapter;
 
-    void loadPosts(View fragmentView, FirebaseUser user, ArrayList<PostModel> postModelArrayList, RecyclerView.Adapter postsAdapter, boolean isRefresh, boolean getDataFromDB) {
+    final int ITEM_LOAD_COUNT = 3;
+    int totalItems = 0, lastVisibleItem = 0;
+    boolean isLoading = false, isMaxData = false;
+    String lastKey = "", lastNode = "";
+
+    void getLastKeyFromFirebase() {
+
+        Query getLastKey = FirebaseDatabase.getInstance().getReference()
+                .child("posts")
+                .orderByKey()
+                .limitToLast(1);
+
+        getLastKey.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot last_Key : snapshot.getChildren()) {
+                    lastKey = last_Key.getKey();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                isLoading = false;
+                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    void loadPosts(View fragmentView, FirebaseUser user, boolean isRefresh, boolean getDataFromDB) {
 
         if (isRefresh) {
             fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
@@ -75,41 +111,27 @@ public class HomeFragment extends Fragment {
 
         if (getDataFromDB) {
 
-            if (!postModelArrayList.isEmpty()) {
-                postModelArrayList.clear();
-            }
-            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+            getLastKeyFromFirebase();
 
-                    for (DataSnapshot snap : snapshot.child("posts").getChildren()) {
+            if (!isMaxData) {
 
-                        PostModel postModel = new PostModel();
-                        postModel.setId(snap.child("id").getValue(String.class));
-                        postModel.setImgUrl(snap.child("imgUrl").getValue(String.class));
-                        postModel.setLikes(snap.child("likes").getValue(String.class));
-                        postModel.setName(snap.child("name").getValue(String.class));
-                        postModel.setProfileImgUrl(snap.child("authorProfilePictureURL").getValue(String.class));
-                        postModel.setPostType(snap.child("postType").getValue(String.class));
+                Query query;
+                if (TextUtils.isEmpty(lastNode))
+                    query = FirebaseDatabase.getInstance().getReference()
+                            .child("posts")
+                            .orderByKey()
+                            .limitToLast(ITEM_LOAD_COUNT);
+                else
+                    query = FirebaseDatabase.getInstance().getReference()
+                            .child("posts")
+                            .orderByKey()
+                            .startAt(lastNode)
+                            .limitToFirst(ITEM_LOAD_COUNT);
 
-                        // Show post in recycler adapter only if the user is not blocked
-                        if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(snap.child("name").getValue(String.class)).exists()) {
-                            postModelArrayList.add(postModel);
-                        }
-                    }
-
-                    HomeActivity.savedPostsModelArrayList = postModelArrayList;
-
-                    postsAdapter.notifyDataSetChanged();
-
-                    recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            // At this point the layout is complete and the
-                            // dimensions of recyclerView and any child views
-                            // are known.
-                            recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.hasChildren()) {
 
                             new Handler().postDelayed(() -> {
                                 fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
@@ -117,16 +139,55 @@ public class HomeFragment extends Fragment {
                                 HomeActivity.showLoadingScreen = false;
                             }, 1200);
 
+                            ArrayList<PostModel> newPosts = new ArrayList<>();
+                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+
+                                PostModel postModel = new PostModel();
+                                postModel.setId(userSnapshot.child("id").getValue(String.class));
+                                postModel.setImgUrl(userSnapshot.child("imgUrl").getValue(String.class));
+                                postModel.setLikes(userSnapshot.child("likes").getValue(String.class));
+                                postModel.setName(userSnapshot.child("name").getValue(String.class));
+                                postModel.setProfileImgUrl(userSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                                postModel.setPostType(userSnapshot.child("postType").getValue(String.class));
+
+                                // Show post in recycler adapter only if the user is not blocked
+                                if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userSnapshot.child("name").getValue(String.class)).exists()) {
+                                    //postModelArrayList.add(postModel);
+                                    newPosts.add(postModel);
+                                    //postModelArrayList.add(postModel);
+                                    recyclerAdapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            lastNode = newPosts.get(newPosts.size() - 1).getId();
+
+                            if (!lastNode.equals(lastKey))
+                                newPosts.remove(newPosts.size() - 1);
+                            else
+                                lastNode = "end"; // Avoiding infinity load
+
+                            recyclerAdapter.addAll(newPosts);
+                            isLoading = false;
+
+                        } else {
+                            isLoading = false;
+                            isMaxData = true;
                         }
-                    });
+                    }
 
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                @Override
-                public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                    Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
-                }
-            });
+                    }
+                });
+
+            } else {
+                Toast.makeText(getContext(), "Hello3", Toast.LENGTH_SHORT).show();
+                isLoading = false;
+                isMaxData = true;
+            }
+
+
         }
 
     }
@@ -177,10 +238,10 @@ public class HomeFragment extends Fragment {
         }
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
+        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
+        //layoutManager.setReverseLayout(true);
+        //layoutManager.setStackFromEnd(true);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
@@ -195,23 +256,35 @@ public class HomeFragment extends Fragment {
         }
 
         // Avoid data refresh on every swipe down
-        ScrollView scrollView = view.findViewById(R.id.scrollView3);
-        scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
+        //RelativeLayout scrollView = view.findViewById(R.id.scrollView3);
+        recyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
                 swipeRefreshLayout.setEnabled(scrollY <= 5));
 
         // Re-load data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            loadPosts(view, user, postModelArrayList, recyclerAdapter, true, true);
+            loadPosts(view, user, true, true);
             swipeRefreshLayout.setRefreshing(false);
         });
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                totalItems = layoutManager.getItemCount();
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+
+                if (!isLoading && totalItems <= ((lastVisibleItem + ITEM_LOAD_COUNT))) {
+                    loadPosts(view, user, false, true);
+                    isLoading = true;
+                }
+
+            }
+        });
+
         HomeActivity.bottomNavBar.setVisibility(View.GONE);
-        if (HomeActivity.showLoadingScreen) {
-            loadPosts(view, user, postModelArrayList, recyclerAdapter, false, true);
-        } else {
-            loadPosts(view, user, postModelArrayList, recyclerAdapter, true, false);
-        }
+        loadPosts(view, user, !HomeActivity.showLoadingScreen, true);
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);
