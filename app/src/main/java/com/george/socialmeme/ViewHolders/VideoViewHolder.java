@@ -71,6 +71,8 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
         sContainer = itemView.findViewById(R.id.sContainer);
         openProfileView = itemView.findViewById(R.id.view5);
 
+        Log.i("ADAPTERTEST", "HOLDER " + videoURL);
+
         like_btn.setOnClickListener(v -> {
 
             // Animate like button when clicked

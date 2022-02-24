@@ -124,6 +124,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             videoViewHolder.andExoPlayerView.setPlayWhenReady(false);
             videoViewHolder.andExoPlayerView.setAspectRatio(EnumAspectRatio.ASPECT_16_9);
 
+            Log.i("ADAPTERTEST", "a " + postList.get(position).getImgUrl());
+
             // Load profile picture
             String profilePictureUrl = postList.get(position).getProfileImgUrl();
             if (profilePictureUrl != null) {

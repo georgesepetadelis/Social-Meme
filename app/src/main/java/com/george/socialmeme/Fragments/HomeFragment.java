@@ -75,14 +75,10 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
 
-    final int ITEM_LOAD_COUNT = 3;
-    int totalItems = 0, lastVisibleItem = 0;
-    boolean isLoading = false, isMaxData = false;
-    String lastKey = "", lastNode = "";
-
     int lastLoadedIndex = 0;
 
     void loadMorePosts() {
+        // Load 3 post's per time
         for (int i = 0; i < 3; i++) {
             if (lastLoadedIndex + 1 < postModelArrayList.size()) {
                 PostModel postModel = postModelArrayList.get(lastLoadedIndex + 1);
@@ -105,17 +101,21 @@ public class HomeFragment extends Fragment {
                     HomeActivity.showLoadingScreen = false;
                 }, 1200);
 
-                int itemsLoaded = 0;
-
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     PostModel postModel = postSnapshot.getValue(PostModel.class);
-                    postModelArrayList.add(postModel);
+
+                    // Show post in recycler adapter only if the user is not blocked
+                    if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                        postModelArrayList.add(postModel);
+                    }
+
                     recyclerAdapter.notifyDataSetChanged();
                 }
-                Collections.reverse(postModelArrayList);
-                Log.i("TEST", "firts is " + postModelArrayList.get(0).getId());
-                Log.i("TEST", "LAST is " + postModelArrayList.get(postModelArrayList.size() - 1).getId());
 
+                // Reverse elements inside postModelArrayList
+                Collections.reverse(postModelArrayList);
+
+                // Load first 3 post's
                 for (int i = 0; i < 3; i++) {
                     loadedPostsArrayList.add(postModelArrayList.get(i));
                     lastLoadedIndex++;
@@ -128,120 +128,6 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    void getLastKeyFromFirebase() {
-
-        Query getLastKey = FirebaseDatabase.getInstance().getReference()
-                .child("posts")
-                .orderByKey()
-                .limitToLast(1);
-
-        getLastKey.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot last_Key : snapshot.getChildren()) {
-                    lastKey = last_Key.getKey();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                isLoading = false;
-                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    void loadPosts(View fragmentView, FirebaseUser user, boolean isRefresh, boolean getDataFromDB) {
-
-        if (isRefresh) {
-            fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-            ((HomeActivity) getContext()).findViewById(R.id.bottom_nav).setVisibility(View.VISIBLE);
-        }
-
-        if (getDataFromDB) {
-
-            getLastKeyFromFirebase();
-
-            if (!isMaxData) {
-
-                Query query;
-                if (TextUtils.isEmpty(lastNode))
-                    query = FirebaseDatabase.getInstance().getReference()
-                            .child("posts")
-                            .orderByKey()
-                            .limitToLast(ITEM_LOAD_COUNT);
-                else
-                    query = FirebaseDatabase.getInstance().getReference()
-                            .child("posts")
-                            .orderByKey()
-                            .startAt(lastNode)
-                            .limitToFirst(ITEM_LOAD_COUNT);
-
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.hasChildren()) {
-
-                            new Handler().postDelayed(() -> {
-                                fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                                HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                                HomeActivity.showLoadingScreen = false;
-                            }, 1200);
-
-                            ArrayList<PostModel> newPosts = new ArrayList<>();
-                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-
-                                PostModel postModel = new PostModel();
-                                postModel.setId(userSnapshot.child("id").getValue(String.class));
-                                postModel.setImgUrl(userSnapshot.child("imgUrl").getValue(String.class));
-                                postModel.setLikes(userSnapshot.child("likes").getValue(String.class));
-                                postModel.setName(userSnapshot.child("name").getValue(String.class));
-                                postModel.setProfileImgUrl(userSnapshot.child("authorProfilePictureURL").getValue(String.class));
-                                postModel.setPostType(userSnapshot.child("postType").getValue(String.class));
-
-                                // Show post in recycler adapter only if the user is not blocked
-                                if (!snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userSnapshot.child("name").getValue(String.class)).exists()) {
-                                    //postModelArrayList.add(postModel);
-                                    newPosts.add(postModel);
-                                    //postModelArrayList.add(postModel);
-                                    recyclerAdapter.notifyDataSetChanged();
-                                }
-                            }
-
-                            lastNode = newPosts.get(newPosts.size() - 1).getId();
-
-                            if (!lastNode.equals(lastKey))
-                                newPosts.remove(newPosts.size() - 1);
-                            else
-                                lastNode = "end"; // Avoiding infinity load
-
-                            recyclerAdapter.addAll(newPosts);
-                            isLoading = false;
-
-                        } else {
-                            isLoading = false;
-                            isMaxData = true;
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
-            } else {
-                Toast.makeText(getContext(), "Hello3", Toast.LENGTH_SHORT).show();
-                isLoading = false;
-                isMaxData = true;
-            }
-
-
-        }
-
     }
 
     @Override
@@ -294,10 +180,7 @@ public class HomeFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerAdapter = new PostRecyclerAdapter(loadedPostsArrayList, getContext(), getActivity());
 
-        //layoutManager.setReverseLayout(true);
-        //layoutManager.setStackFromEnd(true);
         recyclerView.setAdapter(recyclerAdapter);
-        //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
         progressDialog = LoadingDialog.Companion.get(getActivity());
@@ -310,14 +193,13 @@ public class HomeFragment extends Fragment {
         }
 
         // Avoid data refresh on every swipe down
-        //RelativeLayout scrollView = view.findViewById(R.id.scrollView3);
         recyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
                 swipeRefreshLayout.setEnabled(scrollY <= 5));
 
         // Re-load data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            loadPosts(view, user, true, true);
+            loadAllPosts(view);
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -325,26 +207,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
-                totalItems = layoutManager.getItemCount();
-                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-
                 loadMorePosts();
-
-                if (!isLoading && totalItems <= ((lastVisibleItem + ITEM_LOAD_COUNT))) {
-                    //loadPosts(view, user, false, true);
-
-                    Toast.makeText(getActivity(), "Scroll", Toast.LENGTH_SHORT).show();
-                    isLoading = true;
-                }
-
             }
         });
 
         HomeActivity.bottomNavBar.setVisibility(View.GONE);
-        //loadPosts(view, user, !HomeActivity.showLoadingScreen, true);
         loadAllPosts(view);
-        //loadMorePosts();
 
         postsOfTheMonthBtn.setOnClickListener(view13 -> {
             Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);

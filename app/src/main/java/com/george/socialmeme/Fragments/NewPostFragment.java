@@ -69,7 +69,7 @@ public class NewPostFragment extends Fragment {
                                         Intent data = result.getData();
                                         mediaUri = data.getData();
                                         uploadPostToFirebase(mediaUri, "video");
-                                    }else {
+                                    } else {
                                         Intent data = result.getData();
                                         mediaUri = data.getData();
                                         uploadPostToFirebase(mediaUri, "image");
@@ -104,7 +104,7 @@ public class NewPostFragment extends Fragment {
 
             if (user.getPhotoUrl() != null) {
                 mRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
-            }else {
+            } else {
                 mRef.child(postId).child("authorProfilePictureURL").setValue("none");
             }
 
@@ -113,12 +113,11 @@ public class NewPostFragment extends Fragment {
             startActivity(new Intent(getActivity(), HomeActivity.class));
             CustomIntent.customType(getActivity(), "fadein-to-fadeout");
 
-        }))
-                .addOnProgressListener(snapshot -> loadingDialog.show())
+        })).addOnProgressListener(snapshot -> loadingDialog.show())
                 .addOnFailureListener(e -> {
-            loadingDialog.hide();
-            Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        });
+                    loadingDialog.hide();
+                    Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     @Override

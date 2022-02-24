@@ -46,6 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             app:andexo_show_full_screen="true"
+            app:keep_content_on_player_reset="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
