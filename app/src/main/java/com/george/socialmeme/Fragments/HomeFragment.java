@@ -78,12 +78,12 @@ public class HomeFragment extends Fragment {
     int lastLoadedIndex = 0;
 
     void loadMorePosts() {
-        // Load 3 post's per time
+        // Load 3 post per time
         for (int i = 0; i < 3; i++) {
             if (lastLoadedIndex + 1 < postModelArrayList.size()) {
                 PostModel postModel = postModelArrayList.get(lastLoadedIndex + 1);
                 loadedPostsArrayList.add(postModel);
-                recyclerAdapter.notifyDataSetChanged();
+                recyclerAdapter.notifyItemInserted(loadedPostsArrayList.size() - 1);
                 lastLoadedIndex = lastLoadedIndex + 1;
             }
         }
@@ -115,8 +115,8 @@ public class HomeFragment extends Fragment {
                 // Reverse elements inside postModelArrayList
                 Collections.reverse(postModelArrayList);
 
-                // Load first 3 post's
-                for (int i = 0; i < 3; i++) {
+                // Load first 2 post's
+                for (int i = 0; i < 2; i++) {
                     loadedPostsArrayList.add(postModelArrayList.get(i));
                     lastLoadedIndex++;
                 }
@@ -192,23 +192,18 @@ public class HomeFragment extends Fragment {
             FirebaseInAppMessaging.getInstance().triggerEvent("new_version_open");
         }
 
+        ScrollView scrollView = view.findViewById(R.id.scrollView3);
         // Avoid data refresh on every swipe down
-        recyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
-                swipeRefreshLayout.setEnabled(scrollY <= 5));
+        scrollView.setOnScrollChangeListener((view14, i, i1, i2, i3) -> {
+            swipeRefreshLayout.setEnabled(i <= 5);
+            loadMorePosts();
+        });
 
         // Re-load data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
             loadAllPosts(view);
             swipeRefreshLayout.setRefreshing(false);
-        });
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                loadMorePosts();
-            }
         });
 
         HomeActivity.bottomNavBar.setVisibility(View.GONE);

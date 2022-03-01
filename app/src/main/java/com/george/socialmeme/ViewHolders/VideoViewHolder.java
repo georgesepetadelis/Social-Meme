@@ -22,6 +22,7 @@ import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Dialogs.PostOptionsDialog;
 import com.george.socialmeme.R;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +41,7 @@ import maes.tech.intentanim.CustomIntent;
 public class VideoViewHolder extends RecyclerView.ViewHolder {
 
     public Context context;
-    public AndExoPlayerView andExoPlayerView;
+    public StyledPlayerView andExoPlayerView;
     public String id, userID, videoURL;
     public View openProfileView;
     public TextView username, like_counter_tv;
@@ -70,8 +71,6 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
         like_counter_tv = itemView.findViewById(R.id.textView36);
         sContainer = itemView.findViewById(R.id.sContainer);
         openProfileView = itemView.findViewById(R.id.view5);
-
-        Log.i("ADAPTERTEST", "HOLDER " + videoURL);
 
         like_btn.setOnClickListener(v -> {
 

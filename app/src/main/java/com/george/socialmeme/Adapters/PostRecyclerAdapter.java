@@ -2,6 +2,7 @@ package com.george.socialmeme.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.ImageViewHolder;
 import com.george.socialmeme.ViewHolders.VideoViewHolder;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -118,13 +121,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             videoViewHolder.videoURL = postList.get(position).getImgUrl();
 
             // Load video source
-            HashMap<String, String> extraHeaders = new HashMap<>();
-            extraHeaders.put("foo", "bar");
-            videoViewHolder.andExoPlayerView.setSource(postList.get(position).getImgUrl(), extraHeaders);
-            videoViewHolder.andExoPlayerView.setPlayWhenReady(false);
-            videoViewHolder.andExoPlayerView.setAspectRatio(EnumAspectRatio.ASPECT_16_9);
-
-            Log.i("ADAPTERTEST", "a " + postList.get(position).getImgUrl());
+            ExoPlayer player = new ExoPlayer.Builder(context).build();
+            MediaItem mediaItem = MediaItem.fromUri(postList.get(position).getImgUrl());
+            player.setMediaItem(mediaItem);
+            player.prepare();
+            videoViewHolder.andExoPlayerView.setPlayer(player);
 
             // Load profile picture
             String profilePictureUrl = postList.get(position).getProfileImgUrl();
