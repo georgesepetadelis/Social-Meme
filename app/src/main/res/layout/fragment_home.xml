@@ -31,12 +31,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view3">
 
-            <RelativeLayout
-                android:id="@+id/root_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:alpha="55">
-
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -47,7 +41,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="130dp"
                         android:background="@null"
-                        android:nestedScrollingEnabled="false"
+                        android:nestedScrollingEnabled="true"
                         android:padding="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -154,8 +148,6 @@
                     </androidx.cardview.widget.CardView>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </RelativeLayout>
 
         </ScrollView>
 

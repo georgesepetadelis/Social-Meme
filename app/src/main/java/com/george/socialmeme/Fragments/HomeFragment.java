@@ -78,6 +78,7 @@ public class HomeFragment extends Fragment {
     int lastLoadedIndex = 0;
 
     void loadMorePosts() {
+        Toast.makeText(getContext(), "Laoding more...", Toast.LENGTH_SHORT).show();
         // Load 3 post per time
         for (int i = 0; i < 3; i++) {
             if (lastLoadedIndex + 1 < postModelArrayList.size()) {
@@ -115,12 +116,11 @@ public class HomeFragment extends Fragment {
                 // Reverse elements inside postModelArrayList
                 Collections.reverse(postModelArrayList);
 
-                // Load first 2 post's
-                for (int i = 0; i < 2; i++) {
+                // Load first 3 post's
+                for (int i = 0; i < 3; i++) {
                     loadedPostsArrayList.add(postModelArrayList.get(i));
                     lastLoadedIndex++;
                 }
-
             }
 
             @Override
