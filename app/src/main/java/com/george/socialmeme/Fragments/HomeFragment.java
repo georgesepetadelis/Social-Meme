@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment {
     int lastLoadedIndex = 0;
 
     void loadMorePosts() {
-        Toast.makeText(getContext(), "Loading more...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Laoding more...", Toast.LENGTH_SHORT).show();
         // Load 3 post per time
         for (int i = 0; i < 3; i++) {
             if (lastLoadedIndex + 1 < postModelArrayList.size()) {
@@ -106,13 +106,10 @@ public class HomeFragment extends Fragment {
                     PostModel postModel = postSnapshot.getValue(PostModel.class);
 
                     // Show post in recycler adapter only if the user is not blocked
-                    if (!HomeActivity.anonymous) {
-                        if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
-                            postModelArrayList.add(postModel);
-                        }
-                    }else {
+                    if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
                         postModelArrayList.add(postModel);
                     }
+
                     recyclerAdapter.notifyDataSetChanged();
                 }
 
@@ -162,7 +159,8 @@ public class HomeFragment extends Fragment {
         if (!HomeActivity.anonymous) {
             usernameLoadingScreen.setText(user.getDisplayName());
             if (user.getPhotoUrl() != null) {
-                Glide.with(getContext()).load(user.getPhotoUrl().toString()).into((ImageView) view.findViewById(R.id.my_profile_image));
+                Glide.with(getContext()).load(user.getPhotoUrl().toString())
+                        .into((ImageView) view.findViewById(R.id.my_profile_image));
             }
         } else {
             searchUserBtn.setVisibility(View.GONE);
@@ -181,7 +179,7 @@ public class HomeFragment extends Fragment {
         }
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerAdapter = new PostRecyclerAdapter(loadedPostsArrayList, getContext(), getActivity());
+        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
@@ -191,11 +189,24 @@ public class HomeFragment extends Fragment {
         searchView.setVisibility(View.GONE);
         searchUserButton.setVisibility(View.GONE);
 
+        if (HomeActivity.showWhatsNewMessage) {
+            FirebaseInAppMessaging.getInstance().triggerEvent("new_version_open");
+        }
+
+        /*
         ScrollView scrollView = view.findViewById(R.id.scrollView3);
         // Avoid data refresh on every swipe down
         scrollView.setOnScrollChangeListener((view14, i, i1, i2, i3) -> {
             swipeRefreshLayout.setEnabled(i1 <= 5);
-            loadMorePosts();
+            //loadMorePosts();
+        });*/
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                swipeRefreshLayout.setEnabled(dy <= 5);
+            }
         });
 
         // Re-load data

@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         // show progress dialog
         progressDialog.show();
 
-        mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
+        mAuth.signInWithEmailAndPassword(email.trim(), password).addOnSuccessListener(authResult -> {
             progressDialog.hide();
             finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));

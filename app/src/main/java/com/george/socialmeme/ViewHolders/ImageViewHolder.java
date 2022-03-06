@@ -277,15 +277,15 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
 
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.Theme_SocialMeme);
         View bottomSheetView = LayoutInflater.from(context.getApplicationContext())
-                .inflate(R.layout.comments_bottom_sheet,
+                .inflate(R.layout.post_options_bottom_sheet,
                         (ConstraintLayout)itemView.findViewById(R.id.bottom_sheet_container));
 
-        bottomSheetView.findViewById(R.id.imageButton11).setOnClickListener(new View.OnClickListener() {
+        /*bottomSheetView.findViewById(R.id.imageButton11).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 bottomSheetDialog.dismiss();
             }
-        });
+        });*/
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
 
