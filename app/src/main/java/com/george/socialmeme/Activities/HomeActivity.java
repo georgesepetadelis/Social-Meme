@@ -68,6 +68,7 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences("daily_notification_registered", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("daily_notification_registered", true);
+        editor.apply();
 
     }
 

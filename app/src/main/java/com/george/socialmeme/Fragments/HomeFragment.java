@@ -180,7 +180,6 @@ public class HomeFragment extends Fragment {
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
-
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -189,27 +188,16 @@ public class HomeFragment extends Fragment {
         searchView.setVisibility(View.GONE);
         searchUserButton.setVisibility(View.GONE);
 
-        if (HomeActivity.showWhatsNewMessage) {
-            FirebaseInAppMessaging.getInstance().triggerEvent("new_version_open");
-        }
-
-        /*
-        ScrollView scrollView = view.findViewById(R.id.scrollView3);
-        // Avoid data refresh on every swipe down
-        scrollView.setOnScrollChangeListener((view14, i, i1, i2, i3) -> {
-            swipeRefreshLayout.setEnabled(i1 <= 5);
-            //loadMorePosts();
-        });*/
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                // Avoid data reload on every scroll
                 swipeRefreshLayout.setEnabled(dy <= 5);
             }
         });
 
-        // Re-load data
+        // Reload data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
             loadAllPosts(view);

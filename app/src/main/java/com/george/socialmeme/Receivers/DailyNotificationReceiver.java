@@ -60,7 +60,7 @@ public class DailyNotificationReceiver extends BroadcastReceiver {
                 }else {
                     Notification.Builder notification = new Notification.Builder(context, CHANNEL_ID)
                             .setContentTitle("What's up memer?")
-                            .setContentText("Don't forget to check new memes for today")
+                            .setContentText("Don't forget to check your memes today")
                             .setSmallIcon(R.drawable.app_logo)
                             .setAutoCancel(false);
                     NotificationManagerCompat.from(context).notify(1, notification.build());
