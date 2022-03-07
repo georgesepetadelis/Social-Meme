@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -47,13 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        if (isNightModeEnabled()) {
-            // Disable night mode
-            editor.putBoolean("dark_mode", false);
-        }else {
-            // Enable Night mode
-            editor.putBoolean("dark_mode", true);
-        }
+        editor.putBoolean("dark_mode", !isNightModeEnabled());
         editor.apply();
 
         if (restartNow) {
@@ -62,6 +58,12 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+    }
+
+    void openURL(String URL) {
+        Uri uri = Uri.parse(URL);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
     }
 
     @Override
@@ -90,8 +92,18 @@ public class SettingsActivity extends AppCompatActivity {
         CardView bugReport = findViewById(R.id.cardView3);
         CardView feedback = findViewById(R.id.cardView5);
         CardView privacyPolicy = findViewById(R.id.cardView6);
+        ImageButton instagram = findViewById(R.id.instagram_button);
+        ImageButton github = findViewById(R.id.github_button);
         SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
         nightModeSwitch.setChecked(isNightModeEnabled());
+
+        instagram.setOnClickListener(view -> {
+            openURL("https://www.instagram.com/sepetadelhsss/");
+        });
+
+        github.setOnClickListener(view -> {
+            openURL("https://github.com/georgesepetadelis/Social-Meme");
+        });
 
         nightModeSwitch.setOnClickListener(view -> {
 

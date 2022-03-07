@@ -1,0 +1,36 @@
+package com.george.socialmeme.ViewHolders;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
+import com.george.socialmeme.R;
+
+import maes.tech.intentanim.CustomIntent;
+
+public class PostsOfTheMonthViewHolder extends RecyclerView.ViewHolder {
+    View itemContainer;
+    Context context;
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public PostsOfTheMonthViewHolder(@NonNull View itemView) {
+        super(itemView);
+        itemContainer = (View) itemView.findViewById(R.id.posts_of_the_month_btn);
+
+        itemContainer.setOnClickListener(view -> {
+            Intent intent = new Intent(context, PostsOfTheMonthActivity.class);
+            context.startActivity(intent);
+            CustomIntent.customType(context, "left-to-right");
+        });
+
+    }
+
+}

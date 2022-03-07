@@ -43,7 +43,6 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean showLoadingScreen;
     public static boolean showWhatsNewMessage;
     public static ChipNavigationBar bottomNavBar;
-    public static ArrayList<PostModel> savedPostsModelArrayList = null;
 
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);

@@ -2,8 +2,6 @@ package com.george.socialmeme.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -16,6 +14,7 @@ import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.ImageViewHolder;
+import com.george.socialmeme.ViewHolders.PostsOfTheMonthViewHolder;
 import com.george.socialmeme.ViewHolders.VideoViewHolder;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -27,11 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
-import com.potyvideo.library.globalEnums.EnumAspectRatio;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class PostRecyclerAdapter extends RecyclerView.Adapter {
@@ -44,18 +41,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
     public int getItemViewType(int position) {
         if (postList.get(position).getPostType().equals("video")) {
             return 1;
+        } if (postList.get(position).getPostType().equals("postsOfTheMonth")) {
+            return 2;
         }
         return 0;
-    }
-
-    public void addAll(List<PostModel> newPosts) {
-        int initSize = postList.size();
-        postList.addAll(newPosts);
-        notifyItemRangeChanged(initSize, postList.size());
-    }
-
-    public String getLastItemID() {
-        return postList.get(postList.size() - 1).getId();
     }
 
     public PostRecyclerAdapter(ArrayList<PostModel> postModelArrayList, Context context, Activity activity) {
@@ -70,6 +59,9 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         if (viewType == 1) {
             return new VideoViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.post_video_item, parent, false));
         }
+        if (viewType == 2) {
+            return new PostsOfTheMonthViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_of_the_month_view_item, parent, false));
+        }
         return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.post_item, parent, false));
     }
 
@@ -80,6 +72,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
+        if (postList.get(position).getPostType().equals("postsOfTheMonth")) {
+            PostsOfTheMonthViewHolder viewHolder = (PostsOfTheMonthViewHolder) holder;
+            viewHolder.setContext(context);
+        }
         if (postList.get(position).getPostType().equals("video")) {
             // bind video view holder
             VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
@@ -92,7 +88,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                     if (!HomeActivity.anonymous) {
 
                         // check if current post is liked from this user
-                        if (snapshot.child(videoViewHolder.id).hasChild(user.getUid())) {
+                        if (snapshot.child(videoViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
                             videoViewHolder.like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
 
@@ -114,7 +110,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             });
 
             // Get current post id set username, authorID, profile picture URL, postType, likes and post image URL
-            videoViewHolder.id = postList.get(position).getId();
+            videoViewHolder.postID = postList.get(position).getId();
             videoViewHolder.username.setText(postList.get(position).getName());
             videoViewHolder.userID = postList.get(position).getAuthorID();
             videoViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
@@ -136,7 +132,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             }
 
 
-        } else {
+        } if (postList.get(position).getPostType().equals("image")) {
 
             // bind image view holder
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;

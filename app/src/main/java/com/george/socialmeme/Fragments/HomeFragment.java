@@ -1,10 +1,19 @@
 package com.george.socialmeme.Fragments;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -12,62 +21,34 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
-import android.os.Parcelable;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.NotificationsActivity;
-import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
-import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
-import com.george.socialmeme.R;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
+import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
-import com.google.gson.Gson;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Queue;
 
 import maes.tech.intentanim.CustomIntent;
 
 public class HomeFragment extends Fragment {
 
     LoadingDialog progressDialog;
-    final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     boolean isSearchOpen = false;
     private EditText searchView;
     ArrayList<PostModel> postModelArrayList;
@@ -75,52 +56,46 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
 
-    int lastLoadedIndex = 0;
-
-    void loadMorePosts() {
-        Toast.makeText(getContext(), "Laoding more...", Toast.LENGTH_SHORT).show();
-        // Load 3 post per time
-        for (int i = 0; i < 3; i++) {
-            if (lastLoadedIndex + 1 < postModelArrayList.size()) {
-                PostModel postModel = postModelArrayList.get(lastLoadedIndex + 1);
-                loadedPostsArrayList.add(postModel);
-                recyclerAdapter.notifyItemInserted(loadedPostsArrayList.size() - 1);
-                lastLoadedIndex = lastLoadedIndex + 1;
-            }
-        }
-    }
-
     void loadAllPosts(View fragmentView) {
         DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
         postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                new Handler().postDelayed(() -> {
-                    fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                    HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                    HomeActivity.showLoadingScreen = false;
-                }, 1200);
+                if (HomeActivity.showLoadingScreen) {
+                    new Handler().postDelayed(() -> {
+                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                        HomeActivity.showLoadingScreen = false;
+                    }, 1200);
+                }
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     PostModel postModel = postSnapshot.getValue(PostModel.class);
 
-                    // Show post in recycler adapter only if the user is not blocked
-                    if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                    if (!HomeActivity.anonymous) {
+                        // Show post in recycler adapter only if the user is not blocked
+                        if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                            postModelArrayList.add(postModel);
+                        }
+                    }else {
                         postModelArrayList.add(postModel);
                     }
 
                     recyclerAdapter.notifyDataSetChanged();
                 }
 
+                // Add post's of the month view as RecyclerView item
+                // to avoid using ScrollView
+                PostModel postsOfTheMonthView = new PostModel();
+                postsOfTheMonthView.setPostType("postsOfTheMonth");
+                postModelArrayList.add(postsOfTheMonthView);
+                recyclerAdapter.notifyDataSetChanged();
+
                 // Reverse elements inside postModelArrayList
+                // to show items inside RecyclerView reversed
                 Collections.reverse(postModelArrayList);
 
-                // Load first 3 post's
-                for (int i = 0; i < 3; i++) {
-                    loadedPostsArrayList.add(postModelArrayList.get(i));
-                    lastLoadedIndex++;
-                }
             }
 
             @Override
@@ -148,13 +123,24 @@ public class HomeFragment extends Fragment {
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
         ImageButton notificationsBtn = view.findViewById(R.id.notificationsButton);
         ImageButton searchUserButton = view.findViewById(R.id.enter_search_button);
-        View postsOfTheMonthBtn = view.findViewById(R.id.posts_of_the_month_btn);
+        recyclerView = view.findViewById(R.id.home_recycler_view);
         searchView = view.findViewById(R.id.search_view);
+        progressDialog = LoadingDialog.Companion.get(getActivity());
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
+
+        loadedPostsArrayList = new ArrayList<>();
+        postModelArrayList = new ArrayList<>();
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
+        recyclerView.setAdapter(recyclerAdapter);
+        recyclerView.setLayoutManager(layoutManager);
+
+        searchView.setVisibility(View.GONE);
+        searchUserButton.setVisibility(View.GONE);
 
         if (!HomeActivity.anonymous) {
             usernameLoadingScreen.setText(user.getDisplayName());
@@ -167,26 +153,6 @@ public class HomeFragment extends Fragment {
             notificationsBtn.setVisibility(View.GONE);
             usernameLoadingScreen.setText("Anonymous User");
         }
-
-        recyclerView = view.findViewById(R.id.home_recycler_view);
-
-        loadedPostsArrayList = new ArrayList<>();
-
-        if (HomeActivity.savedPostsModelArrayList == null) {
-            postModelArrayList = new ArrayList<>();
-        } else {
-            postModelArrayList = HomeActivity.savedPostsModelArrayList;
-        }
-
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
-        recyclerView.setAdapter(recyclerAdapter);
-        recyclerView.setLayoutManager(layoutManager);
-
-        progressDialog = LoadingDialog.Companion.get(getActivity());
-
-        searchView.setVisibility(View.GONE);
-        searchUserButton.setVisibility(View.GONE);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -204,14 +170,12 @@ public class HomeFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
         });
 
-        HomeActivity.bottomNavBar.setVisibility(View.GONE);
-        loadAllPosts(view);
+        if (HomeActivity.showLoadingScreen) {
+            HomeActivity.bottomNavBar.setVisibility(View.GONE);
+            view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
+        }
 
-        postsOfTheMonthBtn.setOnClickListener(view13 -> {
-            Intent intent = new Intent(getActivity(), PostsOfTheMonthActivity.class);
-            startActivity(intent);
-            CustomIntent.customType(getContext(), "left-to-right");
-        });
+        loadAllPosts(view);
 
         searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
