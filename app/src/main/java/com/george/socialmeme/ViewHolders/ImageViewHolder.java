@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
+import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +50,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -320,7 +324,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 showPostOptionsBottomSheet();
             }
         });
-        show_comments_btn.setOnClickListener(view -> showComments(postID, itemView));
+        show_comments_btn.setOnClickListener(view -> showCommentsDialog());
 
         openUserProfileView.setOnClickListener(v -> {
 
@@ -395,29 +399,54 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
 
                 @Override
                 public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
         });
 
-
     }
 
-    private void showComments(String postID, View itemView) {
+    private void showCommentsDialog() {
 
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.Theme_SocialMeme);
-        View bottomSheetView = LayoutInflater.from(context.getApplicationContext())
-                .inflate(R.layout.post_options_bottom_sheet,
-                        (ConstraintLayout)itemView.findViewById(R.id.bottom_sheet_container));
+        AlertDialog dialog = new AlertDialog.Builder(context, R.style.Theme_SocialMeme).create();
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = layoutInflater.inflate(R.layout.comments_dialog_fragment, null);
 
-        /*bottomSheetView.findViewById(R.id.imageButton11).setOnClickListener(new View.OnClickListener() {
+        ImageButton dismissDialogButton = dialogView.findViewById(R.id.imageButton17);
+        EditText comment = dialogView.findViewById(R.id.writeCommentET);
+        ImageButton addCommentBtn = dialogView.findViewById(R.id.imageButton18);
+        RecyclerView commentsRecyclerView = dialogView.findViewById(R.id.comments_recycler_view);
+
+        ArrayList<CommentModel> commentModelArrayList = new ArrayList<>();
+        CommentsRecyclerAdapter adapter = new CommentsRecyclerAdapter(commentModelArrayList, context, dialog.getOwnerActivity());
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                bottomSheetDialog.dismiss();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("posts").child(postID).child("comments").exists()) {
+
+                    for (DataSnapshot commentsSnapshot : snapshot.child("posts").child(postID).getChildren()) {
+                        CommentModel commentModel = commentsSnapshot.getValue(CommentModel.class);
+                        commentModelArrayList.add(commentModel);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                }
             }
-        });*/
-        bottomSheetDialog.setContentView(bottomSheetView);
-        bottomSheetDialog.show();
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        commentsRecyclerView.setAdapter(adapter);
+
+        dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.setView(dialogView);
+        dialog.show();
 
     }
 }
