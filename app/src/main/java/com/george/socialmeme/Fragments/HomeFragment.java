@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
 
-    void loadAllPosts(View fragmentView) {
+    void loadAllPosts(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
         DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
         postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment {
                     new Handler().postDelayed(() -> {
                         fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
                         HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setEnabled(true);
                         HomeActivity.showLoadingScreen = false;
                     }, 1200);
                 }
@@ -81,8 +82,7 @@ public class HomeFragment extends Fragment {
                     }else {
                         postModelArrayList.add(postModel);
                     }
-
-                    recyclerAdapter.notifyDataSetChanged();
+                    recyclerAdapter.notifyItemInserted(postModelArrayList.size() -1);
                 }
 
                 // Add post's of the month view as RecyclerView item
@@ -90,7 +90,7 @@ public class HomeFragment extends Fragment {
                 PostModel postsOfTheMonthView = new PostModel();
                 postsOfTheMonthView.setPostType("postsOfTheMonth");
                 postModelArrayList.add(postsOfTheMonthView);
-                recyclerAdapter.notifyDataSetChanged();
+                recyclerAdapter.notifyItemInserted(postModelArrayList.size() -1);
 
                 // Reverse elements inside postModelArrayList
                 // to show items inside RecyclerView reversed
@@ -166,16 +166,17 @@ public class HomeFragment extends Fragment {
         // Reload data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            loadAllPosts(view);
+            loadAllPosts(view, swipeRefreshLayout);
             swipeRefreshLayout.setRefreshing(false);
         });
 
         if (HomeActivity.showLoadingScreen) {
             HomeActivity.bottomNavBar.setVisibility(View.GONE);
+            swipeRefreshLayout.setEnabled(false);
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
         }
 
-        loadAllPosts(view);
+        loadAllPosts(view, swipeRefreshLayout);
 
         searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

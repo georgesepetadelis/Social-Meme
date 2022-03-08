@@ -47,6 +47,8 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
             if (!profilePictureUrl.equals("none")) {
                 Glide.with(context).load(profilePictureUrl).into(viewHolder.profilePicture);
             }
+        }else {
+            viewHolder.profilePicture.setImageResource(R.drawable.user);
         }
 
         viewHolder.usernameTV.setText(commentsList.get(position).getAuthorUsername());

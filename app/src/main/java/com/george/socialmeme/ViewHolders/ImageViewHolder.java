@@ -11,29 +11,37 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.george.socialmeme.Activities.FollowerInfoActivity;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -412,26 +420,94 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = layoutInflater.inflate(R.layout.comments_dialog_fragment, null);
 
+        CircleImageView profilePicture = dialogView.findViewById(R.id.comments_profile_image);
         ImageButton dismissDialogButton = dialogView.findViewById(R.id.imageButton17);
-        EditText comment = dialogView.findViewById(R.id.writeCommentET);
+        EditText commentET = dialogView.findViewById(R.id.writeCommentET);
         ImageButton addCommentBtn = dialogView.findViewById(R.id.imageButton18);
         RecyclerView commentsRecyclerView = dialogView.findViewById(R.id.comments_recycler_view);
 
         ArrayList<CommentModel> commentModelArrayList = new ArrayList<>();
         CommentsRecyclerAdapter adapter = new CommentsRecyclerAdapter(commentModelArrayList, context, dialog.getOwnerActivity());
+        commentsRecyclerView.setAdapter(adapter);
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        commentsRecyclerView.setAdapter(adapter);
+        commentsRecyclerView.setHasFixedSize(true);
+        commentsRecyclerView.setLayoutManager(layoutManager);
+
+        // Load current user profile picture
+        if (user.getPhotoUrl() != null) {
+            Glide.with(context).load(user.getPhotoUrl().toString()).into(profilePicture);
+        }else {
+            profilePicture.setImageResource(R.drawable.user);
+        }
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        addCommentBtn.setOnClickListener(view -> {
+            if (!commentET.getText().toString().isEmpty()) {
+
+                ProgressBar progressBar = dialogView.findViewById(R.id.addCommentProgressBar);
+                progressBar.setVisibility(View.VISIBLE);
+                addCommentBtn.setVisibility(View.INVISIBLE);
+
+                String commendID = rootRef.push().getKey();
+
+                CommentModel commentModel = new CommentModel();
+                commentModel.setAuthor(user.getUid());
+                commentModel.setCommentID(commendID);
+                commentModel.setAuthorUsername(user.getDisplayName());
+                commentModel.setPostID(postID);
+                commentModel.setCommentText(commentET.getText().toString());
+
+                if (user.getPhotoUrl() != null) {
+                    commentModel.setAuthorProfilePictureURL(user.getPhotoUrl().toString());
+                }else {
+                    commentModel.setAuthorProfilePictureURL("none");
+                }
+
+                // Add comment to RecyclerView
+                commentModelArrayList.add(commentModel);
+                adapter.notifyDataSetChanged();
+                adapter.notifyItemInserted(commentModelArrayList.size() - 1);
+
+                // Add comment to Firebase Real-Time database
+                rootRef.child("posts").child(postID).child("comments").child(commendID).setValue(commentModel)
+                        .addOnSuccessListener(unused -> {
+                            progressBar.setVisibility(View.GONE);
+                            addCommentBtn.setVisibility(View.VISIBLE);
+                            commentET.setText("");
+                        })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    addCommentBtn.setVisibility(View.VISIBLE);
+                });
+
+
+            } else {
+                Toast.makeText(context, "Please write a comment", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("posts").child(postID).child("comments").exists()) {
-
-                    for (DataSnapshot commentsSnapshot : snapshot.child("posts").child(postID).getChildren()) {
-                        CommentModel commentModel = commentsSnapshot.getValue(CommentModel.class);
+                if (snapshot.child("posts").child(postID).hasChild("comments")) {
+                    for (DataSnapshot commentsSnapshot : snapshot.child("posts").child(postID).child("comments").getChildren()) {
+                        CommentModel commentModel = new CommentModel();
+                        commentModel.setAuthor(commentsSnapshot.child("author").getValue(String.class));
+                        commentModel.setCommentID(commentsSnapshot.child("commentID").getValue(String.class));
+                        commentModel.setAuthorUsername(commentsSnapshot.child("authorUsername").getValue(String.class));
+                        commentModel.setPostID(commentsSnapshot.child("postID").getValue(String.class));
+                        commentModel.setAuthorProfilePictureURL(commentsSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                        commentModel.setCommentText(commentsSnapshot.child("commentText").getValue(String.class));
                         commentModelArrayList.add(commentModel);
                         adapter.notifyDataSetChanged();
+                        adapter.notifyItemInserted(commentModelArrayList.size() - 1);
                     }
-
                 }
             }
 
@@ -441,11 +517,10 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        commentsRecyclerView.setAdapter(adapter);
-
         dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
 
         dialog.setView(dialogView);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.show();
 
     }

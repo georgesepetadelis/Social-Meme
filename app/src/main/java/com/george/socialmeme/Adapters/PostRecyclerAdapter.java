@@ -57,12 +57,12 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == 1) {
-            return new VideoViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.post_video_item, parent, false));
+            return new VideoViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.video_post_item, parent, false));
         }
         if (viewType == 2) {
             return new PostsOfTheMonthViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_of_the_month_view_item, parent, false));
         }
-        return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.post_item, parent, false));
+        return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_post_item, parent, false));
     }
 
     @Override

@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/background"
+    android:background="@drawable/bottom_sheet_background"
     tools:context=".Activities.NotificationsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -41,34 +42,25 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.411" />
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nestedScrollView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/comments_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view19">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/comments_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:itemCount="10"
-                tools:listitem="@layout/comment_item" />
-
-        </androidx.core.widget.NestedScrollView>
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/view19"
+            tools:itemCount="10"
+            tools:listitem="@layout/comment_item" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/view19"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_marginBottom="12dp"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
+            app:layout_constraintBottom_toTopOf="@+id/comments_recycler_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar4">
@@ -109,12 +101,24 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:background="@color/white"
+                    android:foreground="?selectableItemBackgroundBorderless"
                     app:layout_constraintBottom_toBottomOf="@+id/writeCommentET"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/writeCommentET"
                     app:layout_constraintTop_toTopOf="@+id/writeCommentET"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    app:srcCompat="@drawable/ic_send" />
+
+                <ProgressBar
+                    android:id="@+id/addCommentProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageButton18"
+                    app:layout_constraintEnd_toEndOf="@+id/imageButton18"
+                    app:layout_constraintStart_toStartOf="@+id/imageButton18"
+                    app:layout_constraintTop_toTopOf="@+id/imageButton18" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -83,15 +83,15 @@ public class FollowerInfoActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                // hide progress bar
                 progressDialog.hide();
 
                 if (displayFollowers) {
 
                     for (DataSnapshot snap : snapshot.child(userID).child("followers").getChildren()) {
 
+                        int followersCount = (int) snapshot.child(userID).child("followers").getChildrenCount();
                         UserModel userModel = new UserModel();
-                        userModel.setFollowers(String.valueOf(snapshot.child(userID).child("followers").getChildrenCount()));
+                        userModel.setFollowers(String.valueOf(followersCount));
 
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
 
@@ -114,7 +114,7 @@ public class FollowerInfoActivity extends AppCompatActivity {
                                 }
 
                             } else {
-                                // Delete current user node if the user not exists
+                                // Delete current user node if the user does not exists
                                 usersRef.child(userID).child("followers").child(snap.getValue(String.class)).removeValue();
                             }
 
@@ -126,8 +126,9 @@ public class FollowerInfoActivity extends AppCompatActivity {
 
                     for (DataSnapshot snap : snapshot.child(userID).child("following").getChildren()) {
 
+                        int followingUsersCount = (int) snapshot.child(userID).child("following").getChildrenCount();
                         UserModel userModel = new UserModel();
-                        userModel.setFollowers(String.valueOf(snapshot.child(userID).child("following").getChildrenCount()));
+                        userModel.setFollowers(String.valueOf(followingUsersCount));
 
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
 

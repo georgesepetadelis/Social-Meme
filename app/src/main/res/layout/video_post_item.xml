@@ -101,6 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:background="@null"
+                android:foreground="?selectableItemBackgroundBorderless"
                 app:layout_constraintBottom_toBottomOf="@+id/textView36"
                 app:layout_constraintStart_toEndOf="@+id/textView36"
                 app:layout_constraintTop_toTopOf="@+id/textView36"
