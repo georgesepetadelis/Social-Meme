@@ -476,15 +476,21 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                for (DataSnapshot snap : snapshot.getChildren()) {
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 
-                    if (snap.child("name").getValue(String.class).equals(username)) {
+                    if (postSnapshot.child("name").getValue(String.class).equals(username)) {
                         PostModel postModel = new PostModel();
-                        postModel.setId(snap.child("id").getValue(String.class));
-                        postModel.setImgUrl(snap.child("imgUrl").getValue(String.class));
-                        postModel.setLikes(snap.child("likes").getValue(String.class));
-                        postModel.setName(snap.child("name").getValue(String.class));
-                        postModel.setPostType(snap.child("postType").getValue(String.class));
+                        postModel.setId(postSnapshot.child("id").getValue(String.class));
+                        postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                        postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                        postModel.setName(postSnapshot.child("name").getValue(String.class));
+                        postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                        if (postSnapshot.child("comments").exists()) {
+                            postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                        }else {
+                            postModel.setCommentsCount("0");
+                        }
 
                         postModelArrayList.add(postModel);
 

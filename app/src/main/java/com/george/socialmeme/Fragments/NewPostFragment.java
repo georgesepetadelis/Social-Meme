@@ -10,19 +10,13 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
@@ -33,11 +27,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -45,10 +36,9 @@ import maes.tech.intentanim.CustomIntent;
 
 public class NewPostFragment extends Fragment {
 
-    final private DatabaseReference mRef = FirebaseDatabase.getInstance().getReference("posts");
+    final private DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
     final private StorageReference storageReference = FirebaseStorage.getInstance().getReference("images");
     private Uri mediaUri;
-    private ImageView img;
     private static String mediaType;
     final private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     final private FirebaseUser user = mAuth.getCurrentUser();
@@ -90,22 +80,23 @@ public class NewPostFragment extends Fragment {
 
     private void uploadPostToFirebase(Uri uri, String type) {
 
-        String postId = mRef.push().getKey();
+        String postId = postsRef.push().getKey();
 
         StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
         fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
             loadingDialog.hide();
+
             UploadPostModel model = new UploadPostModel(uri1.toString());
-            mRef.child(postId).setValue(model);
-            mRef.child(postId).child("name").setValue(user.getDisplayName());
-            mRef.child(postId).child("likes").setValue("0");
-            mRef.child(postId).child("id").setValue(postId);
-            mRef.child(postId).child("postType").setValue(type);
+            postsRef.child(postId).setValue(model);
+            postsRef.child(postId).child("name").setValue(user.getDisplayName());
+            postsRef.child(postId).child("likes").setValue("0");
+            postsRef.child(postId).child("id").setValue(postId);
+            postsRef.child(postId).child("postType").setValue(type);
 
             if (user.getPhotoUrl() != null) {
-                mRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
             } else {
-                mRef.child(postId).child("authorProfilePictureURL").setValue("none");
+                postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
             }
 
             Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
@@ -130,7 +121,6 @@ public class NewPostFragment extends Fragment {
         mAdView.loadAd(adRequest);
 
         loadingDialog = LoadingDialog.Companion.get(getActivity());
-        img = view.findViewById(R.id.imageView3);
         View select_img = view.findViewById(R.id.select_img_btn);
         View selectVideo = view.findViewById(R.id.select_video_btn);
 

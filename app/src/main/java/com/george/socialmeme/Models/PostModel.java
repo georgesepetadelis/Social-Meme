@@ -1,21 +1,27 @@
 package com.george.socialmeme.Models;
 
 public class PostModel {
-    private String name, imgUrl, likes, id, profileImgUrl, authorID, postType;
+    private String name, imgUrl, likes, id, profileImgUrl, authorID, postType, commentsCount;
 
     // constructors
-    public PostModel(String name, String imgUrl, String postType) {
+    public PostModel(String name, String imgUrl, String postType, String commentsCount) {
         this.name = name;
         this.imgUrl = imgUrl;
         this.postType = postType;
+        this.commentsCount = commentsCount;
     }
 
     public PostModel() {
 
     }
 
-    // getters and setters
+    public String getCommentsCount() {
+        return commentsCount;
+    }
 
+    public void setCommentsCount(String commentsCount) {
+        this.commentsCount = commentsCount;
+    }
 
     public String getPostType() {
         return postType;

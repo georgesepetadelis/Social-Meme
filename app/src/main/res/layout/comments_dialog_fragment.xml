@@ -4,24 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/background"
+    android:background="@null"
     tools:context=".Activities.NotificationsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/background"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar4"
             android:layout_width="0dp"
             android:layout_height="70dp"
-            android:background="?attr/background"
+            android:background="@null"
             android:minHeight="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,15 +49,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:background="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view19"
-            tools:itemCount="10"
-            tools:listitem="@layout/comment_item" />
+            tools:itemCount="3"
+            tools:listitem="@layout/comment_item">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <ProgressBar
+            android:id="@+id/commentsProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/comments_recycler_view" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/view19"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_marginStart="12dp"
+            android:layout_marginTop="15dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="12dp"
@@ -101,7 +120,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:background="@color/white"
+                    android:background="@null"
                     android:foreground="?selectableItemBackgroundBorderless"
                     app:layout_constraintBottom_toBottomOf="@+id/writeCommentET"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -131,7 +150,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginEnd="8dp"
-            android:background="?attr/background"
+            android:background="@null"
             android:foreground="?selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toBottomOf="@+id/toolbar4"
             app:layout_constraintEnd_toEndOf="parent"

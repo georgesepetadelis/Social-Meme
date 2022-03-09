@@ -2,19 +2,21 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:cardElevation="8dp"
-    android:layout_marginStart="12dp"
-    android:layout_marginEnd="12dp"
-    android:layout_marginTop="15dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="12dp"
+    android:id="@+id/commentItemContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="?attr/background"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#6FFFFFFF"
+        android:background="?attr/cardBackgroundColor"
         android:padding="15dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -31,9 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Username"
+            android:textColor="?attr/titleTextColor"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="?attr/textFillColor"
             app:layout_constraintBottom_toBottomOf="@+id/circleImageView3"
             app:layout_constraintStart_toEndOf="@+id/circleImageView3"
             app:layout_constraintTop_toTopOf="@+id/circleImageView3" />
@@ -44,9 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Comment text"
-            android:textStyle="bold"
+            android:textColor="?attr/textFillColor"
             android:textSize="18sp"
-            android:textColor="?attr/titleTextColor"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/circleImageView3"
             app:layout_constraintTop_toBottomOf="@+id/circleImageView3" />
 

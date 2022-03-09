@@ -11,7 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.george.socialmeme.Adapters.FollowingAndFollowersRecyclerAdapter;
+import com.george.socialmeme.Adapters.FollowerInfoRecyclerAdapter;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
@@ -68,7 +68,7 @@ public class FollowerInfoActivity extends AppCompatActivity {
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         final ArrayList<UserModel> usersArrayList = new ArrayList<>();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(FollowerInfoActivity.this);
-        final RecyclerView.Adapter recyclerAdapter = new FollowingAndFollowersRecyclerAdapter(FollowerInfoActivity.this, usersArrayList);
+        final RecyclerView.Adapter recyclerAdapter = new FollowerInfoRecyclerAdapter(FollowerInfoActivity.this, usersArrayList);
 
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
@@ -87,25 +87,36 @@ public class FollowerInfoActivity extends AppCompatActivity {
 
                 if (displayFollowers) {
 
-                    for (DataSnapshot snap : snapshot.child(userID).child("followers").getChildren()) {
+                    for (DataSnapshot followerSnapshot : snapshot.child(userID).child("followers").getChildren()) {
 
-                        int followersCount = (int) snapshot.child(userID).child("followers").getChildrenCount();
+                        int followersCount = (int) snapshot.child(followerSnapshot.getValue(String.class)).child("followers").getChildrenCount();
                         UserModel userModel = new UserModel();
-                        userModel.setFollowers(String.valueOf(followersCount));
 
-                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        switch (followersCount) {
+                            case 0:
+                                userModel.setFollowers("No followers");
+                                break;
+                            case 1:
+                                userModel.setFollowers("1 follower");
+                                break;
+                            default:
+                                userModel.setFollowers(followersCount + " followers");
+                        }
+
+                        for (DataSnapshot usersSnapshot : snapshot.getChildren()) {
 
                             // Confirm that the user exists
-                            if (snapshot.child(snap.getValue(String.class)).exists()) {
+                            if (snapshot.child(followerSnapshot.getValue(String.class)).exists()) {
 
-                                userModel.setUserID(snap.getValue(String.class));
+                                userModel.setUserID(followerSnapshot.getValue(String.class));
 
-                                if (snapshot1.child("id").getValue(String.class).equals(snap.getValue(String.class))) {
-                                    userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
 
-                                    if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
-                                        userModel.setProfilePictureURL(snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
-                                    } else if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class) == null) {
+                                if (usersSnapshot.child("id").getValue(String.class).equals(followerSnapshot.getValue(String.class))) {
+                                    userModel.setUsername(snapshot.child(usersSnapshot.child("id").getValue(String.class)).child("name").getValue(String.class));
+
+                                    if (snapshot.child(usersSnapshot.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
+                                        userModel.setProfilePictureURL(snapshot.child(usersSnapshot.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
+                                    } else if (snapshot.child(usersSnapshot.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class) == null) {
                                         userModel.setProfilePictureURL("none");
                                     }
 
@@ -115,7 +126,7 @@ public class FollowerInfoActivity extends AppCompatActivity {
 
                             } else {
                                 // Delete current user node if the user does not exists
-                                usersRef.child(userID).child("followers").child(snap.getValue(String.class)).removeValue();
+                                usersRef.child(userID).child("followers").child(followerSnapshot.getValue(String.class)).removeValue();
                             }
 
                         }
@@ -124,20 +135,30 @@ public class FollowerInfoActivity extends AppCompatActivity {
 
                 }else {
 
-                    for (DataSnapshot snap : snapshot.child(userID).child("following").getChildren()) {
+                    for (DataSnapshot followingUserSnapshot : snapshot.child(userID).child("following").getChildren()) {
 
-                        int followingUsersCount = (int) snapshot.child(userID).child("following").getChildrenCount();
+                        int followersCount = (int) snapshot.child(followingUserSnapshot.getValue(String.class)).child("followers").getChildrenCount();
                         UserModel userModel = new UserModel();
-                        userModel.setFollowers(String.valueOf(followingUsersCount));
+
+                        switch (followersCount) {
+                            case 0:
+                                userModel.setFollowers("No followers");
+                                break;
+                            case 1:
+                                userModel.setFollowers("1 follower");
+                                break;
+                            default:
+                                userModel.setFollowers(followersCount + " followers");
+                        }
 
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
 
                             // Confirm that the user exists
-                            if (snapshot.child(snap.getValue(String.class)).exists()) {
+                            if (snapshot.child(followingUserSnapshot.getValue(String.class)).exists()) {
 
-                                userModel.setUserID(snap.getValue(String.class));
+                                userModel.setUserID(followingUserSnapshot.getValue(String.class));
 
-                                if (snapshot1.child("id").getValue(String.class).equals(snap.getValue(String.class))) {
+                                if (snapshot1.child("id").getValue(String.class).equals(followingUserSnapshot.getValue(String.class))) {
                                     userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
 
                                     if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
@@ -152,7 +173,7 @@ public class FollowerInfoActivity extends AppCompatActivity {
 
                             } else {
                                 // Delete current user node if the user not exists
-                                usersRef.child(userID).child("followers").child(snap.getValue(String.class)).removeValue();
+                                usersRef.child(userID).child("followers").child(followingUserSnapshot.getValue(String.class)).removeValue();
                             }
 
                         }

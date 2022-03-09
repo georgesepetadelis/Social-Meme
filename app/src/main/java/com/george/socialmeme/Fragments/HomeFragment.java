@@ -52,7 +52,6 @@ public class HomeFragment extends Fragment {
     boolean isSearchOpen = false;
     private EditText searchView;
     ArrayList<PostModel> postModelArrayList;
-    ArrayList<PostModel> loadedPostsArrayList;
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
 
@@ -72,7 +71,20 @@ public class HomeFragment extends Fragment {
                 }
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    PostModel postModel = postSnapshot.getValue(PostModel.class);
+
+                    PostModel postModel = new PostModel();
+                    postModel.setId(postSnapshot.child("id").getValue(String.class));
+                    postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                    postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                    postModel.setName(postSnapshot.child("name").getValue(String.class));
+                    postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                    postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                    if (postSnapshot.child("comments").exists()) {
+                        postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                    }else {
+                        postModel.setCommentsCount("0");
+                    }
 
                     if (!HomeActivity.anonymous) {
                         // Show post in recycler adapter only if the user is not blocked
@@ -130,8 +142,6 @@ public class HomeFragment extends Fragment {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
-
-        loadedPostsArrayList = new ArrayList<>();
         postModelArrayList = new ArrayList<>();
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());

@@ -90,11 +90,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         // check if current post is liked from this user
                         if (snapshot.child(videoViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
-                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
+                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
 
                         } else {
                             // post is not liked from this user
-                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_thump_up_outline);
+                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_like);
                         }
                     } else {
                         // disable like button
@@ -115,6 +115,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             videoViewHolder.userID = postList.get(position).getAuthorID();
             videoViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             videoViewHolder.videoURL = postList.get(position).getImgUrl();
+            videoViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
             // Load video source
             ExoPlayer player = new ExoPlayer.Builder(context).build();
@@ -131,7 +132,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 }
             }
 
-
         } if (postList.get(position).getPostType().equals("image")) {
 
             // bind image view holder
@@ -147,14 +147,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         // check if current post is liked from this user
                         if (snapshot.child(imageViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
-                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
+                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
 
                         } else {
                             // post is not liked from this user
-                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_thump_up_outline);
+                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_like);
                         }
                     } else {
-                        // disable like button
                         imageViewHolder.like_btn.setEnabled(false);
                     }
 
@@ -172,6 +171,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             imageViewHolder.username.setText(postList.get(position).getName());
             imageViewHolder.userID = postList.get(position).getAuthorID();
             imageViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
+            imageViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
             Picasso.get().load(postList.get(position).getImgUrl()).into(imageViewHolder.postImg);
             imageViewHolder.postImageURL = postList.get(position).getImgUrl();

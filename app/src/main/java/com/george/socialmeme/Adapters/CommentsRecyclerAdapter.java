@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
