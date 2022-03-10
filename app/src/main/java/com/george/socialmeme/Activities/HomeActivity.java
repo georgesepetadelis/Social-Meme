@@ -36,10 +36,11 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 import java.util.ArrayList;
 
+import io.alterac.blurkit.BlurLayout;
+
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
-    public static boolean isDarkModeEnabled;
     public static boolean showLoadingScreen;
     public static boolean showWhatsNewMessage;
     public static ChipNavigationBar bottomNavBar;

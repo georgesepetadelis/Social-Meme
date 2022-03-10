@@ -170,6 +170,19 @@
             app:layout_constraintStart_toEndOf="@+id/searchPersonButton"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <io.alterac.blurkit.BlurLayout
+            android:id="@+id/blurView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:blk_blurRadius="15"
+            app:blk_fps="30"
+            android:visibility="gone"
+            app:blk_downscaleFactor="0.12"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
@@ -188,8 +201,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:indeterminate="true"
-                android:indeterminateDuration="700"
                 android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
+                android:indeterminateDuration="700"
                 app:layout_constraintBottom_toTopOf="@+id/textView41"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
