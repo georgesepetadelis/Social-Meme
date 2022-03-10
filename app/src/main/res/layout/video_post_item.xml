@@ -130,6 +130,19 @@
                 app:layout_constraintStart_toStartOf="@+id/imageButton11"
                 app:layout_constraintTop_toTopOf="@+id/imageButton11" />
 
+            <ImageButton
+                android:id="@+id/imageButton14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView71"
+                app:layout_constraintStart_toEndOf="@+id/textView71"
+                app:layout_constraintTop_toTopOf="@+id/textView71"
+                android:foreground="?selectableItemBackgroundBorderless"
+                android:background="?attr/cardBackgroundColor"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_share" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton

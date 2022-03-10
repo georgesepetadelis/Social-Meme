@@ -112,7 +112,13 @@ public class HomeActivity extends AppCompatActivity {
                     selectedFragment = new MyProfileFragment();
                     break;
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
+
         });
 
         // Load default fragment

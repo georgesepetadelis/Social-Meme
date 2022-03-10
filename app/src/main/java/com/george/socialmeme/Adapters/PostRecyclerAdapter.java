@@ -1,8 +1,11 @@
 package com.george.socialmeme.Adapters;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -132,6 +135,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 }
             }
 
+            videoViewHolder.shareBtn.setOnClickListener(view -> {
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("post_url", postList.get(position).getImgUrl());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Video URL copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+
         } if (postList.get(position).getPostType().equals("image")) {
 
             // bind image view holder
@@ -183,6 +193,14 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                     Glide.with(context).load(profilePictureUrl).into(imageViewHolder.profileImage);
                 }
             }
+
+            imageViewHolder.shareBtn.setOnClickListener(view -> {
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("post_url", postList.get(position).getImgUrl());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Image URL copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+
         }
 
     }

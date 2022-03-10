@@ -40,6 +40,8 @@ import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -65,7 +67,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
     public View openProfileView, openCommentsView;
     public TextView username, like_counter_tv, commentsCount;
     public CircleImageView profilePicture;
-    public ImageButton like_btn, postOptionsButton;
+    public ImageButton like_btn, postOptionsButton, shareBtn;
     public boolean isLiked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -220,6 +222,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
         postOptionsButton = itemView.findViewById(R.id.imageButton12);
         commentsCount = itemView.findViewById(R.id.textView71);
         openCommentsView = itemView.findViewById(R.id.openCommentsViewVideoItem);
+        shareBtn = itemView.findViewById(R.id.imageButton14);
 
         openCommentsView.setOnClickListener(view -> {
             if (!HomeActivity.anonymous) {
@@ -249,7 +252,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
                     if (isLiked) {
                         if (snapshot.child(postID).hasChild(user.getUid())) {
                             // Post is liked from this user, so user wants to unlike this post
-                            like_btn.setImageResource(R.drawable.ic_thump_up_outline);
+                            like_btn.setImageResource(R.drawable.ic_like);
                             likesRef.child(postID).child(user.getUid()).removeValue();
                             isLiked = false;
 
@@ -257,7 +260,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
                             updateLikes(postID, false);
                         } else {
                             // Post is not liked from ths user, so the user wants to like this post
-                            like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
+                            like_btn.setImageResource(R.drawable.ic_like_filled);
                             likesRef.child(postID).child(user.getUid()).setValue("true");
 
                             // Update likes to DB
@@ -267,7 +270,6 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
 
                         }
                     }
-
                 }
 
                 @Override
@@ -426,6 +428,9 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
             window.setStatusBarColor(Color.BLACK);
         } else {
             dialog = new AlertDialog.Builder(context, R.style.Theme_SocialMeme).create();
+            Window window = dialog.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.WHITE);
         }
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -437,10 +442,15 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
         ImageButton addCommentBtn = dialogView.findViewById(R.id.imageButton18);
         ProgressBar recyclerViewProgressBar = dialogView.findViewById(R.id.commentsProgressBar);
         RecyclerView commentsRecyclerView = dialogView.findViewById(R.id.comments_recycler_view);
+        TextView noCommentsMsg = dialogView.findViewById(R.id.textView22);
 
         ArrayList<CommentModel> commentModelArrayList = new ArrayList<>();
         CommentsRecyclerAdapter adapter = new CommentsRecyclerAdapter(commentModelArrayList, context, dialog.getOwnerActivity());
         commentsRecyclerView.setAdapter(adapter);
+
+        AdView mAdView = dialogView.findViewById(R.id.adView6);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setReverseLayout(true);
@@ -480,11 +490,6 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
                     commentModel.setAuthorProfilePictureURL("none");
                 }
 
-                // Add comment to RecyclerView
-                commentModelArrayList.add(commentModel);
-                adapter.notifyDataSetChanged();
-                adapter.notifyItemInserted(commentModelArrayList.size() - 1);
-
                 // Update comment counter on post item inside RecyclerView
                 String currentCommentsCountToString = commentsCount.getText().toString();
                 int newCurrentCommentsCountToInt = Integer.parseInt(currentCommentsCountToString) + 1;
@@ -493,9 +498,21 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
                 // Add comment to Firebase Real-Time database
                 rootRef.child("posts").child(postID).child("comments").child(commendID).setValue(commentModel)
                         .addOnSuccessListener(unused -> {
+
+                            // Add comment to RecyclerView
+                            commentModelArrayList.add(commentModel);
+                            adapter.notifyDataSetChanged();
+                            adapter.notifyItemInserted(commentModelArrayList.size() - 1);
+
                             progressBar.setVisibility(View.GONE);
                             addCommentBtn.setVisibility(View.VISIBLE);
                             commentET.setText("");
+
+                            // Hide no comments warning message if is visible
+                            if (commentModelArrayList.size() == 1) {
+                                noCommentsMsg.setVisibility(View.GONE);
+                            }
+
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(context, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -526,6 +543,8 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
                         adapter.notifyDataSetChanged();
                         adapter.notifyItemInserted(commentModelArrayList.size() - 1);
                     }
+                }else {
+                    noCommentsMsg.setVisibility(View.VISIBLE);
                 }
                 recyclerViewProgressBar.setVisibility(View.GONE);
             }

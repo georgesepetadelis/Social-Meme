@@ -92,18 +92,15 @@ public class SettingsActivity extends AppCompatActivity {
         CardView bugReport = findViewById(R.id.cardView3);
         CardView feedback = findViewById(R.id.cardView5);
         CardView privacyPolicy = findViewById(R.id.cardView6);
+        CardView donateButton = findViewById(R.id.cardView10);
         ImageButton instagram = findViewById(R.id.instagram_button);
         ImageButton github = findViewById(R.id.github_button);
         SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
         nightModeSwitch.setChecked(isNightModeEnabled());
 
-        instagram.setOnClickListener(view -> {
-            openURL("https://www.instagram.com/sepetadelhsss/");
-        });
-
-        github.setOnClickListener(view -> {
-            openURL("https://github.com/georgesepetadelis/Social-Meme");
-        });
+        donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
+        instagram.setOnClickListener(view -> openURL("https://www.instagram.com/sepetadelhsss/"));
+        github.setOnClickListener(view -> openURL("https://github.com/georgesepetadelis/Social-Meme"));
 
         nightModeSwitch.setOnClickListener(view -> {
 

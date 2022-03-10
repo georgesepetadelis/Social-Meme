@@ -41,6 +41,8 @@ import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -69,7 +71,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     public String postID, postImageURL, userID;
     public TextView username, like_counter_tv, commentsCount;
     public ImageView postImg;
-    public ImageButton like_btn, show_comments_btn, showPostOptionsButton;
+    public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn;
     public CircleImageView profileImage;
     public boolean isLiked = false;
     public ConstraintLayout openUserProfileView;
@@ -334,6 +336,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         like_counter_tv = itemView.findViewById(R.id.like_counter);
         openUserProfileView = itemView.findViewById(R.id.view_profile);
         commentsCount = itemView.findViewById(R.id.textView63);
+        shareBtn = itemView.findViewById(R.id.imageButton13);
         View openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
 
         showPostOptionsButton.setOnClickListener(view -> {
@@ -445,6 +448,9 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             window.setStatusBarColor(Color.BLACK);
         } else {
             dialog = new AlertDialog.Builder(context, R.style.Theme_SocialMeme).create();
+            Window window = dialog.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.WHITE);
         }
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -456,10 +462,15 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageButton addCommentBtn = dialogView.findViewById(R.id.imageButton18);
         ProgressBar recyclerViewProgressBar = dialogView.findViewById(R.id.commentsProgressBar);
         RecyclerView commentsRecyclerView = dialogView.findViewById(R.id.comments_recycler_view);
+        TextView noCommentsMsg = dialogView.findViewById(R.id.textView22);
 
         ArrayList<CommentModel> commentModelArrayList = new ArrayList<>();
         CommentsRecyclerAdapter adapter = new CommentsRecyclerAdapter(commentModelArrayList, context, dialog.getOwnerActivity());
         commentsRecyclerView.setAdapter(adapter);
+
+        AdView mAdView = dialogView.findViewById(R.id.adView6);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setReverseLayout(true);
@@ -499,11 +510,6 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                     commentModel.setAuthorProfilePictureURL("none");
                 }
 
-                // Add comment to RecyclerView
-                commentModelArrayList.add(commentModel);
-                adapter.notifyDataSetChanged();
-                adapter.notifyItemInserted(commentModelArrayList.size() - 1);
-
                 // Update comment counter on post item inside RecyclerView
                 String currentCommentsCountToString = commentsCount.getText().toString();
                 int newCurrentCommentsCountToInt = Integer.parseInt(currentCommentsCountToString) + 1;
@@ -512,9 +518,21 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 // Add comment to Firebase Real-Time database
                 rootRef.child("posts").child(postID).child("comments").child(commendID).setValue(commentModel)
                         .addOnSuccessListener(unused -> {
+
+                            // Add comment to RecyclerView
+                            commentModelArrayList.add(commentModel);
+                            adapter.notifyDataSetChanged();
+                            adapter.notifyItemInserted(commentModelArrayList.size() - 1);
+
                             progressBar.setVisibility(View.GONE);
                             addCommentBtn.setVisibility(View.VISIBLE);
                             commentET.setText("");
+
+                            // Hide no comments warning message if is visible
+                            if (commentModelArrayList.size() == 1) {
+                                noCommentsMsg.setVisibility(View.GONE);
+                            }
+
                         })
                 .addOnFailureListener(e -> {
                     Toast.makeText(context, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -545,6 +563,8 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                         adapter.notifyDataSetChanged();
                         adapter.notifyItemInserted(commentModelArrayList.size() - 1);
                     }
+                }else {
+                    noCommentsMsg.setVisibility(View.VISIBLE);
                 }
                 recyclerViewProgressBar.setVisibility(View.GONE);
             }

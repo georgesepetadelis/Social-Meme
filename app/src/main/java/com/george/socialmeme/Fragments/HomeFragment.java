@@ -56,8 +56,8 @@ public class HomeFragment extends Fragment {
     PostRecyclerAdapter recyclerAdapter;
 
     void loadAllPosts(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
-        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
-        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -70,7 +70,7 @@ public class HomeFragment extends Fragment {
                     }, 1200);
                 }
 
-                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
                     PostModel postModel = new PostModel();
                     postModel.setId(postSnapshot.child("id").getValue(String.class));

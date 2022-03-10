@@ -73,6 +73,7 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
 
+        // Hide delete button if current logged-in user is not the comment author
         if (!commentsList.get(position).getAuthor().equals(user.getUid())) {
             viewHolder.deleteCommentBtn.setVisibility(View.INVISIBLE);
         }
@@ -87,6 +88,7 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
 
                         // Remove comment from Real-Time DB
                         postsRef.child(commentsList.get(position).getPostID())
+                                .child("comments")
                                 .child(commentsList.get(position).getCommentID())
                                 .removeValue()
                                 .addOnCompleteListener(task -> {

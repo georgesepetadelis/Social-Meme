@@ -44,7 +44,6 @@ public class NewPostFragment extends Fragment {
     final private FirebaseUser user = mAuth.getCurrentUser();
     LoadingDialog loadingDialog;
 
-
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -100,9 +99,7 @@ public class NewPostFragment extends Fragment {
             }
 
             Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-            startActivity(new Intent(getActivity(), HomeActivity.class));
-            CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+            HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
         })).addOnProgressListener(snapshot -> loadingDialog.show())
                 .addOnFailureListener(e -> {

@@ -230,8 +230,6 @@ public class MyProfileFragment extends Fragment {
 
         if (!HomeActivity.anonymous) {
 
-            progressDialog.show();
-
             userRef = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
 
             // Set username
@@ -282,8 +280,6 @@ public class MyProfileFragment extends Fragment {
                 @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                    progressDialog.hide();
 
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 

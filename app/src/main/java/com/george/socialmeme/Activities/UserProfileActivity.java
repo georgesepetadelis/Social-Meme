@@ -504,7 +504,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
 
                 recyclerAdapter.notifyDataSetChanged();
-
                 loadingDialog.hide();
 
             }
@@ -594,7 +593,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 Toast.makeText(UserProfileActivity.this, "User blocked", Toast.LENGTH_SHORT).show();
                 onBackPressed();
             }else {
-                Toast.makeText(UserProfileActivity.this, "Can't block this user", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserProfileActivity.this, "Error: Can't block this user", Toast.LENGTH_SHORT).show();
             }
         });
     }
