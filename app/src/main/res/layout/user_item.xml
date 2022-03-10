@@ -12,6 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/cardBackgroundColor"
         android:padding="8dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -33,7 +34,7 @@
             android:text="George Sepetadelis"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="?attr/textFillColor"
             app:layout_constraintStart_toEndOf="@+id/circleImageView"
             app:layout_constraintTop_toTopOf="@+id/circleImageView" />
 
@@ -43,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="30 Followers"
+            android:textColor="?attr/titleTextColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/textView23"
             app:layout_constraintTop_toBottomOf="@+id/textView23" />

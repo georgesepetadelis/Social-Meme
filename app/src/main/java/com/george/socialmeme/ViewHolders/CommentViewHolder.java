@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
 import com.george.socialmeme.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -18,14 +19,14 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
 
     public CircleImageView profilePicture;
     public TextView usernameTV, commentContent;
-    public CardView itemContainer;
+    public ImageButton deleteCommentBtn;
 
     public CommentViewHolder(@NonNull View itemView) {
         super(itemView);
         profilePicture = itemView.findViewById(R.id.circleImageView3);
         usernameTV = itemView.findViewById(R.id.textView65);
         commentContent = itemView.findViewById(R.id.textView69);
-        itemContainer = itemView.findViewById(R.id.commentItemContainer);
+        deleteCommentBtn = itemView.findViewById(R.id.delete_comment_btn);
 
     }
 

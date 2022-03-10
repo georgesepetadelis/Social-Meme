@@ -337,10 +337,6 @@ public class UserProfileActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-
         postsOfTheMonthInfo.setOnClickListener(view -> {
             Intent intent = new Intent(UserProfileActivity.this, PostsOfTheMonthActivity.class);
             startActivity(intent);
@@ -401,6 +397,15 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
 
                 String profilePictureURL = "none";
+
+                // Show report/block options only
+                // if this profile is not the current
+                // logged-in user profile
+                if (!userID.equals(user.getUid())) {
+                    Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                    toolbar.setTitle("");
+                    setSupportActionBar(toolbar);
+                }
 
                 if (snapshot.child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
                     followBtn.setVisibility(View.GONE);
