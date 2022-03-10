@@ -52,13 +52,12 @@ public class HomeFragment extends Fragment {
     boolean isSearchOpen = false;
     private EditText searchView;
     ArrayList<PostModel> postModelArrayList;
-    ArrayList<PostModel> loadedPostsArrayList;
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
 
-    void loadAllPosts(View fragmentView) {
-        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
-        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    void loadAllPosts(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -66,12 +65,26 @@ public class HomeFragment extends Fragment {
                     new Handler().postDelayed(() -> {
                         fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
                         HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setEnabled(true);
                         HomeActivity.showLoadingScreen = false;
                     }, 1200);
                 }
 
-                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    PostModel postModel = postSnapshot.getValue(PostModel.class);
+                for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+
+                    PostModel postModel = new PostModel();
+                    postModel.setId(postSnapshot.child("id").getValue(String.class));
+                    postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                    postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                    postModel.setName(postSnapshot.child("name").getValue(String.class));
+                    postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                    postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                    if (postSnapshot.child("comments").exists()) {
+                        postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                    }else {
+                        postModel.setCommentsCount("0");
+                    }
 
                     if (!HomeActivity.anonymous) {
                         // Show post in recycler adapter only if the user is not blocked
@@ -81,8 +94,7 @@ public class HomeFragment extends Fragment {
                     }else {
                         postModelArrayList.add(postModel);
                     }
-
-                    recyclerAdapter.notifyDataSetChanged();
+                    recyclerAdapter.notifyItemInserted(postModelArrayList.size() -1);
                 }
 
                 // Add post's of the month view as RecyclerView item
@@ -90,7 +102,7 @@ public class HomeFragment extends Fragment {
                 PostModel postsOfTheMonthView = new PostModel();
                 postsOfTheMonthView.setPostType("postsOfTheMonth");
                 postModelArrayList.add(postsOfTheMonthView);
-                recyclerAdapter.notifyDataSetChanged();
+                recyclerAdapter.notifyItemInserted(postModelArrayList.size() -1);
 
                 // Reverse elements inside postModelArrayList
                 // to show items inside RecyclerView reversed
@@ -130,8 +142,6 @@ public class HomeFragment extends Fragment {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
-
-        loadedPostsArrayList = new ArrayList<>();
         postModelArrayList = new ArrayList<>();
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -166,16 +176,17 @@ public class HomeFragment extends Fragment {
         // Reload data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            loadAllPosts(view);
+            loadAllPosts(view, swipeRefreshLayout);
             swipeRefreshLayout.setRefreshing(false);
         });
 
         if (HomeActivity.showLoadingScreen) {
             HomeActivity.bottomNavBar.setVisibility(View.GONE);
+            swipeRefreshLayout.setEnabled(false);
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
         }
 
-        loadAllPosts(view);
+        loadAllPosts(view, swipeRefreshLayout);
 
         searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

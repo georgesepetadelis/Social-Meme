@@ -158,11 +158,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="65dp"
                 android:nestedScrollingEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView20"
                 tools:itemCount="1"
-                tools:listitem="@layout/post_item" />
+                tools:listitem="@layout/image_post_item" />
 
             <TextView
                 android:id="@+id/textView20"

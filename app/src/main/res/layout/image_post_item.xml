@@ -63,7 +63,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_thumb_up_filled"
+                app:srcCompat="@drawable/ic_like_filled"
                 tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             <ImageButton
@@ -72,10 +72,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:background="@null"
+                android:foreground="?selectableItemBackgroundBorderless"
                 app:layout_constraintBottom_toBottomOf="@+id/like_counter"
                 app:layout_constraintStart_toEndOf="@+id/like_counter"
                 app:layout_constraintTop_toTopOf="@+id/like_counter"
-                app:srcCompat="@drawable/ic_comment" />
+                app:srcCompat="@drawable/ic_comment_small" />
 
             <TextView
                 android:id="@+id/textView63"
@@ -87,8 +88,34 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/show_comments_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/show_comments_btn"
                 app:layout_constraintTop_toTopOf="@+id/show_comments_btn" />
+
+            <View
+                android:id="@+id/openCommentsViewImageItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:foreground="?selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="@+id/show_comments_btn"
+                app:layout_constraintEnd_toEndOf="@+id/textView63"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/show_comments_btn"
+                app:layout_constraintTop_toTopOf="@+id/show_comments_btn" />
+
+            <ImageButton
+                android:id="@+id/imageButton13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView63"
+                app:layout_constraintStart_toEndOf="@+id/textView63"
+                app:layout_constraintTop_toTopOf="@+id/textView63"
+                android:background="?attr/cardBackgroundColor"
+                android:padding="8dp"
+                android:foreground="?selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_share" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

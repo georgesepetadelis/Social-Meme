@@ -14,15 +14,14 @@ import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FollowingAndFollowersRecyclerAdapter extends RecyclerView.Adapter<FollowingAndFollowersRecyclerAdapter.ViewHolder> {
+public class FollowerInfoRecyclerAdapter extends RecyclerView.Adapter<FollowerInfoRecyclerAdapter.ViewHolder> {
 
     Context context;
     List<UserModel> usersArrayList;
 
-    public FollowingAndFollowersRecyclerAdapter(Context context, List<UserModel> usersArrayList) {
+    public FollowerInfoRecyclerAdapter(Context context, List<UserModel> usersArrayList) {
         this.context = context;
         this.usersArrayList = usersArrayList;
     }
@@ -31,20 +30,20 @@ public class FollowingAndFollowersRecyclerAdapter extends RecyclerView.Adapter<F
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
-        return new FollowingAndFollowersRecyclerAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         if (usersArrayList.get(position).getProfilePictureURL().equals("none")) {
-            holder.profilePicture.setImageResource(R.drawable.profile_icon);
+            holder.profilePicture.setImageResource(R.drawable.user);
         }else {
             Picasso.get().load(usersArrayList.get(position).getProfilePictureURL()).into(holder.profilePicture);
         }
 
         holder.username.setText(usersArrayList.get(position).getUsername());
-        holder.followers.setText(usersArrayList.get(position).getFollowers() + " Followers");
+        holder.followers.setText(usersArrayList.get(position).getFollowers());
 
     }
 
@@ -53,7 +52,7 @@ public class FollowingAndFollowersRecyclerAdapter extends RecyclerView.Adapter<F
         return usersArrayList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView profilePicture;
         TextView username, followers;

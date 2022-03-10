@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutDescription="@xml/activity_splash_scene"
+    android:background="?attr/background"
     tools:context=".Activities.SplashScreenActivity">
 
     <ImageView
@@ -23,8 +24,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="224dp"
         android:text="Social Meme"
-        android:textColor="#0411FF"
-        android:textSize="33sp"
+        android:textColor="@color/main"
+        android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,6 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="By George Sepetadelis"
+        android:textColor="?attr/textFillColor"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

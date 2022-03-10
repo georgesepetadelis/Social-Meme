@@ -1,8 +1,11 @@
 package com.george.socialmeme.Adapters;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -57,12 +60,12 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == 1) {
-            return new VideoViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.post_video_item, parent, false));
+            return new VideoViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.video_post_item, parent, false));
         }
         if (viewType == 2) {
             return new PostsOfTheMonthViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_of_the_month_view_item, parent, false));
         }
-        return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.post_item, parent, false));
+        return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_post_item, parent, false));
     }
 
     @Override
@@ -90,11 +93,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         // check if current post is liked from this user
                         if (snapshot.child(videoViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
-                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
+                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
 
                         } else {
                             // post is not liked from this user
-                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_thump_up_outline);
+                            videoViewHolder.like_btn.setImageResource(R.drawable.ic_like);
                         }
                     } else {
                         // disable like button
@@ -115,6 +118,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             videoViewHolder.userID = postList.get(position).getAuthorID();
             videoViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             videoViewHolder.videoURL = postList.get(position).getImgUrl();
+            videoViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
             // Load video source
             ExoPlayer player = new ExoPlayer.Builder(context).build();
@@ -131,6 +135,12 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 }
             }
 
+            videoViewHolder.shareBtn.setOnClickListener(view -> {
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("post_url", postList.get(position).getImgUrl());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Video URL copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
 
         } if (postList.get(position).getPostType().equals("image")) {
 
@@ -147,14 +157,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         // check if current post is liked from this user
                         if (snapshot.child(imageViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
-                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_thumb_up_filled);
+                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
 
                         } else {
                             // post is not liked from this user
-                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_thump_up_outline);
+                            imageViewHolder.like_btn.setImageResource(R.drawable.ic_like);
                         }
                     } else {
-                        // disable like button
                         imageViewHolder.like_btn.setEnabled(false);
                     }
 
@@ -172,6 +181,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             imageViewHolder.username.setText(postList.get(position).getName());
             imageViewHolder.userID = postList.get(position).getAuthorID();
             imageViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
+            imageViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
             Picasso.get().load(postList.get(position).getImgUrl()).into(imageViewHolder.postImg);
             imageViewHolder.postImageURL = postList.get(position).getImgUrl();
@@ -183,6 +193,14 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                     Glide.with(context).load(profilePictureUrl).into(imageViewHolder.profileImage);
                 }
             }
+
+            imageViewHolder.shareBtn.setOnClickListener(view -> {
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("post_url", postList.get(position).getImgUrl());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Image URL copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+
         }
 
     }

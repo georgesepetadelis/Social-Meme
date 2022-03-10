@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -47,13 +48,30 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (isNightModeEnabled()) {
+            Resources.Theme theme = super.getTheme();
+            theme.applyStyle(R.style.AppTheme_Base_Night, true);
+            // Update status bar color
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.BLUE);
+        }else {
+            // Update status bar color
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.WHITE);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.WHITE);
 
         new Handler().postDelayed(() -> {
 

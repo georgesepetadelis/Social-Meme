@@ -36,10 +36,11 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 import java.util.ArrayList;
 
+import io.alterac.blurkit.BlurLayout;
+
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
-    public static boolean isDarkModeEnabled;
     public static boolean showLoadingScreen;
     public static boolean showWhatsNewMessage;
     public static ChipNavigationBar bottomNavBar;
@@ -112,7 +113,13 @@ public class HomeActivity extends AppCompatActivity {
                     selectedFragment = new MyProfileFragment();
                     break;
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
+
         });
 
         // Load default fragment
