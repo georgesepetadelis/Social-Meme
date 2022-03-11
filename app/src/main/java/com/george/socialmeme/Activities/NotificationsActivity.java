@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.george.socialmeme.Adapters.NotificationRecyclerAdapter;
@@ -35,7 +36,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class NotificationsActivity extends AppCompatActivity {
 
-    LoadingDialog loadingDialog;
+    ProgressBar progressBar;
 
     @Override
     public void onBackPressed() {
@@ -58,6 +59,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
         ImageButton backBtn = findViewById(R.id.imageButton6);
         ImageButton clearNotificationsBtn = findViewById(R.id.clear_notifications_button);
+        progressBar = findViewById(R.id.notificationsProgressBar);
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
@@ -76,8 +78,7 @@ public class NotificationsActivity extends AppCompatActivity {
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
-        loadingDialog = LoadingDialog.Companion.get(NotificationsActivity.this);
-        loadingDialog.show();
+        progressBar.setVisibility(View.VISIBLE);
 
         clearNotificationsBtn.setOnClickListener(v ->
 
@@ -86,14 +87,12 @@ public class NotificationsActivity extends AppCompatActivity {
                 .setMessage("Are you sure you want to delete your notifications?")
                 .setPositiveButton("Yes", (dialog, which) -> {
 
-                    // show loading dialog
-                    loadingDialog.show();
+                    progressBar.setVisibility(View.GONE);
 
                     // Delete user notifications
                     userRef.child("notifications").removeValue().addOnCompleteListener(task -> {
 
-                        // hide loading dialog
-                        loadingDialog.hide();
+                        progressBar.setVisibility(View.GONE);
 
                         if (task.isSuccessful()) {
                             onBackPressed();
@@ -109,7 +108,7 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                loadingDialog.hide();
+                progressBar.setVisibility(View.GONE);
 
                 if (snapshot.child("notifications").exists()) {
 

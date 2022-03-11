@@ -105,6 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
         nightModeSwitch.setOnClickListener(view -> {
 
             new AlertDialog.Builder(this)
+                    .setCancelable(false)
                     .setTitle("Restart required")
                     .setMessage("You need to restart Social Meme to apply new settings")
                     .setPositiveButton("Restart now", (dialogInterface, i) -> updateNightModeState(true))

@@ -39,9 +39,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:background="@null"
+            android:background="@drawable/ripple_round_action_bar"
+            android:padding="5dp"
             android:clickable="true"
-            android:foreground="?selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/toolbar2"
@@ -117,8 +117,10 @@
                     android:id="@+id/switch1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginEnd="5dp"
+                    android:textColor="@color/main"
+                    android:theme="@style/Theme.SocialMeme"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.511" />
@@ -328,7 +330,7 @@
                     android:id="@+id/textView54"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Give feedback about Social Meme"
+                    android:text="Tell your app suggestions"
                     android:textStyle="bold"
                     android:textColor="?attr/titleTextColor"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView10"
@@ -468,13 +470,12 @@
                     android:id="@+id/textView57"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Donate to Social Meme via PayPal"
+                    android:text="Donate to Social Meme"
                     android:textColor="?attr/titleTextColor"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                     app:layout_constraintStart_toStartOf="@+id/textView59"
-                    app:layout_constraintTop_toBottomOf="@+id/textView56" />
-
+                    app:layout_constraintTop_toBottomOf="@+id/textView59" />
                 <ImageView
                     android:id="@+id/imageView28"
                     android:layout_width="wrap_content"

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -151,6 +152,7 @@ public class MyProfileFragment extends Fragment {
         View showFollowersView = view.findViewById(R.id.showFollowersView_Profile);
         View showFollowingUsersView = view.findViewById(R.id.showFollowingView_Profile);
         ImageButton postsOfTheMonthInfo = view.findViewById(R.id.imageButton9);
+        ProgressBar progressBar = view.findViewById(R.id.progressBar);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -300,8 +302,10 @@ public class MyProfileFragment extends Fragment {
                             postModelArrayList.add(postModel);
                             recyclerAdapter.notifyDataSetChanged();
                         }
-
                     }
+
+                    progressBar.setVisibility(View.GONE);
+
                 }
 
                 @Override
@@ -310,6 +314,7 @@ public class MyProfileFragment extends Fragment {
                 }
             });
         }else {
+            progressBar.setVisibility(View.GONE);
             username.setText("Anonymous User");
             settings.setVisibility(View.GONE);
             profilePicture.setEnabled(false);

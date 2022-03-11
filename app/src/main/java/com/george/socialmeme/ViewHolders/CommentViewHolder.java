@@ -27,7 +27,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         usernameTV = itemView.findViewById(R.id.textView65);
         commentContent = itemView.findViewById(R.id.textView69);
         deleteCommentBtn = itemView.findViewById(R.id.delete_comment_btn);
-
     }
 
 }

@@ -59,7 +59,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:background="@null"
+                android:background="@drawable/ripple_round_card_bg"
+                android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -112,9 +113,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView63"
                 app:layout_constraintStart_toEndOf="@+id/textView63"
                 app:layout_constraintTop_toTopOf="@+id/textView63"
-                android:background="?attr/cardBackgroundColor"
+                android:background="@drawable/ripple_round_card_bg"
                 android:padding="8dp"
-                android:foreground="?selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_share" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -163,8 +163,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:background="@null"
-            android:foreground="?selectableItemBackgroundBorderless"
+            android:background="@drawable/ripple_round_card_bg"
             android:padding="3dp"
             app:layout_constraintBottom_toBottomOf="@+id/view_profile"
             app:layout_constraintEnd_toEndOf="parent"

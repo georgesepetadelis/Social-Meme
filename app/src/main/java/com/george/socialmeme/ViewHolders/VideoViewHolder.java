@@ -67,7 +67,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
     public View openProfileView, openCommentsView;
     public TextView username, like_counter_tv, commentsCount;
     public CircleImageView profilePicture;
-    public ImageButton like_btn, postOptionsButton, shareBtn;
+    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn;
     public boolean isLiked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -158,7 +158,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    void showPostOptionsBottomSheet() {
+    public void showPostOptionsBottomSheet() {
 
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -223,6 +223,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
         commentsCount = itemView.findViewById(R.id.textView71);
         openCommentsView = itemView.findViewById(R.id.openCommentsViewVideoItem);
         shareBtn = itemView.findViewById(R.id.imageButton14);
+        commentsBtn = itemView.findViewById(R.id.imageButton11);
 
         openCommentsView.setOnClickListener(view -> {
             if (!HomeActivity.anonymous) {

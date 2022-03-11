@@ -80,9 +80,17 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             viewHolder.setContext(context);
         }
         if (postList.get(position).getPostType().equals("video")) {
+
             // bind video view holder
             VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
             videoViewHolder.setContext(context);
+
+            if (HomeActivity.anonymous) {
+                videoViewHolder.commentsCount.setVisibility(View.GONE);
+                videoViewHolder.postOptionsButton.setVisibility(View.GONE);
+                videoViewHolder.commentsBtn.setVisibility(View.GONE);
+                videoViewHolder.shareBtn.setVisibility(View.GONE);
+            }
 
             // check if post is liked or not
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -147,6 +155,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             // bind image view holder
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
             imageViewHolder.setContext(context);
+
+            if (HomeActivity.anonymous) {
+                imageViewHolder.commentsCount.setVisibility(View.GONE);
+                imageViewHolder.show_comments_btn.setVisibility(View.GONE);
+                imageViewHolder.showPostOptionsButton.setVisibility(View.GONE);
+                imageViewHolder.shareBtn.setVisibility(View.GONE);
+            }
 
             // check if post is liked or not
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -3,6 +3,7 @@ package com.george.socialmeme.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -43,6 +44,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -54,6 +56,12 @@ public class HomeFragment extends Fragment {
     ArrayList<PostModel> postModelArrayList;
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
+
+    void openDonateURL() {
+        Uri uri = Uri.parse("https://PayPal.me/GSepetadelis");
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
 
     void loadAllPosts(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -184,6 +192,33 @@ public class HomeFragment extends Fragment {
             HomeActivity.bottomNavBar.setVisibility(View.GONE);
             swipeRefreshLayout.setEnabled(false);
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
+        }
+
+        // Display donate dialog (1 in 6 cases)
+        // except the user is singed in anonymously
+        if (!HomeActivity.anonymous) {
+            int randomNum = ThreadLocalRandom.current().nextInt(0, 5 + 1);
+            if (randomNum == 1) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Can you buy me a coffee? :)")
+                        .setMessage(getString(R.string.donate_msg))
+                        .setPositiveButton("Donate", (dialogInterface, i) ->
+                                openDonateURL())
+                        .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .setCancelable(false)
+                        .setIcon(R.drawable.ic_coffee)
+                        .show();
+            }
+        }else {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Can you buy me a coffee? :)")
+                    .setMessage(getString(R.string.donate_msg))
+                    .setPositiveButton("Donate", (dialogInterface, i) ->
+                            openDonateURL())
+                    .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .setCancelable(false)
+                    .setIcon(R.drawable.ic_coffee)
+                    .show();
         }
 
         loadAllPosts(view, swipeRefreshLayout);

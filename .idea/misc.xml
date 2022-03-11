@@ -31,9 +31,7 @@
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/ActivitiesLayouts/drawable/ic_close_black.xml" value="0.22" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/ActivitiesLayouts/drawable/ic_comment.xml" value="0.22" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/ActivitiesLayouts/drawable/ic_wave_header.xml" value="0.2525" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable-v24/progress_bar_style_gradient.xml" value="0.22" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/bottom_nav_style.xml" value="0.2145" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/bottom_sheet_background.xml" value="0.1665" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/circle_ripple_effect.xml" value="0.1675" />
@@ -53,10 +51,8 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_home.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_login.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_notifications.xml" value="0.25" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_posts_of_the_month.xml" value="0.33" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_privacy_policy.xml" value="0.27586206896551724" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_settings.xml" value="0.25" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_splash.xml" value="0.2936708860759494" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_top_posts.xml" value="0.23513513513513515" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_user_profile.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_welcome.xml" value="0.24954710144927536" />
@@ -66,19 +62,18 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/fragment_my_profile.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/fragment_new_post.xml" value="0.271875" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/image_post_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/notification_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_options_bottom_sheet.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/posts_of_the_month_view_item.xml" value="0.27586206896551724" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/user_item.xml" value="0.29743589743589743" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/video_post_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/menu/bottom_nav.xml" value="0.27586206896551724" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/menu/user_profile_options_menu.xml" value="0.25" />
+        <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_arrow_forward.xml" value="0.1265" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_upload.xml" value="0.211" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_video.xml" value="0.211" />
+        <entry key="app/src/main/res/drawable-v24/progress_bar_style_gradient.xml" value="0.1265" />
         <entry key="app/src/main/res/drawable/bottom_nav_style.xml" value="0.30512820512820515" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.211" />
         <entry key="app/src/main/res/drawable/bug_icon.xml" value="0.20970464135021097" />
@@ -100,6 +95,10 @@
         <entry key="app/src/main/res/drawable/options_sdialog_bg.xml" value="0.1305" />
         <entry key="app/src/main/res/drawable/policy_icon.xml" value="0.20970464135021097" />
         <entry key="app/src/main/res/drawable/profile_icon.xml" value="0.20970464135021097" />
+        <entry key="app/src/main/res/drawable/ripple_round_action_bar.xml" value="0.1265" />
+        <entry key="app/src/main/res/drawable/ripple_round_bg.xml" value="0.1265" />
+        <entry key="app/src/main/res/drawable/ripple_round_card_bg.xml" value="0.1265" />
+        <entry key="app/src/main/res/drawable/ripple_round_header.xml" value="0.1265" />
         <entry key="app/src/main/res/drawable/search_bar_stye.xml" value="0.2641350210970464" />
         <entry key="app/src/main/res/layout/activity_account_informtion.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/activity_account_settings.xml" value="0.25" />
@@ -110,6 +109,7 @@
         <entry key="app/src/main/res/layout/activity_notifications.xml" value="0.19662447257383966" />
         <entry key="app/src/main/res/layout/activity_password_reset.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/activity_privacy.xml" value="0.10085470085470086" />
+        <entry key="app/src/main/res/layout/activity_privacy_policy.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_security.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/activity_select_profile_image.xml" value="0.2918803418803419" />
@@ -118,20 +118,25 @@
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.15" />
-        <entry key="app/src/main/res/layout/comment_item.xml" value="0.23802083333333332" />
+        <entry key="app/src/main/res/layout/comment_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/comments_bottom_sheet.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/comments_dialog_fragment.xml" value="0.21" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.22849462365591397" />
         <entry key="app/src/main/res/layout/fragment_my_profile.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_new_post.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/image_post_item.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/layout/loading_dialog.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/notification_item.xml" value="0.25427350427350426" />
         <entry key="app/src/main/res/layout/post_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/post_options_bottom_sheet.xml" value="0.2" />
         <entry key="app/src/main/res/layout/post_options_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/post_video_item.xml" value="0.20092592592592592" />
+        <entry key="app/src/main/res/layout/posts_of_the_month_view_item.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/layout/splash_screen.xml" value="0.13333333333333333" />
         <entry key="app/src/main/res/layout/user_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/user_profile_item.xml" value="0.25427350427350426" />
+        <entry key="app/src/main/res/layout/video_post_item.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/menu/bottom_nav.xml" value="0.2918803418803419" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1141025641025641" />
       </map>

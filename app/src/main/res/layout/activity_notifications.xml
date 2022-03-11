@@ -49,12 +49,12 @@
         android:id="@+id/imageButton6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:background="@null"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ripple_round_action_bar"
+        android:padding="8dp"
         android:clickable="true"
         android:elevation="12dp"
         android:focusable="true"
-        android:foreground="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_back"
         app:layout_constraintBottom_toTopOf="@+id/notifications_recycler_view"
         app:layout_constraintStart_toStartOf="@+id/toolbar4"
@@ -72,5 +72,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/delete_icon" />
+
+    <ProgressBar
+        android:id="@+id/notificationsProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
+        android:indeterminateDuration="500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notifications_recycler_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

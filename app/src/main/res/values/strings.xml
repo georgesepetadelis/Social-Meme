@@ -10,4 +10,7 @@
         The 3rd most liked post: <b>Bronze Trophy</b>\n
         The trophies will be awarded every 1st of the month
     </string>
+    <string name="donate_msg">
+        The purpose of this application is to make people laugh and have a good time in their free time. I make a great effort to maintain this application by paying attention to the smallest detail and listening to the opinion of users. I would appreciate it if you made a donation (of any amount) to help me continue the hard work.
+    </string>
 </resources>

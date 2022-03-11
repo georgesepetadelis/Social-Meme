@@ -72,36 +72,12 @@
             app:layout_constraintStart_toStartOf="@+id/andExoPlayerView">
 
             <ImageButton
-                android:id="@+id/imageButton11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:background="@null"
-                android:foreground="?selectableItemBackgroundBorderless"
-                app:layout_constraintBottom_toBottomOf="@+id/textView36"
-                app:layout_constraintStart_toEndOf="@+id/textView36"
-                app:layout_constraintTop_toTopOf="@+id/textView36"
-                app:srcCompat="@drawable/ic_comment_small" />
-
-            <TextView
-                android:id="@+id/textView71"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="0"
-                android:textColor="?attr/titleTextColor"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imageButton11"
-                app:layout_constraintStart_toEndOf="@+id/imageButton11"
-                app:layout_constraintTop_toTopOf="@+id/imageButton11" />
-
-            <ImageButton
                 android:id="@+id/imageButton8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:background="@null"
+                android:padding="8dp"
+                android:background="@drawable/ripple_round_card_bg"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -120,28 +96,55 @@
                 app:layout_constraintStart_toEndOf="@+id/imageButton8"
                 app:layout_constraintTop_toTopOf="@+id/imageButton8" />
 
-            <View
-                android:id="@+id/openCommentsViewVideoItem"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:foreground="?selectableItemBackgroundBorderless"
-                app:layout_constraintBottom_toBottomOf="@+id/imageButton11"
-                app:layout_constraintEnd_toEndOf="@+id/textView71"
-                app:layout_constraintStart_toStartOf="@+id/imageButton11"
-                app:layout_constraintTop_toTopOf="@+id/imageButton11" />
-
             <ImageButton
                 android:id="@+id/imageButton14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
+                android:background="@drawable/ripple_round_card_bg"
+                android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView71"
                 app:layout_constraintStart_toEndOf="@+id/textView71"
                 app:layout_constraintTop_toTopOf="@+id/textView71"
-                android:foreground="?selectableItemBackgroundBorderless"
-                android:background="?attr/cardBackgroundColor"
-                android:padding="8dp"
                 app:srcCompat="@drawable/ic_share" />
+
+            <ImageButton
+                android:id="@+id/imageButton11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:background="@drawable/ripple_round_card_bg"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="@+id/textView36"
+                app:layout_constraintStart_toEndOf="@+id/textView36"
+                app:layout_constraintTop_toTopOf="@+id/textView36"
+                app:srcCompat="@drawable/ic_comment_small" />
+
+            <TextView
+                android:id="@+id/textView71"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="0"
+                android:textColor="?attr/titleTextColor"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageButton11"
+                app:layout_constraintStart_toEndOf="@+id/imageButton11"
+                app:layout_constraintTop_toTopOf="@+id/imageButton11" />
+
+            <View
+                android:id="@+id/openCommentsViewVideoItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:foreground="?selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="@+id/imageButton11"
+                app:layout_constraintEnd_toStartOf="@+id/imageButton14"
+                app:layout_constraintStart_toEndOf="@+id/textView36"
+                app:layout_constraintTop_toTopOf="@+id/imageButton11" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -150,10 +153,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:background="@null"
+            android:background="@drawable/ripple_round_card_bg"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?selectableItemBackgroundBorderless"
             android:padding="3dp"
             app:layout_constraintBottom_toTopOf="@+id/andExoPlayerView"
             app:layout_constraintEnd_toEndOf="parent"
