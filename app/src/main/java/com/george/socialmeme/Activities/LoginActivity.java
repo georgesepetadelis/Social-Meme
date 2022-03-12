@@ -69,7 +69,6 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             // Google Sign In was successful, authenticate with Firebase
                             GoogleSignInAccount account = task.getResult(ApiException.class);
-                            Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                             firebaseAuthWithGoogle(account.getIdToken());
                         } catch (ApiException e) {
                             progressDialog.hide();
@@ -81,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     } else {
                         progressDialog.hide();
-                        Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Error: Can't sign-in with google right now. Try again later", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -94,7 +93,6 @@ public class LoginActivity extends AppCompatActivity {
 
     void singIn(String email, String password) {
 
-        // show progress dialog
         progressDialog.show();
 
         mAuth.signInWithEmailAndPassword(email.trim(), password).addOnSuccessListener(authResult -> {

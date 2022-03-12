@@ -12,7 +12,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +80,6 @@ public class NewPostFragment extends Fragment {
     private void uploadPostToFirebase(Uri uri, String type) {
 
         String postId = postsRef.push().getKey();
-        final String[] audioName = {"AudioName"};
         AtomicBoolean uploadCancelled = new AtomicBoolean(false);
 
         // Set a name for the audio if the user uploading an audio file
@@ -90,12 +91,42 @@ public class NewPostFragment extends Fragment {
             audioNameET.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
             audioNameET.setHint("Write a name");
             dialog.setView(audioNameET);
+
             dialog.setPositiveButton("Ok", (dialogInterface, i) -> {
                 if (!audioNameET.getText().toString().isEmpty()) {
-                    audioName[0] = audioNameET.getText().toString();
 
+                    StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
+                    fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
+                        loadingDialog.hide();
 
+                        UploadPostModel model = new UploadPostModel(uri1.toString());
+                        postsRef.child(postId).setValue(model);
+                        postsRef.child(postId).child("name").setValue(user.getDisplayName());
+                        postsRef.child(postId).child("likes").setValue("0");
+                        postsRef.child(postId).child("id").setValue(postId);
+                        postsRef.child(postId).child("postType").setValue(type);
 
+                        if (!audioNameET.getText().toString().isEmpty()) {
+                            postsRef.child(postId).child("audioName").setValue(audioNameET.getText().toString());
+                        }
+
+                        if (user.getPhotoUrl() != null) {
+                            postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                        } else {
+                            postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
+                        }
+                        Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+
+                    })).addOnProgressListener(snapshot -> loadingDialog.show())
+                            .addOnFailureListener(e -> {
+                                loadingDialog.hide();
+                                Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
+
+                } else {
+                    Toast.makeText(getActivity(), "Please provide a name for your sound and try again", Toast.LENGTH_LONG).show();
+                    dialogInterface.dismiss();
                 }
             }).setNegativeButton("Cancel", (dialogInterface, i) -> {
                 uploadCancelled.set(true);
@@ -105,9 +136,7 @@ public class NewPostFragment extends Fragment {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(550, FrameLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(50, 6, 30, 6);
             audioNameET.setLayoutParams(params);
-        }
-
-        if (!uploadCancelled.get()) {
+        } else {
 
             StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
             fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
@@ -119,10 +148,6 @@ public class NewPostFragment extends Fragment {
                 postsRef.child(postId).child("likes").setValue("0");
                 postsRef.child(postId).child("id").setValue(postId);
                 postsRef.child(postId).child("postType").setValue(type);
-
-                if (mediaType.equals("audio")) {
-                    postsRef.child(postId).child("audioName").setValue(audioName[0]);
-                }
 
                 if (user.getPhotoUrl() != null) {
                     postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
@@ -138,8 +163,6 @@ public class NewPostFragment extends Fragment {
                         Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     });
 
-        }else {
-            Toast.makeText(getActivity(), "Upload cancelled!", Toast.LENGTH_SHORT).show();
         }
     }
 

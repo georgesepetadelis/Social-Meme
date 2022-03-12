@@ -24,7 +24,6 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="fitStart"
-            android:src="@drawable/loading_photo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -171,6 +170,21 @@
             app:layout_constraintStart_toEndOf="@+id/view_profile"
             app:layout_constraintTop_toTopOf="@+id/view_profile"
             app:srcCompat="@drawable/ic_more" />
+
+        <ProgressBar
+            android:id="@+id/progressBar3"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:layout_marginBottom="92dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
+            android:indeterminateDuration="500"
+            app:layout_constraintBottom_toBottomOf="@+id/post_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/post_image"
+            app:layout_constraintTop_toTopOf="@+id/post_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

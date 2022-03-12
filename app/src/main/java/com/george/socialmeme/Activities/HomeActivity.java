@@ -39,8 +39,6 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 import java.util.ArrayList;
 
-import io.alterac.blurkit.BlurLayout;
-
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
@@ -127,19 +125,20 @@ public class HomeActivity extends AppCompatActivity {
                     .setMessage("Social Meme detected that you have enabled night mode on your device. " +
                             "You want to enable night mode in Social Meme too?")
                     .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
-                        askForNightModeSharedPrefEditor.apply();
                         enableNightMode();
                         finish();
                         startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
                     })
-                    .setNegativeButton("No, thanks", (dialogInterface, i) ->
-                    new AlertDialog.Builder(HomeActivity.this)
-                            .setTitle("Nigh mode")
-                            .setIcon(R.drawable.moon)
-                            .setMessage("Remember that you can always enable night mode in Social Meme settings")
-                            .setNegativeButton("Ok", (dialogInterface1, i1) -> dialogInterface1.dismiss())
-                            .show()).show();
+                    .setNegativeButton("No, thanks", (dialogInterface, i) -> {
+                        askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
+                        askForNightModeSharedPrefEditor.apply();
+                        new AlertDialog.Builder(HomeActivity.this)
+                                .setTitle("Nigh mode")
+                                .setIcon(R.drawable.moon)
+                                .setMessage("Remember that you can always enable night mode in Social Meme settings")
+                                .setNegativeButton("Ok", (dialogInterface1, i1) -> dialogInterface1.dismiss())
+                                .show();
+                    }).show();
         }
 
         bottomNavBar.setOnItemSelectedListener(id -> {

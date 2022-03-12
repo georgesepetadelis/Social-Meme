@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.hugomatilla.audioplayerview.AudioPlayerView;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -94,7 +95,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
         if (postList.get(position).getPostType().equals("audio")) {
 
-            // bind video view holder
+            // bind audio view holder
             AudioItemViewHolder audioViewHolder = (AudioItemViewHolder) holder;
             audioViewHolder.setContext(context);
 
@@ -139,6 +140,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             audioViewHolder.authorID = postList.get(position).getAuthorID();
             audioViewHolder.likesCounter.setText(postList.get(position).getLikes());
             audioViewHolder.audioURL = postList.get(position).getImgUrl();
+            audioViewHolder.audioName.setText(postList.get(position).getAudioName());
             audioViewHolder.commentsCounter.setText(postList.get(position).getCommentsCount());
 
             // Load audio source
@@ -282,7 +284,17 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             imageViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             imageViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
-            Picasso.get().load(postList.get(position).getImgUrl()).into(imageViewHolder.postImg);
+            Picasso.get().load(postList.get(position).getImgUrl()).into(imageViewHolder.postImg, new Callback() {
+                @Override
+                public void onSuccess() {
+                    imageViewHolder.loadingProgressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Toast.makeText(context, "Can't load this image: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
             imageViewHolder.postImageURL = postList.get(position).getImgUrl();
 
             // Load profile picture

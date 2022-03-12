@@ -72,6 +72,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     public TextView username, like_counter_tv, commentsCount;
     public ImageView postImg;
     public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn;
+    public ProgressBar loadingProgressBar;
     public CircleImageView profileImage;
     public boolean isPostLiked = false;
     public ConstraintLayout openUserProfileView;
@@ -335,6 +336,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         openUserProfileView = itemView.findViewById(R.id.view_profile);
         commentsCount = itemView.findViewById(R.id.textView63);
         shareBtn = itemView.findViewById(R.id.imageButton13);
+        loadingProgressBar = itemView.findViewById(R.id.progressBar3);
         View openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
 
         showPostOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
