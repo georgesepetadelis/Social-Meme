@@ -133,7 +133,6 @@ public class SettingsActivity extends AppCompatActivity {
                 if (!feedback_et.getText().toString().isEmpty()) {
                     feedbackRef.child(user.getUid()).child(feedback_et.getText().toString());
                 }
-
                 dialogInterface.dismiss();
                 Toast.makeText(SettingsActivity.this, "Feedback report succeed!", Toast.LENGTH_SHORT).show();
             }).setNegativeButton("Cancel", (dialogInterface, i) -> {

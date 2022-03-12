@@ -108,4 +108,7 @@ dependencies {
     // Blur view
     implementation 'io.alterac.blurkit:blurkit:1.1.0'
 
+    // Audio player
+    implementation 'com.github.HugoMatilla:AudioPlayerView:v1.0.1';
+
 }

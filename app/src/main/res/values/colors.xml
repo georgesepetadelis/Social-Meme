@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="main">#0099ff</color>
-    <color name="main_dark">#002776</color>
+    <color name="main_dark">#313E52</color>
 
     <!--Night Color-->
     <color name="colorPrimaryNight">#212121</color>

@@ -62,7 +62,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             // Update status bar color
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.BLUE);
+            window.setStatusBarColor(Color.GRAY);
         }else {
             // Update status bar color
             Window window = getWindow();
@@ -84,15 +84,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 } else {
-
                     initializeNightModeSharedPref();
-
-                    SharedPreferences sharedPref = getSharedPreferences("current_app_version", Context.MODE_PRIVATE);
-                    if (!sharedPref.getString("current_app_version", "2.0.6").equals(BuildConfig.VERSION_NAME)) {
-                        saveCurrentAppVersionToSharedPrefs();
-                        HomeActivity.showWhatsNewMessage = true;
-                    }
-
                     HomeActivity.showLoadingScreen = true;
                     startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
                 }

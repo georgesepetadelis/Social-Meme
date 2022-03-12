@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
         startActivity(intent);
     }
 
-    void loadAllPosts(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
+    void fetchPostsFromDB(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -87,6 +87,10 @@ public class HomeFragment extends Fragment {
                     postModel.setName(postSnapshot.child("name").getValue(String.class));
                     postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
                     postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                    if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
+                        postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
+                    }
 
                     if (postSnapshot.child("comments").exists()) {
                         postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
@@ -184,7 +188,7 @@ public class HomeFragment extends Fragment {
         // Reload data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            loadAllPosts(view, swipeRefreshLayout);
+            fetchPostsFromDB(view, swipeRefreshLayout);
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -221,7 +225,7 @@ public class HomeFragment extends Fragment {
                     .show();
         }
 
-        loadAllPosts(view, swipeRefreshLayout);
+        fetchPostsFromDB(view, swipeRefreshLayout);
 
         searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

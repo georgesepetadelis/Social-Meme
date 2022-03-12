@@ -2,8 +2,11 @@ package com.george.socialmeme.Activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.icu.util.Calendar;
@@ -72,6 +75,14 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    void enableNightMode() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("dark_mode", true);
+        editor.apply();
+        Toast.makeText(this, "Night mode enabled", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -97,6 +108,38 @@ public class HomeActivity extends AppCompatActivity {
 
         if (!notificationBroadcastRegistered) {
             registerDailyNotification();
+        }
+
+        // Detect if system night mode is enabled
+        // to auto enable in-app night mode
+        SharedPreferences askForNightModeSharedPref = getSharedPreferences("asked_night_mode_enable", MODE_PRIVATE);
+        SharedPreferences.Editor askForNightModeSharedPrefEditor = askForNightModeSharedPref.edit();
+        boolean askForEnableNightMode = askForNightModeSharedPref.getBoolean("asked_night_mode_enable", false);
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && !isNightModeEnabled() && !askForEnableNightMode) {
+            // System dark mode is enabled
+            // ask user to enable in-app night mode
+            new AlertDialog.Builder(HomeActivity.this)
+                    .setCancelable(false)
+                    .setTitle("Enable app night mode?")
+                    .setIcon(R.drawable.moon)
+                    .setMessage("Social Meme detected that you have enabled night mode on your device. " +
+                            "You want to enable night mode in Social Meme too?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
+                        askForNightModeSharedPrefEditor.apply();
+                        enableNightMode();
+                        finish();
+                        startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
+                    })
+                    .setNegativeButton("No, thanks", (dialogInterface, i) ->
+                    new AlertDialog.Builder(HomeActivity.this)
+                            .setTitle("Nigh mode")
+                            .setIcon(R.drawable.moon)
+                            .setMessage("Remember that you can always enable night mode in Social Meme settings")
+                            .setNegativeButton("Ok", (dialogInterface1, i1) -> dialogInterface1.dismiss())
+                            .show()).show();
         }
 
         bottomNavBar.setOnItemSelectedListener(id -> {

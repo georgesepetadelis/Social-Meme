@@ -14,14 +14,17 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        tools:replace="android:allowBackup"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@drawable/app_logo"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme"
-        android:dataExtractionRules="@xml/data_extraction_rules">
+        tools:targetApi="s"
+        tools:ignore="DataExtractionRules">
         <activity
             android:name=".Activities.PostsOfTheMonthActivity"
             android:exported="false" />
@@ -51,9 +54,7 @@
         <activity
             android:name=".Activities.SettingsActivity"
             android:exported="false" />
-
         <activity android:name=".Activities.SelectProfileImageActivity" />
-
         <activity
             android:name=".Activities.HomeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
@@ -82,9 +83,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <receiver android:name=".Receivers.DailyNotificationReceiver" />
-
     </application>
 
 </manifest>

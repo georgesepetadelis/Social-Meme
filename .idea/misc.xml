@@ -71,6 +71,7 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/menu/bottom_nav.xml" value="0.27586206896551724" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/menu/user_profile_options_menu.xml" value="0.25" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_arrow_forward.xml" value="0.1265" />
+        <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_info.xml" value="0.1265" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_upload.xml" value="0.211" />
         <entry key="app/src/main/res/ActivitiesLayouts/drawable/ic_video.xml" value="0.211" />
         <entry key="app/src/main/res/drawable-v24/progress_bar_style_gradient.xml" value="0.1265" />
@@ -116,12 +117,14 @@
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_test.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.15" />
+        <entry key="app/src/main/res/layout/audio_post_item.xml" value="0.18" />
         <entry key="app/src/main/res/layout/comment_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/comments_bottom_sheet.xml" value="0.1" />
         <entry key="app/src/main/res/layout/comments_dialog_fragment.xml" value="0.21" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.22849462365591397" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2" />
         <entry key="app/src/main/res/layout/fragment_my_profile.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_new_post.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.2918803418803419" />
