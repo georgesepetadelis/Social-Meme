@@ -15,8 +15,8 @@ android {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 31
-        versionCode 12
-        versionName "2.0.8"
+        versionCode 13
+        versionName "2.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -98,12 +98,12 @@ dependencies {
     implementation 'com.github.ismaeldivita:chip-navigation-bar:1.4.0'
 
     // ExoPlayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.17.0'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.17.0'
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.17.0'
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.17.0'
-    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.17.0'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.17.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.17.1'
 
     // Blur view
     implementation 'io.alterac.blurkit:blurkit:1.1.0'
