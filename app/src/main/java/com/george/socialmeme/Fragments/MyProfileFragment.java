@@ -163,6 +163,7 @@ public class MyProfileFragment extends Fragment {
 
         TextView followersCounter = view.findViewById(R.id.followers_my_profile);
         TextView followingCounter = view.findViewById(R.id.following_my_profile);
+        TextView totalLikesCounter = view.findViewById(R.id.textView76);
 
         TextView goldTrophiesCount = view.findViewById(R.id.gold_trophies_count);
         TextView silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
@@ -238,7 +239,7 @@ public class MyProfileFragment extends Fragment {
             username.setText(user.getDisplayName());
 
             // Load profile picture & following\followers counter and user trophies
-            usersRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @SuppressLint("DefaultLocale")
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -283,6 +284,8 @@ public class MyProfileFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
+                    int totalLikes = 0;
+
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 
                         if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
@@ -293,11 +296,16 @@ public class MyProfileFragment extends Fragment {
                             postModel.setName(postSnapshot.child("name").getValue(String.class));
                             postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
+                            totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
+
                             if (postSnapshot.child("comments").exists()) {
                                 postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
                             }else {
                                 postModel.setCommentsCount("0");
                             }
+
+                            // Set total likes
+                            totalLikesCounter.setText(String.valueOf(totalLikes));
 
                             postModelArrayList.add(postModel);
                             recyclerAdapter.notifyDataSetChanged();

@@ -309,6 +309,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         TextView followersCounter = findViewById(R.id.followers_my_profile3);
         TextView followingCounter = findViewById(R.id.following_my_profile3);
+        TextView totalLikesCounter = findViewById(R.id.textView74);
 
         TextView goldTrophiesCount = findViewById(R.id.gold_trophies_count);
         TextView silverTrophiesCount = findViewById(R.id.silver_trophies_count);
@@ -477,9 +478,12 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
+        // Load user posts and calculate total likes of the user
         postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                int totalLikes = 0;
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 
@@ -490,6 +494,8 @@ public class UserProfileActivity extends AppCompatActivity {
                         postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
                         postModel.setName(postSnapshot.child("name").getValue(String.class));
                         postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                        totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
 
                         if (postSnapshot.child("comments").exists()) {
                             postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
@@ -502,6 +508,9 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
 
                 }
+
+                // Set total likes
+                totalLikesCounter.setText(String.valueOf(totalLikes));
 
                 recyclerAdapter.notifyDataSetChanged();
                 loadingDialog.hide();
