@@ -345,27 +345,31 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         openUserProfileView.setOnClickListener(v -> {
 
             if (!HomeActivity.anonymous) {
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                usersRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snap : snapshot.getChildren()) {
-                            if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                                UserProfileActivity.username = username.getText().toString();
-                                UserProfileActivity.userID = snap.child("id").getValue().toString();
-                                break;
+                if (userID.equals(user.getUid())) {
+                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+                }else {
+                    Intent intent = new Intent(context, UserProfileActivity.class);
+                    usersRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot snap : snapshot.getChildren()) {
+                                if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
+                                    UserProfileActivity.username = username.getText().toString();
+                                    UserProfileActivity.userID = snap.child("id").getValue().toString();
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                context.startActivity(intent);
-                CustomIntent.customType(context, "left-to-right");
+                    context.startActivity(intent);
+                    CustomIntent.customType(context, "left-to-right");
+                }
 
             }
 

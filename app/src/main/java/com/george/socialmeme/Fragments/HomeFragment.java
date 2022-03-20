@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
         startActivity(intent);
     }
 
-    void fetchPostsFromDB(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
+    void fetchAllPostsFromDB(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -188,7 +188,7 @@ public class HomeFragment extends Fragment {
         // Reload data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            fetchPostsFromDB(view, swipeRefreshLayout);
+            fetchAllPostsFromDB(view, swipeRefreshLayout);
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -225,7 +225,7 @@ public class HomeFragment extends Fragment {
                     .show();
         }
 
-        fetchPostsFromDB(view, swipeRefreshLayout);
+        fetchAllPostsFromDB(view, swipeRefreshLayout);
 
         searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

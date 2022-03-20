@@ -71,16 +71,36 @@ public class NewPostFragment extends Fragment {
             });
 
 
-    private String getFileExtension(Uri mUri) {
+    private String getFileExtension(Uri uri) {
         ContentResolver cr = getActivity().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cr.getType(mUri));
+        return mime.getExtensionFromMimeType(cr.getType(uri));
     }
 
     private void uploadPostToFirebase(Uri uri, String type) {
 
         String postId = postsRef.push().getKey();
         AtomicBoolean uploadCancelled = new AtomicBoolean(false);
+
+        if (type.equals("text")) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
+                    .setTitle("Upload your joke")
+                    .setCancelable(false);
+
+            // Title edit text
+            final EditText jokeTitle = new EditText(getActivity());
+            jokeTitle.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+            jokeTitle.setHint("Title");
+
+            // Content edit text
+            final EditText jokeContent = new EditText(getActivity());
+            jokeTitle.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+            jokeTitle.setHint("Write your joke");
+
+            dialog.setView(jokeTitle);
+            dialog.setView(jokeContent);
+            dialog.show();
+        }
 
         // Set a name for the audio if the user uploading an audio file
         if (type.equals("audio")) {
@@ -140,6 +160,7 @@ public class NewPostFragment extends Fragment {
 
             StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
             fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
+
                 loadingDialog.hide();
 
                 UploadPostModel model = new UploadPostModel(uri1.toString());
@@ -154,6 +175,7 @@ public class NewPostFragment extends Fragment {
                 } else {
                     postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
                 }
+
                 Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
                 HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
@@ -179,6 +201,7 @@ public class NewPostFragment extends Fragment {
         View selectPicture = view.findViewById(R.id.select_img_btn);
         View selectVideo = view.findViewById(R.id.select_video_btn);
         View selectAudio = view.findViewById(R.id.select_audio_btn);
+        View uploadText = view.findViewById(R.id.upload_text_view);
 
         if (HomeActivity.anonymous) {
             new AlertDialog.Builder(getContext())
@@ -192,6 +215,11 @@ public class NewPostFragment extends Fragment {
                     .setCancelable(false)
                     .show();
         }
+
+        uploadText.setOnClickListener(v -> {
+            mediaType = "text";
+            uploadPostToFirebase(null, "text");
+        });
 
         selectAudio.setOnClickListener(view12 -> {
             mediaType = "audio";
