@@ -3,6 +3,8 @@ package com.george.socialmeme.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
@@ -88,13 +91,18 @@ public class HomeFragment extends Fragment {
                     postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
                     postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
+                    if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                        postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                        postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                    }
+
                     if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
                         postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
                     }
 
                     if (postSnapshot.child("comments").exists()) {
                         postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                    }else {
+                    } else {
                         postModel.setCommentsCount("0");
                     }
 
@@ -198,31 +206,36 @@ public class HomeFragment extends Fragment {
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
         }
 
-        // Display donate dialog (1 in 6 cases)
+        // Display donate dialog (1 in 7 cases)
         // except the user is singed in anonymously
         if (!HomeActivity.anonymous) {
-            int randomNum = ThreadLocalRandom.current().nextInt(0, 5 + 1);
+            int randomNum = ThreadLocalRandom.current().nextInt(0, 7 + 1);
             if (randomNum == 1) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Can you buy me a coffee? :)")
+                AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Can you buy me a coffee?")
                         .setMessage(getString(R.string.donate_msg))
                         .setPositiveButton("Donate", (dialogInterface, i) ->
                                 openDonateURL())
                         .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .setCancelable(false)
                         .setIcon(R.drawable.ic_coffee)
-                        .show();
+                        .create();
+                donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                donateDialog.show();
             }
         }else {
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Can you buy me a coffee? :)")
+            AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                    .setTitle("Can you buy me a coffee?")
                     .setMessage(getString(R.string.donate_msg))
                     .setPositiveButton("Donate", (dialogInterface, i) ->
                             openDonateURL())
                     .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
                     .setCancelable(false)
                     .setIcon(R.drawable.ic_coffee)
-                    .show();
+                    .create();
+            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            donateDialog.show();
         }
 
         fetchAllPostsFromDB(view, swipeRefreshLayout);
@@ -249,11 +262,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 if (!userFound) {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("User not found")
-                            .setMessage("We cannot find a user with this username")
-                            .setPositiveButton("ok", (dialog, which) -> dialog.dismiss())
-                            .show();
+                    SmartDialogBox.showSearchDialog(getActivity(), "We cannot find a user with this username", "OK");
                 }
             }
 

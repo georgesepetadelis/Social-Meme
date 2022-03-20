@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.claudylab.smartdialogbox.SmartDialogBox;
+import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Receivers.DailyNotificationReceiver;
 import com.github.loadingview.LoadingDialog;
@@ -50,7 +52,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class LoginActivity extends AppCompatActivity {
 
-    LoadingDialog progressDialog;
+    KAlertDialog progressDialog;
     public static String TAG = "GoogleActivity: ";
     public static int RC_SIGN_IN = 9001;
     GoogleSignInClient mGoogleSignInClient;
@@ -67,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
                         try {
-                            // Google Sign In was successful, authenticate with Firebase
+                            // Google Sign In was successful, authenticate user with Firebase
                             GoogleSignInAccount account = task.getResult(ApiException.class);
                             firebaseAuthWithGoogle(account.getIdToken());
                         } catch (ApiException e) {
@@ -80,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     } else {
                         progressDialog.hide();
-                        Toast.makeText(LoginActivity.this, "Error: Can't sign-in with google right now. Try again later", Toast.LENGTH_LONG).show();
+                        SmartDialogBox.showErrorDialog(LoginActivity.this, "Error: Can't sign-in with google right now. Try again later.", "OK");
                     }
                 }
             });
@@ -104,10 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             registerDailyNotification();
         }).addOnFailureListener(e -> {
             progressDialog.hide();
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setTitle("Whoops!")
-                    .setMessage(e.getLocalizedMessage())
-                    .setPositiveButton("Okay", (dialog, which) -> dialog.dismiss()).show();
+            SmartDialogBox.showErrorDialog(LoginActivity.this, e.getLocalizedMessage(), "OK");
         });
 
     }
@@ -145,7 +144,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        progressDialog = LoadingDialog.Companion.get(LoginActivity.this);
+        progressDialog = new KAlertDialog(LoginActivity.this, KAlertDialog.PROGRESS_TYPE);
+        progressDialog.getProgressHelper().setBarColor(R.color.main);
+        progressDialog.setTitleText("Signing in...");
+        progressDialog.setCancelable(false);
 
         EditText email = findViewById(R.id.email_login);
         EditText password = findViewById(R.id.password_login);
@@ -176,12 +178,9 @@ public class LoginActivity extends AppCompatActivity {
             email_et.setHint("Enter your email");
             dialog.setView(email_et);
             dialog.setPositiveButton("OK", (dialogInterface, i) -> {
-
                 if (!email_et.getText().toString().isEmpty()) {
                     sendResetPasswordLink(email_et.getText().toString());
                 }
-
-
             }).setNegativeButton("Cancel", (dialogInterface, i) -> {
                 dialogInterface.dismiss();
             }).show();
@@ -199,10 +198,7 @@ public class LoginActivity extends AppCompatActivity {
 
         submit.setOnClickListener(v -> {
             if (email.getText().toString().isEmpty() || password.getText().toString().isEmpty()) {
-                new AlertDialog.Builder(LoginActivity.this)
-                        .setTitle("Whoops!")
-                        .setMessage("All fields are required")
-                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
+                SmartDialogBox.showErrorDialog(LoginActivity.this, "Email or password cannot be empty", "OK");
             } else {
                 singIn(email.getText().toString(), password.getText().toString());
             }
@@ -211,28 +207,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendResetPasswordLink(String email) {
-
         progressDialog.show();
-
-        mAuth.sendPasswordResetEmail(email).addOnSuccessListener(task -> {
-
+        mAuth.sendPasswordResetEmail(email.trim()).addOnSuccessListener(task -> {
             progressDialog.hide();
-
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setIcon(R.drawable.success_icon)
-                    .setTitle("Email send")
-                    .setMessage("Reset password link has been send on this email address\n" + email)
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
-
+            SmartDialogBox.showSuccessDialog(LoginActivity.this, "Reset password link has been send on this email address\n" + email, "OK");
         }).addOnFailureListener(e -> {
-
             progressDialog.hide();
-
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setIcon(R.drawable.error_icon)
-                    .setTitle("Error")
-                    .setMessage(e.getLocalizedMessage())
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
+            SmartDialogBox.showErrorDialog(LoginActivity.this, e.getLocalizedMessage(), "OK");
         });
     }
 

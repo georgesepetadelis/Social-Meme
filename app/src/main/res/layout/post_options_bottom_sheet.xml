@@ -14,12 +14,13 @@
         android:layout_width="80dp"
         android:layout_height="10dp"
         android:layout_marginTop="15dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/round_dialog_view"
         android:fontFamily="sans-serif-black"
-        android:textColor="@color/black"
         android:text="Post Options"
+        android:textColor="@color/black"
         android:textSize="40sp"
         android:textStyle="bold"
-        android:background="@drawable/round_dialog_view"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,19 +76,19 @@
         android:id="@+id/constraintLayout8"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout9"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView64">
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/imageView23"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/view13"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/view13"
             app:srcCompat="@drawable/ic_save" />
 
         <TextView
@@ -107,10 +108,10 @@
             android:id="@+id/view13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -114,6 +114,10 @@ dependencies {
     implementation 'com.github.HugoMatilla:AudioPlayerView:v1.0.1';
 
     // Custom alert
-    implementation 'com.github.TutorialsAndroid:KAlertDialog:v14.0.19'
+    implementation 'com.github.jeanclaudesoft:SmartDialog:1.0'
+    implementation "com.airbnb.android:lottie:5.0.3"
+
+    // Custom
+    implementation 'com.github.TutorialsAndroid:KAlertDialog:14.0.19'
 
 }

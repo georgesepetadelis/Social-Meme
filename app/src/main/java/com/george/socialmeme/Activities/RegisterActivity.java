@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.claudylab.smartdialogbox.SmartDialogBox;
+import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +23,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    LoadingDialog progressDialog;
+    KAlertDialog progressDialog;
 
     void addUserToRealTimeDB(String username, String email) {
 
@@ -41,34 +43,20 @@ public class RegisterActivity extends AppCompatActivity {
             CustomIntent.customType(RegisterActivity.this, "left-to-right");
         });
 
-
     }
 
     void singUp(String username, String email, String password) {
-
-        // show progress dialog
         progressDialog.show();
-
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
+        mAuth.createUserWithEmailAndPassword(email.trim(), password).addOnSuccessListener(authResult -> {
             FirebaseUser user = mAuth.getCurrentUser();
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(username).build();
             user.updateProfile(profileUpdates);
-
             addUserToRealTimeDB(username, email.replace(".", ","));
-
         }).addOnFailureListener(e -> {
-
             progressDialog.hide();
-
-            new AlertDialog.Builder(this)
-                    .setTitle("Whoops!")
-                    .setMessage(e.getMessage())
-                    .setPositiveButton("OK", (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .show();
+            SmartDialogBox.showErrorDialog(RegisterActivity.this, e.getLocalizedMessage(), "OK");
         });
     }
 
@@ -84,7 +72,10 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        progressDialog = LoadingDialog.Companion.get(this);
+        progressDialog = new KAlertDialog(RegisterActivity.this, KAlertDialog.PROGRESS_TYPE);
+        progressDialog.getProgressHelper().setBarColor(R.color.main);
+        progressDialog.setTitleText("Creating account...");
+        progressDialog.setCancelable(false);
 
         final EditText username_et = findViewById(R.id.username_register);
         final EditText email_et = findViewById(R.id.email_register);
@@ -102,24 +93,11 @@ public class RegisterActivity extends AppCompatActivity {
         submit.setOnClickListener(v -> {
             // check if input is empty
             if (username_et.getText().toString().isEmpty() || email_et.getText().toString().isEmpty() || password_et.getText().toString().isEmpty() || confirm_password_et.getText().toString().isEmpty()) {
-
-                new AlertDialog.Builder(RegisterActivity.this)
-                        .setTitle("Whoops!")
-                        .setMessage("All fields are required")
-                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                        .show();
-
+                SmartDialogBox.showErrorDialog(RegisterActivity.this, "All fields are required", "OK");
             } else {
                 // check if confirm password matches password
                 if (!confirm_password_et.getText().toString().equals(password_et.getText().toString())) {
-
-                    new AlertDialog.Builder(RegisterActivity.this)
-                            .setTitle("Whoops!")
-                            .setMessage("Passwords does not match")
-                            .setPositiveButton("OK", (dialog, which) -> {
-                                dialog.dismiss();
-                            }).show();
-
+                    SmartDialogBox.showErrorDialog(RegisterActivity.this, "Passwords does not match.", "OK");
                 } else {
                     singUp(username_et.getText().toString(), email_et.getText().toString(), password_et.getText().toString());
                 }

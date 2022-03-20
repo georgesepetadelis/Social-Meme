@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Observers.ScreenShotContentObserver;
@@ -58,7 +59,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public static boolean currentUserFollowsThisUser;
     public int followers = 0;
     public int following = 0;
-    LoadingDialog loadingDialog;
+    KAlertDialog loadingDialog;
     private ScreenShotContentObserver screenShotContentObserver;
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
@@ -289,8 +290,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
 
-
-
         screenShotContentObserver = new ScreenShotContentObserver(handler, this) {
             @Override
             protected void onScreenShot(String path, String fileName) {
@@ -299,7 +298,11 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
 
-        loadingDialog = LoadingDialog.Companion.get(UserProfileActivity.this);
+        loadingDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
+        loadingDialog.getProgressHelper().setBarColor(R.color.main);
+        loadingDialog.setTitleText("Loading user profile...");
+        loadingDialog.setCancelable(false);
+
         ImageButton backBtn = findViewById(R.id.imageButton2);
         ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
@@ -494,6 +497,11 @@ public class UserProfileActivity extends AppCompatActivity {
                         postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
                         postModel.setName(postSnapshot.child("name").getValue(String.class));
                         postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                        if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                            postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                            postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                        }
 
                         totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
 
