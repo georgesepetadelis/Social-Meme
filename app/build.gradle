@@ -88,13 +88,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
 
-    // Picasso dependency
+    // Image loader
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    // Video player dependency
+    // Video player
     implementation 'com.github.HamidrezaAmz:MagicalExoPlayer:2.0.7'
 
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    // Custom navigation bar
     implementation 'com.github.ismaeldivita:chip-navigation-bar:1.4.0'
 
     // ExoPlayer
@@ -110,5 +112,12 @@ dependencies {
 
     // Audio player
     implementation 'com.github.HugoMatilla:AudioPlayerView:v1.0.1';
+
+    // Custom alert
+    implementation 'com.github.jeanclaudesoft:SmartDialog:1.0'
+    implementation "com.airbnb.android:lottie:5.0.3"
+
+    // Custom
+    implementation 'com.github.TutorialsAndroid:KAlertDialog:14.0.19'
 
 }

@@ -18,6 +18,7 @@ import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.AudioItemViewHolder;
 import com.george.socialmeme.ViewHolders.ImageItemViewHolder;
+import com.george.socialmeme.ViewHolders.PostTextItemViewHolder;
 import com.george.socialmeme.ViewHolders.PostsOfTheMonthItemViewHolder;
 import com.george.socialmeme.ViewHolders.VideoItemViewHolder;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -45,6 +46,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
+
         if (postList.get(position).getPostType().equals("video")) {
             return 1;
         }
@@ -55,6 +57,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
         if (postList.get(position).getPostType().equals("audio")) {
             return 3;
+        }
+
+        if (postList.get(position).getPostType().equals("text")) {
+            return 4;
         }
 
         return 0;
@@ -78,6 +84,9 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         if (viewType == 3) {
             return new AudioItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.audio_post_item, parent, false));
         }
+        if (viewType == 4) {
+            return new PostTextItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.text_post_item, parent, false));
+        }
         return new ImageItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_post_item, parent, false));
     }
 
@@ -93,9 +102,76 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             viewHolder.setContext(context);
         }
 
+        if (postList.get(position).getPostType().equals("text")) {
+
+            // Bind audio view holder
+            PostTextItemViewHolder textItemViewHolder = (PostTextItemViewHolder) holder;
+            textItemViewHolder.setContext(context);
+
+            if (HomeActivity.anonymous) {
+                textItemViewHolder.commentsCount.setVisibility(View.GONE);
+                textItemViewHolder.postOptionsButton.setVisibility(View.GONE);
+                textItemViewHolder.openCommentsView.setVisibility(View.GONE);
+                textItemViewHolder.shareBtn.setVisibility(View.GONE);
+            }
+
+            // check if post is liked or not
+            likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    if (!HomeActivity.anonymous) {
+
+                        // check if current post is liked from this user
+                        if (snapshot.child(textItemViewHolder.postID).hasChild(user.getUid())) {
+                            // post is liked form this user
+                            textItemViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
+
+                        } else {
+                            // post is not liked from this user
+                            textItemViewHolder.like_btn.setImageResource(R.drawable.ic_like);
+                        }
+                    } else {
+                        textItemViewHolder.like_btn.setEnabled(false);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            textItemViewHolder.postID = postList.get(position).getId();
+            textItemViewHolder.username.setText(postList.get(position).getName());
+            textItemViewHolder.userID = postList.get(position).getAuthorID();
+            textItemViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
+            textItemViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
+
+            // Load Title and content for the post
+            textItemViewHolder.postTitle.setText(postList.get(position).getPostTitle());
+            textItemViewHolder.postContentText.setText(postList.get(position).getPostContentText());
+
+            // Load profile picture
+            String profilePictureUrl = postList.get(position).getProfileImgUrl();
+            if (profilePictureUrl != null) {
+                if (!profilePictureUrl.equals("none")) {
+                    Glide.with(context).load(profilePictureUrl).into(textItemViewHolder.profilePicture);
+                }
+            }
+
+            textItemViewHolder.shareBtn.setOnClickListener(view -> {
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("post_url", postList.get(position).getImgUrl());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, "Audio URL copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+
+        }
+
         if (postList.get(position).getPostType().equals("audio")) {
 
-            // bind audio view holder
+            // Bind audio view holder
             AudioItemViewHolder audioViewHolder = (AudioItemViewHolder) holder;
             audioViewHolder.setContext(context);
 

@@ -120,6 +120,12 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                     }
                 }
 
+                if (snapshot.child("comments").exists()) {
+                    goldPostModel.setCommentsCount(String.valueOf(snapshot.child("comments").getChildrenCount()));
+                }else {
+                    goldPostModel.setCommentsCount("0");
+                }
+
                 // Add silver post to array list
                 PostModel silverPostModel = new PostModel();
                 silverPostModel.setPostType(snapshot.child("posts").child(silverPostID).child("postType").getValue(String.class));
@@ -136,6 +142,12 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                     }
                 }
 
+                if (snapshot.child("comments").exists()) {
+                    silverPostModel.setCommentsCount(String.valueOf(snapshot.child("comments").getChildrenCount()));
+                }else {
+                    silverPostModel.setCommentsCount("0");
+                }
+
                 // Add bronze post to array list
                 PostModel bronzePostModel = new PostModel();
                 bronzePostModel.setPostType(snapshot.child("posts").child(bronzePostID).child("postType").getValue(String.class));
@@ -150,6 +162,12 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                         bronzePostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }
+                }
+
+                if (snapshot.child("comments").exists()) {
+                    bronzePostModel.setCommentsCount(String.valueOf(snapshot.child("comments").getChildrenCount()));
+                }else {
+                    bronzePostModel.setCommentsCount("0");
                 }
 
                 goldPostModelArrayList.add(goldPostModel);

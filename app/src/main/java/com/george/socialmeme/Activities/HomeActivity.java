@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.Window;
@@ -43,7 +44,6 @@ public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
     public static boolean showLoadingScreen;
-    public static boolean showWhatsNewMessage;
     public static ChipNavigationBar bottomNavBar;
 
     boolean isNightModeEnabled() {
@@ -116,9 +116,10 @@ public class HomeActivity extends AppCompatActivity {
         int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && !isNightModeEnabled() && !askForEnableNightMode) {
+
             // System dark mode is enabled
             // ask user to enable in-app night mode
-            new AlertDialog.Builder(HomeActivity.this)
+            AlertDialog alertDialog = new AlertDialog.Builder(HomeActivity.this)
                     .setCancelable(false)
                     .setTitle("Enable app night mode?")
                     .setIcon(R.drawable.moon)
@@ -132,13 +133,23 @@ public class HomeActivity extends AppCompatActivity {
                     .setNegativeButton("No, thanks", (dialogInterface, i) -> {
                         askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
                         askForNightModeSharedPrefEditor.apply();
-                        new AlertDialog.Builder(HomeActivity.this)
+                        AlertDialog reminderDialog = new AlertDialog.Builder(HomeActivity.this)
                                 .setTitle("Nigh mode")
                                 .setIcon(R.drawable.moon)
                                 .setMessage("Remember that you can always enable night mode in Social Meme settings")
                                 .setNegativeButton("Ok", (dialogInterface1, i1) -> dialogInterface1.dismiss())
-                                .show();
-                    }).show();
+                                .create();
+
+                        reminderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        reminderDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                        reminderDialog.show();
+
+                    }).create();
+
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            alertDialog.show();
+
         }
 
         bottomNavBar.setOnItemSelectedListener(id -> {

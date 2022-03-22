@@ -82,6 +82,8 @@
             android:id="@+id/imageButton19"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/ripple_round_card_bg"
             android:padding="3dp"
             app:layout_constraintBottom_toBottomOf="@+id/audioView"

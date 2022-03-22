@@ -1,18 +1,36 @@
 package com.george.socialmeme.Models;
 
 public class PostModel {
-    private String name, imgUrl, likes, id, profileImgUrl, authorID, postType, commentsCount, audioName;
+    private String name, imgUrl, likes, id, profileImgUrl, authorID, postType, commentsCount, audioName, postTitle, postContentText;
 
-    public PostModel(String name, String imgUrl, String postType, String commentsCount, String audioName) {
+    public PostModel(String name, String imgUrl, String postType, String commentsCount, String audioName, String postTitle, String postContentText) {
         this.name = name;
         this.imgUrl = imgUrl;
         this.postType = postType;
         this.commentsCount = commentsCount;
         this.audioName = audioName;
+        this.postTitle = postTitle;
+        this.postContentText = postContentText;
     }
 
     public PostModel() {
 
+    }
+
+    public String getPostTitle() {
+        return postTitle;
+    }
+
+    public void setPostTitle(String postTitle) {
+        this.postTitle = postTitle;
+    }
+
+    public String getPostContentText() {
+        return postContentText;
+    }
+
+    public void setPostContentText(String postContentText) {
+        this.postContentText = postContentText;
     }
 
     public String getAudioName() {

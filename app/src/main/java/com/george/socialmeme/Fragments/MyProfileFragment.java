@@ -24,7 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.Activities.FollowerInfoActivity;
+import com.george.socialmeme.Activities.LoginActivity;
 import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
@@ -58,7 +60,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class MyProfileFragment extends Fragment {
 
-    LoadingDialog progressDialog;
+    KAlertDialog progressDialog;
     CircleImageView profilePicture;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageReference = storage.getReference();
@@ -163,6 +165,7 @@ public class MyProfileFragment extends Fragment {
 
         TextView followersCounter = view.findViewById(R.id.followers_my_profile);
         TextView followingCounter = view.findViewById(R.id.following_my_profile);
+        TextView totalLikesCounter = view.findViewById(R.id.textView76);
 
         TextView goldTrophiesCount = view.findViewById(R.id.gold_trophies_count);
         TextView silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
@@ -200,7 +203,10 @@ public class MyProfileFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        progressDialog = LoadingDialog.Companion.get(getActivity());
+        progressDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
+        progressDialog.getProgressHelper().setBarColor(R.color.main);
+        progressDialog.setTitleText("Updating profile picture...");
+        progressDialog.setCancelable(false);
 
         showFollowersView.setOnClickListener(view1 -> {
             if (followers != 0) {
@@ -238,7 +244,7 @@ public class MyProfileFragment extends Fragment {
             username.setText(user.getDisplayName());
 
             // Load profile picture & following\followers counter and user trophies
-            usersRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @SuppressLint("DefaultLocale")
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -283,6 +289,8 @@ public class MyProfileFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
+                    int totalLikes = 0;
+
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 
                         if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
@@ -293,11 +301,21 @@ public class MyProfileFragment extends Fragment {
                             postModel.setName(postSnapshot.child("name").getValue(String.class));
                             postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
+                            if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                                postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                                postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                            }
+
+                            totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
+
                             if (postSnapshot.child("comments").exists()) {
                                 postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
                             }else {
                                 postModel.setCommentsCount("0");
                             }
+
+                            // Set total likes
+                            totalLikesCounter.setText(String.valueOf(totalLikes));
 
                             postModelArrayList.add(postModel);
                             recyclerAdapter.notifyDataSetChanged();

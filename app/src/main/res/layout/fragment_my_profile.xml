@@ -174,12 +174,12 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/my_profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:layout_marginTop="62dp"
-                android:elevation="12dp"
+                android:padding="8dp"
                 android:src="@drawable/user"
-                android:foreground="?selectableItemBackgroundBorderless"
+                android:background="@drawable/ripple_round_main_background"
                 android:clickable="true"
                 app:civ_border_color="#FF000000"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -193,7 +193,7 @@
                 android:layout_marginTop="16dp"
                 android:text="username"
                 android:textColor="?attr/textFillColor"
-                android:textSize="25sp"
+                android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -203,14 +203,12 @@
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="108dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="40dp"
                 android:text="Followers"
                 android:textColor="?attr/textFillColor"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/textView15"
+                app:layout_constraintEnd_toStartOf="@+id/showFollowingView_Profile"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/username_my_profile" />
 
@@ -232,12 +230,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="108dp"
                 android:text="Following"
                 android:textColor="?attr/textFillColor"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/username_my_profile"
+                app:layout_constraintStart_toStartOf="@+id/username_my_profile"
                 app:layout_constraintTop_toBottomOf="@+id/username_my_profile" />
 
             <TextView
@@ -311,10 +309,10 @@
                 android:id="@+id/showFollowersView_Profile"
                 android:layout_width="80dp"
                 android:layout_height="60dp"
-                app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
-                android:foreground="?selectableItemBackgroundBorderless"
-                android:focusable="true"
                 android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
                 app:layout_constraintEnd_toEndOf="@+id/textView13"
                 app:layout_constraintStart_toStartOf="@+id/textView13"
                 app:layout_constraintTop_toTopOf="@+id/textView13" />
@@ -323,13 +321,13 @@
                 android:id="@+id/showFollowingView_Profile"
                 android:layout_width="80dp"
                 android:layout_height="60dp"
-                android:foreground="?selectableItemBackgroundBorderless"
-                android:focusable="true"
                 android:clickable="true"
-                app:layout_constraintBottom_toBottomOf="@+id/following_my_profile"
+                android:focusable="true"
+                android:foreground="?selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
                 app:layout_constraintEnd_toEndOf="@+id/textView15"
                 app:layout_constraintStart_toStartOf="@+id/textView15"
-                app:layout_constraintTop_toTopOf="@+id/textView15" />
+                app:layout_constraintTop_toTopOf="@+id/textView13" />
 
             <com.google.android.gms.ads.AdView
                 android:id="@+id/adView5"
@@ -341,6 +339,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+            <TextView
+                android:id="@+id/textView75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total likes"
+                android:textColor="?attr/textFillColor"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/textView15"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView15"
+                app:layout_constraintTop_toTopOf="@+id/textView15" />
+
+            <TextView
+                android:id="@+id/textView76"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="0"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="?attr/titleTextColor"
+                app:layout_constraintEnd_toEndOf="@+id/textView75"
+                app:layout_constraintStart_toStartOf="@+id/textView75"
+                app:layout_constraintTop_toBottomOf="@+id/textView75" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
