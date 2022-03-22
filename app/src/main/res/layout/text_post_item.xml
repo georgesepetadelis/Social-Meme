@@ -12,7 +12,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/cardBackgroundColor">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -176,6 +177,7 @@
             android:layout_marginBottom="16dp"
             android:padding="10dp"
             android:text="Loading text..."
+            android:textColor="?attr/titleTextColor"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
