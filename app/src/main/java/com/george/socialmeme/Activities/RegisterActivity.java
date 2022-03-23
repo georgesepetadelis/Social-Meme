@@ -99,7 +99,11 @@ public class RegisterActivity extends AppCompatActivity {
                 if (!confirm_password_et.getText().toString().equals(password_et.getText().toString())) {
                     SmartDialogBox.showErrorDialog(RegisterActivity.this, "Passwords does not match.", "OK");
                 } else {
-                    singUp(username_et.getText().toString(), email_et.getText().toString(), password_et.getText().toString());
+                    if (username_et.getText().length() < 5 || username_et.getText().length() > 13) {
+                        SmartDialogBox.showInfoDialog(RegisterActivity.this, "Username must be 5-13 characters.", "OK");
+                    }else {
+                        singUp(username_et.getText().toString(), email_et.getText().toString(), password_et.getText().toString());
+                    }
                 }
 
             }

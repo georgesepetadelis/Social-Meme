@@ -212,6 +212,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        UserProfileActivity.userID = null;
+        UserProfileActivity.username = null;
         super.onPause();
         try {
             getContentResolver().unregisterContentObserver(screenShotContentObserver);
@@ -223,6 +225,8 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        UserProfileActivity.userID = null;
+        UserProfileActivity.username = null;
         try {
             getContentResolver().unregisterContentObserver(screenShotContentObserver);
         } catch (Exception e) {
@@ -289,6 +293,10 @@ public class UserProfileActivity extends AppCompatActivity {
                 super.handleMessage(msg);
             }
         };
+
+        if (username == null || userID == null) {
+            onBackPressed();
+        }
 
         screenShotContentObserver = new ScreenShotContentObserver(handler, this) {
             @Override

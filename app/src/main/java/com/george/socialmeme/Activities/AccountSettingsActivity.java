@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -205,60 +206,66 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
                 }
 
-                if (!user.getDisplayName().equals(username.getText().toString())) {
+                if (username.getText().length() > 13 || username.getText().length() < 3) {
+                    SmartDialogBox.showErrorDialog(AccountSettingsActivity.this, "Username must be 5-13 characters.", "OK");
+                }else {
 
-                    DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+                    if (!user.getDisplayName().equals(username.getText().toString())) {
 
-                    usersRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-                            boolean nameExists = false;
+                        usersRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                            for (DataSnapshot snap : snapshot.getChildren()) {
-                                if (snap.child("name").getValue(String.class).equals(username.getText().toString())) {
-                                    nameExists = true;
-                                    break;
+                                boolean nameExists = false;
+
+                                for (DataSnapshot snap : snapshot.getChildren()) {
+                                    if (snap.child("name").getValue(String.class).equals(username.getText().toString())) {
+                                        nameExists = true;
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if (nameExists) {
-                                save_changes_btn.setEnabled(true);
-                                save_changes_btn.setText("Save Changes");
-                                Toast.makeText(AccountSettingsActivity.this, "This username is already used by another user", Toast.LENGTH_LONG).show();
-                            } else {
-
-                                // update username on current user node
-                                usersRef.child(user.getUid()).child("name").setValue(username.getText().toString());
-
-                                // update username on all user posts
-                                updateUsernameOnUserPosts(user.getDisplayName(), username.getText().toString());
-
-                                // update username on FirebaseAuth
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(username.getText().toString()).build();
-                                user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
-
+                                if (nameExists) {
                                     save_changes_btn.setEnabled(true);
                                     save_changes_btn.setText("Save Changes");
+                                    Toast.makeText(AccountSettingsActivity.this, "This username is already used by another user", Toast.LENGTH_LONG).show();
+                                } else {
 
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(AccountSettingsActivity.this, "Username updated!", Toast.LENGTH_SHORT).show();
-                                    } else if (task.isCanceled()) {
-                                        Toast.makeText(AccountSettingsActivity.this, "Error: Can't update username", Toast.LENGTH_SHORT).show();
-                                    }
+                                    // update username on current user node
+                                    usersRef.child(user.getUid()).child("name").setValue(username.getText().toString());
 
-                                });
+                                    // update username on all user posts
+                                    updateUsernameOnUserPosts(user.getDisplayName(), username.getText().toString());
+
+                                    // update username on FirebaseAuth
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(username.getText().toString()).build();
+                                    user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+
+                                        save_changes_btn.setEnabled(true);
+                                        save_changes_btn.setText("Save Changes");
+
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(AccountSettingsActivity.this, "Username updated!", Toast.LENGTH_SHORT).show();
+                                        } else if (task.isCanceled()) {
+                                            Toast.makeText(AccountSettingsActivity.this, "Error: Can't update username", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    });
+
+                                }
 
                             }
 
-                        }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(AccountSettingsActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(AccountSettingsActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    }
 
                 }
 
