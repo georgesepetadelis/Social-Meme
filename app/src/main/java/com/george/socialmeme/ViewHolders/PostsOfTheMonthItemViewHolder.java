@@ -23,7 +23,7 @@ public class PostsOfTheMonthItemViewHolder extends RecyclerView.ViewHolder {
 
     public PostsOfTheMonthItemViewHolder(@NonNull View itemView) {
         super(itemView);
-        itemContainer = (View) itemView.findViewById(R.id.posts_of_the_month_btn);
+        itemContainer = itemView.findViewById(R.id.posts_of_the_month_btn);
 
         itemContainer.setOnClickListener(view -> {
             Intent intent = new Intent(context, PostsOfTheMonthActivity.class);

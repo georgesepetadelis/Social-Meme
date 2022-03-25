@@ -1,6 +1,7 @@
 package com.george.socialmeme.Activities;
 
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -11,10 +12,12 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -23,9 +26,21 @@ import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -61,6 +76,23 @@ public class HomeActivity extends AppCompatActivity {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Map<String, Object> notification = new HashMap<>();
+                notification.put("token", task.getResult());
+                notification.put("title", "New like");
+                notification.put("message", "George thedev liked your post");
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                firestore.collection("notifications")
+                        .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(notification).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(HomeActivity.this, "Succcess", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         bottomNavBar = findViewById(R.id.bottom_nav);
@@ -109,6 +141,38 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
+        // Set fcm token if not exists
+        // inside real-time DB to be able
+        // to send push notifications from back-end
+        if (!HomeActivity.anonymous) {
+            FirebaseUser user = mAuth.getCurrentUser();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
+                    .child(user.getUid());
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // Check if token exists
+                    if (!snapshot.child("fcm_token").exists()) {
+                        // Token does not exists
+                        // add token to real-time DB
+                        FirebaseMessaging.getInstance().getToken()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        userRef.child("fcm_token").setValue(task.getResult());
+                                    }else {
+                                        Toast.makeText(HomeActivity.this, "Unable to set user token", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         bottomNavBar.setOnItemSelectedListener(id -> {
             Fragment selectedFragment = new HomeFragment();
 
@@ -147,6 +211,5 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(new Intent(HomeActivity.this, LoginActivity.class));
                     }).show());
         }
-
     }
 }

@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -69,6 +70,9 @@ dependencies {
     implementation 'androidx.core:core:1.7.0'
     implementation 'com.google.firebase:firebase-inappmessaging-display:20.1.1'
     implementation 'com.google.firebase:firebase-messaging:23.0.0'
+    implementation 'com.google.firebase:firebase-firestore:24.0.2'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.9'
+    implementation 'com.google.firebase:firebase-analytics:20.1.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     // Firebase dependencies
@@ -111,7 +115,7 @@ dependencies {
     implementation 'io.alterac.blurkit:blurkit:1.1.0'
 
     // Audio player
-    implementation 'com.github.HugoMatilla:AudioPlayerView:v1.0.1';
+    implementation 'com.github.HugoMatilla:AudioPlayerView:v1.0.1'
 
     // Custom alert
     implementation 'com.github.jeanclaudesoft:SmartDialog:1.0'

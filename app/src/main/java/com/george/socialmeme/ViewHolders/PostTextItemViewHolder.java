@@ -258,9 +258,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
         // Hide download option
         // because you can't download text :)
-        dialog.findViewById(R.id.view13).setVisibility(View.GONE);
-        dialog.findViewById(R.id.textView70).setVisibility(View.GONE);
-        dialog.findViewById(R.id.imageView23).setVisibility(View.GONE);
+        dialog.findViewById(R.id.constraintLayout8).setVisibility(View.GONE);
 
         downloadMemeView.setOnClickListener(view -> {
             saveVideoToDeviceStorage();

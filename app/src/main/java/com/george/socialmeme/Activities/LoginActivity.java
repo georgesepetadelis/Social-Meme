@@ -98,32 +98,10 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
             HomeActivity.anonymous = false;
-            registerDailyNotification();
         }).addOnFailureListener(e -> {
             progressDialog.hide();
             SmartDialogBox.showErrorDialog(LoginActivity.this, e.getLocalizedMessage(), "OK");
         });
-
-    }
-
-    private void registerDailyNotification() {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 18);
-        calendar.set(Calendar.MINUTE, 30);
-        calendar.set(Calendar.SECOND, 0);
-
-        Intent intent = new Intent(getApplicationContext(), DailyNotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 100,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntent);
-
-        SharedPreferences sharedPref = getSharedPreferences("daily_notification_registered", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean("daily_notification_registered", true);
 
     }
 

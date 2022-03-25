@@ -61,7 +61,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public int following = 0;
     KAlertDialog loadingDialog;
     private ScreenShotContentObserver screenShotContentObserver;
-    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+    private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
     void sendNotificationToUser(String notificationType) {
 
@@ -310,6 +310,7 @@ public class UserProfileActivity extends AppCompatActivity {
         loadingDialog.getProgressHelper().setBarColor(R.color.main);
         loadingDialog.setTitleText("Loading user profile...");
         loadingDialog.setCancelable(false);
+        loadingDialog.show();
 
         ImageButton backBtn = findViewById(R.id.imageButton2);
         ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
@@ -359,9 +360,6 @@ public class UserProfileActivity extends AppCompatActivity {
             copyUsernameToClipboard();
             return false;
         });
-
-        // Show loading dialog
-        loadingDialog.show();
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
@@ -431,7 +429,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 String username = snapshot.child(userID).child("name").getValue(String.class);
 
                 if (!profilePictureURL.equals("none")) {
-                    Glide.with(UserProfileActivity.this).load(profilePictureURL).into(profilePicture);
+                    Glide.with(getApplicationContext()).load(profilePictureURL).into(profilePicture);
                 }
 
                 if (!snapshot.child(userID).child("following").child(user.getUid()).exists()) {

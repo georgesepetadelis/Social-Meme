@@ -61,9 +61,11 @@ public class HomeFragment extends Fragment {
     PostRecyclerAdapter recyclerAdapter;
 
     void openDonateURL() {
-        Uri uri = Uri.parse("https://PayPal.me/GSepetadelis");
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+        if (isAdded()) {
+            Uri uri = Uri.parse("https://PayPal.me/GSepetadelis");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
     }
 
     void fetchAllPostsFromDB(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
@@ -108,7 +110,8 @@ public class HomeFragment extends Fragment {
 
                     if (!HomeActivity.anonymous) {
                         // Show post in recycler adapter only if the user is not blocked
-                        if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                        if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
                             postModelArrayList.add(postModel);
                         }
                     }else {
@@ -122,7 +125,7 @@ public class HomeFragment extends Fragment {
                 PostModel postsOfTheMonthView = new PostModel();
                 postsOfTheMonthView.setPostType("postsOfTheMonth");
                 postModelArrayList.add(postsOfTheMonthView);
-                recyclerAdapter.notifyItemInserted(postModelArrayList.size() -1);
+                recyclerAdapter.notifyDataSetChanged();
 
                 // Reverse elements inside postModelArrayList
                 // to show items inside RecyclerView reversed
@@ -206,11 +209,11 @@ public class HomeFragment extends Fragment {
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
         }
 
-        // Display donate dialog (1 in 7 cases)
+        // Display donate dialog (1 in 15 cases)
         // except the user is singed in anonymously
         if (!HomeActivity.anonymous) {
-            int randomNum = ThreadLocalRandom.current().nextInt(0, 7 + 1);
-            if (randomNum == 1) {
+            int randomNum = ThreadLocalRandom.current().nextInt(0, 15 + 1);
+            if (randomNum == 3) {
                 AlertDialog donateDialog = new AlertDialog.Builder(getContext())
                         .setTitle("Can you buy me a coffee?")
                         .setMessage(getString(R.string.donate_msg))

@@ -280,7 +280,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 }
             });
 
-            // Get current post id set username, authorID, profile picture URL, postType, likes and post image URL
             videoViewHolder.postID = postList.get(position).getId();
             videoViewHolder.username.setText(postList.get(position).getName());
             videoViewHolder.userID = postList.get(position).getAuthorID();

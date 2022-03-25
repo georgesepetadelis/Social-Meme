@@ -43,6 +43,8 @@ import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -51,6 +53,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -60,6 +64,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -125,6 +131,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                 Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
     }
 
@@ -201,6 +209,9 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
+        final String[] notification_message = {"none"};
+        final String[] notification_title = {"none"};
+
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -220,9 +231,11 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
                         }else if (notificationType.equals("comment_added")) {
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New comment");
+                            notification_title[0] = "New comment";
+                            notification_message[0] = user.getDisplayName() + ": " + commentText;
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("comment_added");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + ": " + commentText);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_title[0]);
                         }
 
                         break;
@@ -233,6 +246,33 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Find user token from DB
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // add notification to Firestore to send
+        // push notification from back-end
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Map<String, Object> notification = new HashMap<>();
+                notification.put("token", task.getResult());
+                notification.put("title", notification_title[0]);
+                notification.put("message", notification_message[0]);
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                firestore.collection("notifications")
+                        .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(notification);
             }
         });
 
@@ -345,9 +385,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         openUserProfileView.setOnClickListener(v -> {
 
             if (!HomeActivity.anonymous) {
-                if (userID.equals(user.getUid())) {
-                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
-                }else {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     usersRef.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -367,9 +404,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                         }
                     });
 
-                    context.startActivity(intent);
-                    CustomIntent.customType(context, "left-to-right");
-                }
+                context.startActivity(intent);
+                CustomIntent.customType(context, "left-to-right");
 
             }
 
