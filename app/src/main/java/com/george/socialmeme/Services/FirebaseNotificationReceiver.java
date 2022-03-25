@@ -1,4 +1,4 @@
-package com.george.socialmeme.Receivers;
+package com.george.socialmeme.Services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
@@ -21,6 +22,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class FirebaseNotificationReceiver extends FirebaseMessagingService {
 
     @Override
@@ -29,9 +32,11 @@ public class FirebaseNotificationReceiver extends FirebaseMessagingService {
         // Update token on real-time DB
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
-                .child(user.getUid());
-        userRef.child("fcm_token").setValue(token);
+        if (user != null) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
+                    .child(user.getUid());
+            userRef.child("fcm_token").setValue(token);
+        }
     }
 
     @Override
@@ -54,12 +59,16 @@ public class FirebaseNotificationReceiver extends FirebaseMessagingService {
         Uri sound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                 getApplicationContext().getPackageName() + "/" + R.raw.notification_sound);
 
-        final String CHANNEL_ID = "MAIN";
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Main", NotificationManager.IMPORTANCE_HIGH);
-        getSystemService(NotificationManager.class).createNotificationChannel(channel);
+        final String CHANNEL_ID = "firebase_fcm";
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "firebase_fcm", NotificationManager.IMPORTANCE_HIGH);
         channel.enableVibration(true);
         channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
         channel.setSound(sound, attributes);
+        getSystemService(NotificationManager.class).createNotificationChannel(channel);
+
+        // Setting different notification ID to
+        // prevent notification replacement from another notification
+        int notificationID = ThreadLocalRandom.current().nextInt(2, 1000);
 
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(notificationTitle)
@@ -67,8 +76,7 @@ public class FirebaseNotificationReceiver extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.app_logo)
                 .setAutoCancel(false);
         notification.setContentIntent(pendingIntent);
-        NotificationManagerCompat.from(this).notify(1, notification.build());
-
+        NotificationManagerCompat.from(this).notify(notificationID, notification.build());
 
     }
 }

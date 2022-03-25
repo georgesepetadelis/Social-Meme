@@ -355,7 +355,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             // Get current post id set username, authorID, profile picture URL, postType, likes and post image URL
             imageViewHolder.postID = postList.get(position).getId();
             imageViewHolder.username.setText(postList.get(position).getName());
-            imageViewHolder.userID = postList.get(position).getAuthorID();
+            imageViewHolder.setUserID(postList.get(position).getAuthorID());
             imageViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             imageViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 

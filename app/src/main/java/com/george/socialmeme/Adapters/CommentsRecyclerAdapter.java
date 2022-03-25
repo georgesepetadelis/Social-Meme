@@ -52,7 +52,7 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
             if (!profilePictureUrl.equals("none")) {
                 Glide.with(context).load(profilePictureUrl).into(viewHolder.profilePicture);
             }
-        }else {
+        } else {
             viewHolder.profilePicture.setImageResource(R.drawable.user);
         }
 
@@ -67,7 +67,7 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
         if (!commentsList.get(position).getAuthor().equals(user.getUid())) {
             viewHolder.deleteCommentBtn.setVisibility(View.INVISIBLE);
         }
-        
+
         viewHolder.deleteCommentBtn.setOnClickListener(view -> {
 
             new AlertDialog.Builder(context)
@@ -87,22 +87,23 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
                                         commentsList.remove(viewHolder.getLayoutPosition());
                                         notifyItemRemoved(position);
                                         notifyItemRangeChanged(position, commentsList.size());
-                                    }else {
+                                    } else {
                                         Toast.makeText(context, "Failed to delete comment", Toast.LENGTH_SHORT).show();
                                     }
                                     dialogInterface.dismiss();
                                 });
 
-                    }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                    })
+                    .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
                     .show();
 
         });
-        
+
     }
 
     @Override
     public int getItemCount() {
         return commentsList.size();
     }
-    
+
 }

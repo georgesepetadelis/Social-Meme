@@ -48,6 +48,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.hugomatilla.audioplayerview.AudioPlayerView;
@@ -55,6 +56,8 @@ import com.hugomatilla.audioplayerview.AudioPlayerView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -188,8 +191,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
                             // Update likes to DB
                             updateLikesToDB(postID, true);
-
-                            sendLikeNotificationToUser();
+                            sendNotificationToPostAuthor("like", "");
 
                         }
                     }
@@ -221,39 +223,6 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         ClipData clip = ClipData.newPlainText("username", usernameTV.getText().toString());
         clipboard.setPrimaryClip(clip);
         Toast.makeText(context, "Username copied to clipboard", Toast.LENGTH_SHORT).show();
-    }
-
-    void sendLikeNotificationToUser() {
-
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                String notificationID = usersRef.push().getKey();
-                String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-
-                Calendar calendar = Calendar.getInstance();
-                int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                int currentMinutes = calendar.get(Calendar.MINUTE);
-
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    if (snap.child("name").getValue().toString().equals(usernameTV.getText().toString())) {
-                        String postAuthorID = snap.child("id").getValue().toString();
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New like");
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " liked your post");
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
     public void updateLikesToDB(String postID, boolean likePost) {
@@ -329,12 +298,19 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
+        final String[] notification_message = {"none"};
+        final String[] notification_title = {"none"};
+
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 String notificationID = usersRef.push().getKey();
                 String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
+
+                Calendar calendar = Calendar.getInstance();
+                int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                int currentMinutes = calendar.get(Calendar.MINUTE);
 
                 for (DataSnapshot snap : snapshot.getChildren()) {
 
@@ -343,19 +319,66 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                         String postAuthorID = snap.child("id").getValue().toString();
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
 
+                        if (notificationType.equals("like")) {
+                            notification_title[0] = "New like";
+                            notification_message[0] = user.getDisplayName() + " liked your post";
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                        }
                         if (notificationType.equals("meme_saved")) {
+                            notification_title[0] = "Meme saved";
+                            notification_message[0] = user.getDisplayName() + " has saved your post";
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Meme saved");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
-                        }else if (notificationType.equals("comment_added")) {
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New comment");
+                        } else if (notificationType.equals("comment_added")) {
+                            notification_title[0] = "New comment";
+                            notification_message[0] = user.getDisplayName() + ": " + commentText;
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("comment_added");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + ": " + commentText);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                         }
 
                         break;
                     }
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Find user token from DB
+        // and add notification to Firestore
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                    if (userSnap.child("name").getValue(String.class).equals(usernameTV.getText().toString())) {
+
+                        if (userSnap.child("fcm_token").exists()) {
+                            // add notification to Firestore to send
+                            // push notification from back-end
+                            String notificationID = usersRef.push().getKey();
+                            Map<String, Object> notification = new HashMap<>();
+                            notification.put("token", userSnap.child("fcm_token").getValue(String.class));
+                            notification.put("title", notification_title[0]);
+                            notification.put("message", notification_message[0]);
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                            firestore.collection("notifications")
+                                    .document(notificationID).set(notification);
+                        }
+                        break;
+                    }
+                }
+
             }
 
             @Override

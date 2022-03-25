@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@drawable/app_logo"
@@ -23,8 +22,9 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme"
-        tools:targetApi="s"
-        tools:ignore="DataExtractionRules">
+        tools:ignore="DataExtractionRules"
+        tools:replace="android:allowBackup"
+        tools:targetApi="s">
         <activity
             android:name=".Activities.PostsOfTheMonthActivity"
             android:exported="false" />
@@ -50,6 +50,10 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9627755439548346~7996414717" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="firebase_fcm" />
 
         <activity
             android:name=".Activities.SettingsActivity"
@@ -77,10 +81,13 @@
         </activity>
 
         <service
-            android:name=".Receivers.FirebaseNotificationReceiver"
-            android:exported="false">
+            android:name=".Services.FirebaseNotificationReceiver"
+            android:directBootAware="true"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
     </application>

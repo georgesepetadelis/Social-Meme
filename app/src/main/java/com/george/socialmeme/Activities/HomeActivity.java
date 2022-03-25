@@ -77,22 +77,7 @@ public class HomeActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
 
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Map<String, Object> notification = new HashMap<>();
-                notification.put("token", task.getResult());
-                notification.put("title", "New like");
-                notification.put("message", "George thedev liked your post");
-                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                firestore.collection("notifications")
-                        .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).set(notification).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(HomeActivity.this, "Succcess", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+
 
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         bottomNavBar = findViewById(R.id.bottom_nav);

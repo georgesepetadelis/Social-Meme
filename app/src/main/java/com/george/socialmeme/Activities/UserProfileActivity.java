@@ -42,12 +42,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -59,7 +62,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public static boolean currentUserFollowsThisUser;
     public int followers = 0;
     public int following = 0;
-    KAlertDialog loadingDialog;
+    public LoadingDialog loadingDialog;
     private ScreenShotContentObserver screenShotContentObserver;
     private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
@@ -69,8 +72,14 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
+        final String[] notification_message = {"none"};
+        final String[] notification_title = {"none"};
+
         if (notificationType.equals("profile_visit")) {
 
+            notification_title[0] = "New profile visitor";
+            notification_message[0] = user.getDisplayName() + " visited your profile";
+
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -85,10 +94,10 @@ public class UserProfileActivity extends AppCompatActivity {
                     for (DataSnapshot snap : snapshot.getChildren()) {
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                             break;
                         }
                     }
@@ -100,7 +109,11 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
 
-        } if (notificationType.equals("follow")) {
+        }
+        if (notificationType.equals("follow")) {
+
+            notification_title[0] = "New follower";
+            notification_message[0] = user.getDisplayName() + " started following you";
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -117,10 +130,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New follower");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " started following you");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                             break;
                         }
                     }
@@ -132,7 +145,11 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
 
-        } if (notificationType.equals("screenshot")) {
+        }
+        if (notificationType.equals("screenshot")) {
+
+            notification_title[0] = "Profile screenshot";
+            notification_message[0] = user.getDisplayName() + " screenshotted your profile";
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -149,10 +166,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Profile screenshot");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " screenshotted your profile");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                             break;
                         }
                     }
@@ -166,6 +183,9 @@ public class UserProfileActivity extends AppCompatActivity {
 
         } else if (notificationType.equals("unfollow")) {
 
+            notification_title[0] = "You lost a follower :(";
+            notification_message[0] = user.getDisplayName() + " unfollowed you";
+
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -181,10 +201,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Unfollow");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " unfollowed you");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                             break;
                         }
                     }
@@ -197,6 +217,39 @@ public class UserProfileActivity extends AppCompatActivity {
             });
 
         }
+
+        // Find user token from DB
+        // and add notification to Firestore
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                    if (userSnap.child("name").getValue(String.class).equals(username)) {
+
+                        if (userSnap.child("fcm_token").exists()) {
+                            // add notification to Firestore to send
+                            // push notification from back-end
+                            String notificationID = usersRef.push().getKey();
+                            Map<String, Object> notification = new HashMap<>();
+                            notification.put("token", userSnap.child("fcm_token").getValue(String.class));
+                            notification.put("title", notification_title[0]);
+                            notification.put("message", notification_message[0]);
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                            firestore.collection("notifications")
+                                    .document(notificationID).set(notification);
+                        }
+                        break;
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -283,8 +336,6 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        sendNotificationToUser("profile_visit");
-
         HandlerThread handlerThread = new HandlerThread("content_observer");
         handlerThread.start();
         final Handler handler = new Handler(handlerThread.getLooper()) {
@@ -306,10 +357,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
 
-        loadingDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
-        loadingDialog.getProgressHelper().setBarColor(R.color.main);
-        loadingDialog.setTitleText("Loading user profile...");
-        loadingDialog.setCancelable(false);
+        loadingDialog = LoadingDialog.Companion.get(this);
         loadingDialog.show();
 
         ImageButton backBtn = findViewById(R.id.imageButton2);
@@ -384,26 +432,28 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                // Check if logged-in user has blocked current user
-                if (snapshot.child(user.getUid()).child("blockedUsers").child(userID).exists()) {
-                    new AlertDialog.Builder(UserProfileActivity.this)
-                            .setTitle("Blocked user")
-                            .setMessage("You have blocked this user. You want to unblock this user?")
-                            .setPositiveButton("Yes", (dialogInterface, i) ->
-                                    usersRef.child(user.getUid()).child("blockedUsers").child(userID).removeValue().addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            dialogInterface.dismiss();
-                                            Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
-                                        }else {
-                                            Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
-                                            onBackPressed();
-                                        }
-                                    })).setNegativeButton("No", (dialogInterface, i) -> {
-                        dialogInterface.dismiss();
-                        onBackPressed();
-                    })
-                            .setCancelable(false)
-                            .show();
+                if (userID != null) {
+                    // Check if logged-in user has blocked current user
+                    if (snapshot.child(user.getUid()).child("blockedUsers").child(userID).exists()) {
+                        new AlertDialog.Builder(UserProfileActivity.this)
+                                .setTitle("Blocked user")
+                                .setMessage("You have blocked this user. You want to unblock this user?")
+                                .setPositiveButton("Yes", (dialogInterface, i) ->
+                                        usersRef.child(user.getUid()).child("blockedUsers").child(userID).removeValue().addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                dialogInterface.dismiss();
+                                                Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                                onBackPressed();
+                                            }
+                                        })).setNegativeButton("No", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                            onBackPressed();
+                        })
+                                .setCancelable(false)
+                                .show();
+                    }
                 }
 
                 String profilePictureURL = "none";
@@ -411,15 +461,20 @@ public class UserProfileActivity extends AppCompatActivity {
                 // Show report/block options only
                 // if this profile is not the current
                 // logged-in user profile
-                if (!userID.equals(user.getUid())) {
-                    Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
-                    toolbar.setTitle("");
-                    setSupportActionBar(toolbar);
+                if (userID != null) {
+                    if (!userID.equals(user.getUid())) {
+                        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                        toolbar.setTitle("");
+                        setSupportActionBar(toolbar);
+                    }
                 }
 
+                assert userID != null;
                 if (snapshot.child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
                     followBtn.setVisibility(View.GONE);
                     userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                }else {
+                    sendNotificationToUser("profile_visit");
                 }
 
                 if (snapshot.child(userID).child("profileImgUrl").exists()) {
@@ -434,7 +489,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 if (!snapshot.child(userID).child("following").child(user.getUid()).exists()) {
                     userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     userFollowsCurrentUserTextView.setVisibility(View.GONE);
                 }
 
@@ -450,7 +505,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     if (snapshot.child(user.getUid()).child("following").child(userID).exists()) {
                         currentUserFollowsThisUser = true;
                         followBtn.setText("Unfollow");
-                    }else {
+                    } else {
                         currentUserFollowsThisUser = false;
                     }
                 }
@@ -513,7 +568,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         if (postSnapshot.child("comments").exists()) {
                             postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                        }else {
+                        } else {
                             postModel.setCommentsCount("0");
                         }
 
@@ -601,7 +656,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         .setMessage(username + " has been reported. Thanks for keeping Social Meme community safe")
                         .setPositiveButton("Okay", (dialogInterface, i) -> dialogInterface.dismiss())
                         .show();
-            }else {
+            } else {
                 Toast.makeText(this, "Error: Can't report user, try again later", Toast.LENGTH_SHORT).show();
             }
         });
@@ -615,7 +670,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 sendNotificationToUser("block");
                 Toast.makeText(UserProfileActivity.this, "User blocked", Toast.LENGTH_SHORT).show();
                 onBackPressed();
-            }else {
+            } else {
                 Toast.makeText(UserProfileActivity.this, "Error: Can't block this user", Toast.LENGTH_SHORT).show();
             }
         });
