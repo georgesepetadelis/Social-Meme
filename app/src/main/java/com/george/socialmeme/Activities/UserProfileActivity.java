@@ -52,6 +52,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.transform.sax.SAXResult;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
 
@@ -62,54 +64,19 @@ public class UserProfileActivity extends AppCompatActivity {
     public static boolean currentUserFollowsThisUser;
     public int followers = 0;
     public int following = 0;
-    public LoadingDialog loadingDialog;
+    //public LoadingDialog loadingDialog;
     private ScreenShotContentObserver screenShotContentObserver;
     private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
     void sendNotificationToUser(String notificationType) {
 
-        final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
         final String[] notification_message = {"none"};
         final String[] notification_title = {"none"};
 
-        if (notificationType.equals("profile_visit")) {
-
-            notification_title[0] = "New profile visitor";
-            notification_message[0] = user.getDisplayName() + " visited your profile";
-
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    String notificationID = usersRef.push().getKey();
-                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-
-                    Calendar calendar = Calendar.getInstance();
-                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                    int currentMinutes = calendar.get(Calendar.MINUTE);
-
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue().toString().equals(username)) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }
+        if (notificationType.equals("profile_visit")) {}
         if (notificationType.equals("follow")) {
 
             notification_title[0] = "New follower";
@@ -223,7 +190,7 @@ public class UserProfileActivity extends AppCompatActivity {
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                /*
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
                     if (userSnap.child("name").getValue(String.class).equals(username)) {
 
@@ -241,7 +208,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         }
                         break;
                     }
-                }
+                }*/
 
             }
 
@@ -265,8 +232,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        UserProfileActivity.userID = null;
-        UserProfileActivity.username = null;
+        userID = null;
+        username = null;
         super.onPause();
         try {
             getContentResolver().unregisterContentObserver(screenShotContentObserver);
@@ -278,8 +245,8 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        UserProfileActivity.userID = null;
-        UserProfileActivity.username = null;
+        userID = null;
+        username = null;
         try {
             getContentResolver().unregisterContentObserver(screenShotContentObserver);
         } catch (Exception e) {
@@ -336,6 +303,10 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        Bundle extras = getIntent().getExtras();
+        userID = extras.getString("user_id");
+        username = extras.getString("username");
+
         HandlerThread handlerThread = new HandlerThread("content_observer");
         handlerThread.start();
         final Handler handler = new Handler(handlerThread.getLooper()) {
@@ -345,10 +316,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
 
-        if (username == null || userID == null) {
-            onBackPressed();
-        }
-
         screenShotContentObserver = new ScreenShotContentObserver(handler, this) {
             @Override
             protected void onScreenShot(String path, String fileName) {
@@ -357,15 +324,14 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
 
-        loadingDialog = LoadingDialog.Companion.get(this);
-        loadingDialog.show();
+        //loadingDialog = LoadingDialog.Companion.get(this);
+        //loadingDialog.show();
 
         ImageButton backBtn = findViewById(R.id.imageButton2);
         ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
         TextView username_tv = findViewById(R.id.textView12);
         Button followBtn = findViewById(R.id.follow_btn);
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         TextView followersCounter = findViewById(R.id.followers_my_profile3);
         TextView followingCounter = findViewById(R.id.following_my_profile3);
@@ -387,16 +353,18 @@ public class UserProfileActivity extends AppCompatActivity {
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
         RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
-        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        backBtn.setOnClickListener(v -> onBackPressed());
 
         postsOfTheMonthInfo.setOnClickListener(view -> {
             Intent intent = new Intent(UserProfileActivity.this, PostsOfTheMonthActivity.class);
@@ -408,8 +376,6 @@ public class UserProfileActivity extends AppCompatActivity {
             copyUsernameToClipboard();
             return false;
         });
-
-        backBtn.setOnClickListener(v -> onBackPressed());
 
         showFollowersView.setOnClickListener(v -> {
             if (followers != 0) {
@@ -427,82 +393,75 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-        // Load profile data
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Load user data
+        rootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                if (userID != null) {
-                    // Check if logged-in user has blocked current user
-                    if (snapshot.child(user.getUid()).child("blockedUsers").child(userID).exists()) {
-                        new AlertDialog.Builder(UserProfileActivity.this)
-                                .setTitle("Blocked user")
-                                .setMessage("You have blocked this user. You want to unblock this user?")
-                                .setPositiveButton("Yes", (dialogInterface, i) ->
-                                        usersRef.child(user.getUid()).child("blockedUsers").child(userID).removeValue().addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                dialogInterface.dismiss();
-                                                Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
-                                                onBackPressed();
-                                            }
-                                        })).setNegativeButton("No", (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
-                            onBackPressed();
-                        })
-                                .setCancelable(false)
-                                .show();
-                    }
-                }
-
                 String profilePictureURL = "none";
+                String username_from_db = snapshot.child("users").child(userID).child("name").getValue(String.class);
+                username_tv.setText(username_from_db);
+                int totalLikes = 0;
+
+                // Check if logged-in user has
+                // blocked current user to show an alert
+                if (snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userID).exists()) {
+
+                    new AlertDialog.Builder(UserProfileActivity.this)
+                            .setTitle("Blocked user")
+                            .setMessage("You have blocked this user. You want to unblock this user?")
+                            .setPositiveButton("Yes", (dialogInterface, i) ->
+                                    usersRef.child(user.getUid())
+                                            .child("blockedUsers").child(userID)
+                                            .removeValue().addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            dialogInterface.dismiss();
+                                            Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                            onBackPressed();
+                                        }
+                                    })).setNegativeButton("No", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                        onBackPressed();
+                    }).setCancelable(false).show();
+
+                }
 
                 // Show report/block options only
                 // if this profile is not the current
                 // logged-in user profile
-                if (userID != null) {
-                    if (!userID.equals(user.getUid())) {
-                        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
-                        toolbar.setTitle("");
-                        setSupportActionBar(toolbar);
-                    }
+                if (!userID.equals(user.getUid())) {
+                    Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                    toolbar.setTitle("");
+                    setSupportActionBar(toolbar);
                 }
 
-                assert userID != null;
-                if (snapshot.child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
+                if (snapshot.child("users").child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
                     followBtn.setVisibility(View.GONE);
                     userFollowsCurrentUserTextView.setVisibility(View.GONE);
-                }else {
+                } else {
                     sendNotificationToUser("profile_visit");
                 }
 
-                if (snapshot.child(userID).child("profileImgUrl").exists()) {
-                    profilePictureURL = snapshot.child(userID).child("profileImgUrl").getValue(String.class);
+                if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {
+                    profilePictureURL = snapshot.child("users").child(userID).child("profileImgUrl").getValue(String.class);
                 }
-
-                String username = snapshot.child(userID).child("name").getValue(String.class);
 
                 if (!profilePictureURL.equals("none")) {
                     Glide.with(getApplicationContext()).load(profilePictureURL).into(profilePicture);
                 }
 
-                if (!snapshot.child(userID).child("following").child(user.getUid()).exists()) {
+                if (!snapshot.child("users").child(userID).child("following").child(user.getUid()).exists()) {
                     userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
                 } else {
                     userFollowsCurrentUserTextView.setVisibility(View.GONE);
                 }
 
-                username_tv.setText(username);
-
-                if (HomeActivity.anonymous) {
-                    followBtn.setEnabled(false);
-                }
-
                 // check logged in user follows this user
-                if (snapshot.child(user.getUid()).child("following").exists()) {
+                if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
 
-                    if (snapshot.child(user.getUid()).child("following").child(userID).exists()) {
+                    if (snapshot.child("users").child(user.getUid()).child("following").child(userID).exists()) {
                         currentUserFollowsThisUser = true;
                         followBtn.setText("Unfollow");
                     } else {
@@ -511,22 +470,22 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
 
                 // set followers and following counter values
-                if (snapshot.child(userID).child("following").exists()) {
-                    following = (int) snapshot.child(userID).child("following").getChildrenCount();
+                if (snapshot.child("users").child(userID).child("following").exists()) {
+                    following = (int) snapshot.child("users").child(userID).child("following").getChildrenCount();
                     followingCounter.setText(String.format("%d", following));
                 }
 
-                if (snapshot.child(userID).child("followers").exists()) {
-                    followers = (int) snapshot.child(userID).child("followers").getChildrenCount();
+                if (snapshot.child("users").child(userID).child("followers").exists()) {
+                    followers = (int) snapshot.child("users").child(userID).child("followers").getChildrenCount();
                     followersCounter.setText(String.format("%d", followers));
                 }
 
                 // Load user trophies
-                if (snapshot.child(userID).child("trophies").exists()) {
+                if (snapshot.child("users").child(userID).child("trophies").exists()) {
 
-                    String goldTrophies = snapshot.child(userID).child("trophies").child("gold").getValue(String.class);
-                    String silverTrophies = snapshot.child(userID).child("trophies").child("silver").getValue(String.class);
-                    String bronzeTrophies = snapshot.child(userID).child("trophies").child("bronze").getValue(String.class);
+                    String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
+                    String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
+                    String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
 
                     goldTrophiesCount.setText(goldTrophies);
                     silverTrophiesCount.setText(silverTrophies);
@@ -534,24 +493,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 }
 
-            }
+                // Load user posts
+                for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Load user posts and calculate total likes of the user
-        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                int totalLikes = 0;
-
-                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-
-                    if (postSnapshot.child("name").getValue(String.class).equals(username)) {
+                    if (postSnapshot.child("name").getValue(String.class).equals(username_from_db)) {
                         PostModel postModel = new PostModel();
                         postModel.setId(postSnapshot.child("id").getValue(String.class));
                         postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
@@ -582,13 +527,13 @@ public class UserProfileActivity extends AppCompatActivity {
                 totalLikesCounter.setText(String.valueOf(totalLikes));
 
                 recyclerAdapter.notifyDataSetChanged();
-                loadingDialog.hide();
+                //loadingDialog.hide();
 
             }
 
             @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(UserProfileActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 

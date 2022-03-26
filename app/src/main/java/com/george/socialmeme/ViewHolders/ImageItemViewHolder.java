@@ -43,8 +43,6 @@ import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -54,7 +52,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -66,8 +63,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.security.auth.callback.Callback;
+import java.util.concurrent.atomic.AtomicReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -154,6 +150,35 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                 Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public interface FirebaseCallback {
+        void onCallback(String callback_userID, String callback_username);
+    }
+
+    void openUserProfile(FirebaseCallback firebaseCallback) {
+        if (!HomeActivity.anonymous) {
+            usersRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
+                            String uname = username.getText().toString();
+                            String userId = snap.child("id").getValue(String.class);
+                            firebaseCallback.onCallback(userId, uname);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
     }
 
     private void deletePost() {
@@ -377,30 +402,15 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
         openUserProfileView.setOnClickListener(v -> {
 
-            if (!HomeActivity.anonymous) {
+            openUserProfile((callback_userID, callback_username) -> {
                 Intent intent = new Intent(context, UserProfileActivity.class);
-                usersRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snap : snapshot.getChildren()) {
-                            if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                                UserProfileActivity.username = username.getText().toString();
-                                UserProfileActivity.userID = snap.child("id").getValue(String.class);
-                                break;
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                intent.putExtra("user_id", callback_userID);
+                intent.putExtra("username", callback_username);
+                //UserProfileActivity.userID = callback_userID;
+                //UserProfileActivity.username  = callback_username;
                 context.startActivity(intent);
                 CustomIntent.customType(context, "left-to-right");
-
-            }
+            });
 
         });
 
