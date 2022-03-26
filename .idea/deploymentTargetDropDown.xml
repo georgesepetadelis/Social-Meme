@@ -7,7 +7,7 @@
         <deviceKey>
           <Key>
             <type value="SERIAL_NUMBER" />
-            <value value="adb-RF8R11HN5FA-xJYicY._adb-tls-connect._tcp" />
+            <value value="RF8R11HN5FA" />
           </Key>
         </deviceKey>
       </Target>

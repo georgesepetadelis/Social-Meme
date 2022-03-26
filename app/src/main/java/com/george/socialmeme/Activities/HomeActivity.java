@@ -73,13 +73,28 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // TODO ONLY SET TOKEN ON LOGIN
+        // Update token on real-time DB
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
+                    .child(user.getUid());
+
+            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    userRef.child("fcm_token").setValue(task.getResult());
+                }
+            });
+
+        }
+
+
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
 
-
-
-        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         bottomNavBar = findViewById(R.id.bottom_nav);
 
         // Detect if system night mode is enabled
@@ -130,7 +145,6 @@ public class HomeActivity extends AppCompatActivity {
         // inside real-time DB to be able
         // to send push notifications from back-end
         if (!HomeActivity.anonymous) {
-            FirebaseUser user = mAuth.getCurrentUser();
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
                     .child(user.getUid());
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -186,7 +200,6 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
         if (!anonymous) {
-            final FirebaseUser user = mAuth.getCurrentUser();
             user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
                     .setTitle("Error")
                     .setMessage(e.getMessage())

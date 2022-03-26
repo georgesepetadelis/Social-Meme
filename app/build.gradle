@@ -124,4 +124,7 @@ dependencies {
     // Custom alert dialog
     implementation 'com.github.TutorialsAndroid:KAlertDialog:14.0.19'
 
+    // Screenshot detector
+    implementation 'com.esc861.screenshotlistener:screenshotlistener:1.0.3'
+
 }

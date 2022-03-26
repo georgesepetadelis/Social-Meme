@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
+import com.esc861.screenshotlistener.ScreenshotListener;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Observers.ScreenShotContentObserver;
@@ -65,8 +66,9 @@ public class UserProfileActivity extends AppCompatActivity {
     public int followers = 0;
     public int following = 0;
     //public LoadingDialog loadingDialog;
-    private ScreenShotContentObserver screenShotContentObserver;
     private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+    ScreenshotListener listener;
 
     void sendNotificationToUser(String notificationType) {
 
@@ -76,25 +78,40 @@ public class UserProfileActivity extends AppCompatActivity {
         final String[] notification_message = {"none"};
         final String[] notification_title = {"none"};
 
-        if (notificationType.equals("profile_visit")) {}
-        if (notificationType.equals("follow")) {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-            notification_title[0] = "New follower";
-            notification_message[0] = user.getDisplayName() + " started following you";
+                String notificationID = usersRef.push().getKey();
+                String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
 
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Calendar calendar = Calendar.getInstance();
+                int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+                int currentMinutes = calendar.get(Calendar.MINUTE);
 
-                    String notificationID = usersRef.push().getKey();
-                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
+                if (notificationType.equals("profile_visit")) {
 
-                    Calendar calendar = Calendar.getInstance();
-                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                    int currentMinutes = calendar.get(Calendar.MINUTE);
+                    notification_title[0] = "New profile visitor";
+                    notification_message[0] = user.getDisplayName() + " visited your profile";
 
                     for (DataSnapshot snap : snapshot.getChildren()) {
+                        if (snap.child("name").getValue().toString().equals(username)) {
+                            String postAuthorID = snap.child("id").getValue().toString();
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
+                            break;
+                        }
+                    }
+                }
 
+                if (notificationType.equals("follow")) {
+
+                    notification_title[0] = "New follower";
+                    notification_message[0] = user.getDisplayName() + " started following you";
+
+                    for (DataSnapshot snap : snapshot.getChildren()) {
                         if (snap.child("name").getValue().toString().equals(username)) {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
@@ -106,28 +123,10 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                if (notificationType.equals("screenshot")) {
 
-        }
-        if (notificationType.equals("screenshot")) {
-
-            notification_title[0] = "Profile screenshot";
-            notification_message[0] = user.getDisplayName() + " screenshotted your profile";
-
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    String notificationID = usersRef.push().getKey();
-                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-
-                    Calendar calendar = Calendar.getInstance();
-                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                    int currentMinutes = calendar.get(Calendar.MINUTE);
+                    notification_title[0] = "Profile screenshot";
+                    notification_message[0] = user.getDisplayName() + " screenshotted your profile";
 
                     for (DataSnapshot snap : snapshot.getChildren()) {
 
@@ -142,27 +141,10 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                else if (notificationType.equals("unfollow")) {
 
-        } else if (notificationType.equals("unfollow")) {
-
-            notification_title[0] = "You lost a follower :(";
-            notification_message[0] = user.getDisplayName() + " unfollowed you";
-
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    String notificationID = usersRef.push().getKey();
-                    String currentDate = String.valueOf(android.text.format.DateFormat.format("dd-MM-yyyy", new java.util.Date()));
-
-                    Calendar calendar = Calendar.getInstance();
-                    int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                    int currentMinutes = calendar.get(Calendar.MINUTE);
+                    notification_title[0] = "You lost a follower :(";
+                    notification_message[0] = user.getDisplayName() + " unfollowed you";
 
                     for (DataSnapshot snap : snapshot.getChildren()) {
 
@@ -177,38 +159,27 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }
-
-        // Find user token from DB
-        // and add notification to Firestore
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                /*
+                // Find user token from DB
+                // and add notification to Firestore
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
                     if (userSnap.child("name").getValue(String.class).equals(username)) {
 
                         if (userSnap.child("fcm_token").exists()) {
                             // add notification to Firestore to send
                             // push notification from back-end
-                            String notificationID = usersRef.push().getKey();
+                            String firestoreNotificationID = usersRef.push().getKey();
                             Map<String, Object> notification = new HashMap<>();
                             notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                             notification.put("title", notification_title[0]);
                             notification.put("message", notification_message[0]);
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             firestore.collection("notifications")
-                                    .document(notificationID).set(notification);
+                                    .document(firestoreNotificationID).set(notification);
+                            break;
                         }
-                        break;
+                        
                     }
-                }*/
+                }
 
             }
 
@@ -223,23 +194,13 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        getContentResolver().registerContentObserver(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                true,
-                screenShotContentObserver
-        );
+        listener.startListening();
     }
 
     @Override
     public void onPause() {
-        userID = null;
-        username = null;
         super.onPause();
-        try {
-            getContentResolver().unregisterContentObserver(screenShotContentObserver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        listener.stopListening();
     }
 
     @Override
@@ -247,11 +208,7 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onDestroy();
         userID = null;
         username = null;
-        try {
-            getContentResolver().unregisterContentObserver(screenShotContentObserver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        listener.stopListening();
     }
 
     void copyUsernameToClipboard() {
@@ -307,25 +264,17 @@ public class UserProfileActivity extends AppCompatActivity {
         userID = extras.getString("user_id");
         username = extras.getString("username");
 
-        HandlerThread handlerThread = new HandlerThread("content_observer");
-        handlerThread.start();
-        final Handler handler = new Handler(handlerThread.getLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-            }
-        };
-
-        screenShotContentObserver = new ScreenShotContentObserver(handler, this) {
-            @Override
-            protected void onScreenShot(String path, String fileName) {
-                File file = new File(path); // this is the file of screenshot image
-                sendNotificationToUser("screenshot");
-            }
-        };
-
         //loadingDialog = LoadingDialog.Companion.get(this);
         //loadingDialog.show();
+
+        listener = new ScreenshotListener() {
+            @Override
+            public void onScreenshotDetected(String path) {
+                Toast.makeText(UserProfileActivity.this, "screenshot", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        listener.startListening();
 
         ImageButton backBtn = findViewById(R.id.imageButton2);
         ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
@@ -393,8 +342,12 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
+        if (userID != null && username != null) {
+            sendNotificationToUser("profile_visit");
+        }
+
         // Load user data
-        rootRef.addValueEventListener(new ValueEventListener() {
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -440,8 +393,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 if (snapshot.child("users").child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
                     followBtn.setVisibility(View.GONE);
                     userFollowsCurrentUserTextView.setVisibility(View.GONE);
-                } else {
-                    sendNotificationToUser("profile_visit");
                 }
 
                 if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {

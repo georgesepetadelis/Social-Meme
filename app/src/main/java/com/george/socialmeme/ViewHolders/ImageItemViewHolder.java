@@ -158,7 +158,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
     void openUserProfile(FirebaseCallback firebaseCallback) {
         if (!HomeActivity.anonymous) {
-            usersRef.addValueEventListener(new ValueEventListener() {
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot snap : snapshot.getChildren()) {
@@ -200,6 +200,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     void sendNotificationToPostAuthor(String notificationType, String commentText) {
+
+        Toast.makeText(context, "not", Toast.LENGTH_SHORT).show();
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
