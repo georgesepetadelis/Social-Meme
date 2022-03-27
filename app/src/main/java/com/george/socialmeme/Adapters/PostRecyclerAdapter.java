@@ -1,5 +1,6 @@
 package com.george.socialmeme.Adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -23,6 +24,8 @@ import com.george.socialmeme.ViewHolders.PostsOfTheMonthItemViewHolder;
 import com.george.socialmeme.ViewHolders.VideoItemViewHolder;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.analytics.AnalyticsListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -90,8 +93,19 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         return new ImageItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_post_item, parent, false));
     }
 
+    // Release ExoPlayer when a video item is recycled
+    // to avoid player errors on other video items
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        if (postList.get(holder.getLayoutPosition()).getPostType().equals("video")) {
+            VideoItemViewHolder videoViewHolder = (VideoItemViewHolder) holder;
+            videoViewHolder.andExoPlayerView.getPlayer().release();
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         DatabaseReference likeRef = FirebaseDatabase.getInstance().getReference("likes");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -210,7 +224,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 }
             });
 
-            // Get current post id set username, authorID, profile picture URL, postType, likes and post image URL
             audioViewHolder.postID = postList.get(position).getId();
             audioViewHolder.usernameTV.setText(postList.get(position).getName());
             audioViewHolder.authorID = postList.get(position).getAuthorID();
@@ -293,6 +306,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             player.setMediaItem(mediaItem);
             player.prepare();
             videoViewHolder.andExoPlayerView.setPlayer(player);
+
+            player.addAnalyticsListener(new AnalyticsListener() {
+                @Override
+                public void onPlayerError(@NonNull EventTime eventTime, @NonNull PlaybackException error) {
+                    Toast.makeText(context, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
             // Load profile picture
             String profilePictureUrl = postList.get(position).getProfileImgUrl();

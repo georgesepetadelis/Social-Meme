@@ -45,14 +45,23 @@ import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import maes.tech.intentanim.CustomIntent;
@@ -60,6 +69,7 @@ import maes.tech.intentanim.CustomIntent;
 public class NewPostFragment extends Fragment {
 
     final private DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
+    final private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     final private StorageReference storageReference = FirebaseStorage.getInstance().getReference("images");
     private Uri mediaUri;
     private static String mediaType;
@@ -87,12 +97,44 @@ public class NewPostFragment extends Fragment {
             });
 
 
+    private void sendNewPostNotificationToFollowers() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child(user.getUid()).child("followers").exists()) {
+                    for (DataSnapshot follower : snapshot.child(user.getUid()).child("followers").getChildren()) {
+                        // Check if token exists
+                        if (snapshot.child(follower.getValue(String.class)).child("fcm_token").exists()) {
+                            String userToken = snapshot.child(follower.getValue(String.class))
+                                    .child("fcm_token").getValue(String.class);
+                            // add notification to Firestore to send
+                            // push notification from back-end
+                            String firestoreNotificationID = usersRef.push().getKey();
+                            Map<String, Object> notification = new HashMap<>();
+                            notification.put("token", userToken);
+                            notification.put("title", user.getDisplayName() + " just uploaded a new meme");
+                            notification.put("message", "See the latest post from " + user.getDisplayName());
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                            firestore.collection("notifications")
+                                    .document(firestoreNotificationID).set(notification);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private String getFileExtension(Uri uri) {
         if (uri != null) {
             ContentResolver cr = getActivity().getContentResolver();
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             return mime.getExtensionFromMimeType(cr.getType(uri));
-        }else {
+        } else {
             return "no_extension";
         }
     }
@@ -134,9 +176,11 @@ public class NewPostFragment extends Fragment {
 
             uploadJokeButton.setOnClickListener(view -> {
 
+                loadingDialog.show();
+
                 if (jokeTitleEditText.getText().toString().isEmpty() || jokeContentEditText.getText().toString().isEmpty()) {
                     SmartDialogBox.showErrorDialog(getActivity(), "Title or joke content cannot be empty", "OK");
-                }else {
+                } else {
                     dialog.dismiss();
                     UploadPostModel model = new UploadPostModel();
                     postsRef.child(postId).setValue(model);
@@ -156,6 +200,7 @@ public class NewPostFragment extends Fragment {
                     }
 
                     Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
+                    sendNewPostNotificationToFollowers();
                     HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
                 }
             });
@@ -183,36 +228,38 @@ public class NewPostFragment extends Fragment {
                 if (!audioNameET.getText().toString().isEmpty()) {
 
                     StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
-                    fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
-                        loadingDialog.hide();
+                    fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
+                            .addOnSuccessListener(uri1 -> {
+                                loadingDialog.hide();
 
-                        UploadPostModel model = new UploadPostModel(uri1.toString());
-                        postsRef.child(postId).setValue(model);
-                        postsRef.child(postId).child("name").setValue(user.getDisplayName());
-                        postsRef.child(postId).child("likes").setValue("0");
-                        postsRef.child(postId).child("id").setValue(postId);
-                        postsRef.child(postId).child("postType").setValue(type);
+                                UploadPostModel model = new UploadPostModel(uri1.toString());
+                                postsRef.child(postId).setValue(model);
+                                postsRef.child(postId).child("name").setValue(user.getDisplayName());
+                                postsRef.child(postId).child("likes").setValue("0");
+                                postsRef.child(postId).child("id").setValue(postId);
+                                postsRef.child(postId).child("postType").setValue(type);
 
-                        if (!audioNameET.getText().toString().isEmpty()) {
-                            postsRef.child(postId).child("audioName").setValue(audioNameET.getText().toString());
-                        }
+                                if (!audioNameET.getText().toString().isEmpty()) {
+                                    postsRef.child(postId).child("audioName").setValue(audioNameET.getText().toString());
+                                }
 
-                        if (user.getPhotoUrl() != null) {
-                            postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
-                        } else {
-                            postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
-                        }
-                        Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                        HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+                                if (user.getPhotoUrl() != null) {
+                                    postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                                } else {
+                                    postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
+                                }
 
-                    })).addOnProgressListener(snapshot -> {
+                            })).addOnProgressListener(snapshot -> {
                         loadingDialog.show();
-                        loadingDialog.setTitleText("Uploading meme...");
-                    })
-                            .addOnFailureListener(e -> {
+                    }).addOnFailureListener(e -> {
                                 loadingDialog.hide();
                                 Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            });
+                            })
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
+                        sendNewPostNotificationToFollowers();
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+                    });
 
                 } else {
                     Toast.makeText(getActivity(), "Please provide a name for your sound and try again", Toast.LENGTH_LONG).show();
@@ -247,14 +294,16 @@ public class NewPostFragment extends Fragment {
                         postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
                     }
 
-                    Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                    HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
-
                 })).addOnProgressListener(snapshot -> loadingDialog.show())
                         .addOnFailureListener(e -> {
                             loadingDialog.hide();
                             Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        });
+                        })
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
+                    sendNewPostNotificationToFollowers();
+                    HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+                });
             }
 
         }
@@ -269,9 +318,9 @@ public class NewPostFragment extends Fragment {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        loadingDialog =  new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
+        loadingDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
         loadingDialog.getProgressHelper().setBarColor(R.color.main);
-        loadingDialog.setTitleText("Loading...");
+        loadingDialog.setTitleText("Uploading your meme...");
         loadingDialog.setCancelable(false);
 
         View selectPicture = view.findViewById(R.id.select_img_btn);

@@ -112,15 +112,18 @@ public class NotificationsActivity extends AppCompatActivity {
 
                 if (snapshot.child("notifications").exists()) {
 
-                    for (DataSnapshot snap : snapshot.child("notifications").getChildren()) {
+                    for (DataSnapshot notificationSnap : snapshot.child("notifications").getChildren()) {
 
-                        NotificationModel notificationModel = new NotificationModel();
-                        notificationModel.setTitle(snap.child("title").getValue(String.class));
-                        notificationModel.setMessage(snap.child("message").getValue(String.class));
-                        notificationModel.setType(snap.child("type").getValue(String.class));
-                        notificationModel.setDate(snap.child("date").getValue(String.class));
-
-                        notificationModelArrayList.add(notificationModel);
+                        if (!notificationSnap.child("type").exists()) {
+                            continue;
+                        }else {
+                            NotificationModel notificationModel = new NotificationModel();
+                            notificationModel.setTitle(notificationSnap.child("title").getValue(String.class));
+                            notificationModel.setMessage(notificationSnap.child("message").getValue(String.class));
+                            notificationModel.setType(notificationSnap.child("type").getValue(String.class));
+                            notificationModel.setDate(notificationSnap.child("date").getValue(String.class));
+                            notificationModelArrayList.add(notificationModel);
+                        }
 
                     }
 
