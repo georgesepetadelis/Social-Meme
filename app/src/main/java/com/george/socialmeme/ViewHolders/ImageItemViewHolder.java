@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -73,13 +73,13 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     public Context context;
     public CardView container;
     public String postID, postImageURL, userID;
-    public TextView username, like_counter_tv, commentsCount;
+    public TextView username, like_counter_tv, commentsCount, followBtn;
     public ImageView postImg;
     public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn;
     public ProgressBar loadingProgressBar;
     public CircleImageView profileImage;
     public boolean isPostLiked = false;
-    public ConstraintLayout openUserProfileView;
+    public ConstraintLayout openUserProfileView, followBtnView;
 
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
@@ -195,13 +195,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
     void sendNotificationToPostAuthor(String notificationType, String commentText) {
-
-        Toast.makeText(context, "not", Toast.LENGTH_SHORT).show();
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -228,6 +222,14 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                         String postAuthorID = snap.child("id").getValue().toString();
                         usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
 
+                        if (notificationType.equals("follow")) {
+                            notification_title[0] = "New follower";
+                            notification_message[0] = user.getDisplayName() + " started following you";
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                        }
                         if (notificationType.equals("like")) {
                             notification_title[0] = "New like";
                             notification_message[0] = user.getDisplayName() + " liked your post";
@@ -255,6 +257,29 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                         break;
                     }
                 }
+
+                // Find user token from DB
+                // and add notification to Firestore
+                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                    if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
+
+                        if (userSnap.child("fcm_token").exists()) {
+                            // add notification to Firestore to send
+                            // push notification from back-end
+                            String firestoreNotificationID = usersRef.push().getKey();
+                            Map<String, Object> notification = new HashMap<>();
+                            notification.put("token", userSnap.child("fcm_token").getValue(String.class));
+                            notification.put("title", notification_title[0]);
+                            notification.put("message", notification_message[0]);
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                            firestore.collection("notifications")
+                                    .document(firestoreNotificationID).set(notification);
+                            break;
+                        }
+
+                    }
+                }
+
             }
 
             @Override
@@ -380,6 +405,36 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    void followPostAuthor() {
+
+        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("following")) {
+                    // Logged-in user follows post author
+                    if (!snapshot.child("following").child(userID).exists()) {
+                        usersRef.child(userID).child("followers").child(user.getUid()).setValue(user.getUid());
+                        usersRef.child(user.getUid()).child("following").child(userID).setValue(userID);
+                        followBtn.setTextColor(context.getColor(R.color.gray));
+                        followBtn.setText("Following");
+                        followBtn.setEnabled(false);
+                        sendNotificationToPostAuthor("follow", "");
+                        Toast.makeText(context, "You started following " + username.getText().toString(), Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(context, "You already following this user.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        
+    }
+
     public ImageItemViewHolder(@NonNull View itemView) {
         super(itemView);
 
@@ -397,21 +452,36 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         commentsCount = itemView.findViewById(R.id.textView63);
         shareBtn = itemView.findViewById(R.id.imageButton13);
         loadingProgressBar = itemView.findViewById(R.id.progressBar3);
+        followBtn = itemView.findViewById(R.id.textView81);
+        followBtnView = itemView.findViewById(R.id.follow_btn_view);
         View openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
 
         showPostOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         openCommentsView.setOnClickListener(view -> showCommentsDialog());
 
+        if (!HomeActivity.anonymous && !username.getText().toString().equals(user.getDisplayName())) {
+            followBtnView.setVisibility(View.VISIBLE);
+        }else {
+            followBtnView.setVisibility(View.GONE);
+        }
+
+        followBtn.setOnClickListener(view -> followPostAuthor());
+
         openUserProfileView.setOnClickListener(v -> {
 
             openUserProfile((callback_userID, callback_username) -> {
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                intent.putExtra("user_id", callback_userID);
-                intent.putExtra("username", callback_username);
-                //UserProfileActivity.userID = callback_userID;
-                //UserProfileActivity.username  = callback_username;
-                context.startActivity(intent);
-                CustomIntent.customType(context, "left-to-right");
+                if (callback_userID.equals(user.getUid())) {
+                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                    if (selectedItemId != R.id.my_profile_fragment) {
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+                    }
+                } else {
+                    Intent intent = new Intent(context, UserProfileActivity.class);
+                    intent.putExtra("user_id", callback_userID);
+                    intent.putExtra("username", callback_username);
+                    context.startActivity(intent);
+                    CustomIntent.customType(context, "left-to-right");
+                }
             });
 
         });
@@ -419,6 +489,26 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         openUserProfileView.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
             return false;
+        });
+
+        // Check if logged-in user follows post author
+        // to hide follow btn
+        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("following")) {
+                    // Logged-in user follows post author
+                    // hide follow btn
+                    if (snapshot.child("following").child(userID).exists()) {
+                        followBtnView.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         like_btn.setOnClickListener(v -> {

@@ -65,7 +65,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public static boolean currentUserFollowsThisUser;
     public int followers = 0;
     public int following = 0;
-    //public LoadingDialog loadingDialog;
+    public KAlertDialog progressDialog;
     private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
     ScreenshotListener listener;
@@ -212,11 +212,9 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     void copyUsernameToClipboard() {
-
         ClipboardManager clipboard = (ClipboardManager) UserProfileActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("username", username);
         clipboard.setPrimaryClip(clip);
-
         Toast.makeText(UserProfileActivity.this, "Username copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
@@ -264,8 +262,11 @@ public class UserProfileActivity extends AppCompatActivity {
         userID = extras.getString("user_id");
         username = extras.getString("username");
 
-        //loadingDialog = LoadingDialog.Companion.get(this);
-        //loadingDialog.show();
+        progressDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
+        progressDialog.getProgressHelper().setBarColor(R.color.main);
+        progressDialog.setTitleText("Loading user profile...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         listener = new ScreenshotListener() {
             @Override
@@ -455,6 +456,12 @@ public class UserProfileActivity extends AppCompatActivity {
                         postModel.setName(postSnapshot.child("name").getValue(String.class));
                         postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
+                        for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                            if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
+                                postModel.setAuthorID(user.child("id").getValue(String.class));
+                            }
+                        }
+
                         if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
                             postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
                             postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
@@ -478,7 +485,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 totalLikesCounter.setText(String.valueOf(totalLikes));
 
                 recyclerAdapter.notifyDataSetChanged();
-                //loadingDialog.hide();
+                progressDialog.hide();
 
             }
 
@@ -489,6 +496,10 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         followBtn.setOnClickListener(v -> {
+
+            progressDialog.show();
+            progressDialog.setTitleText("Loading...");
+
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -505,29 +516,21 @@ public class UserProfileActivity extends AppCompatActivity {
                         }
 
                         followBtn.setText("Follow");
-
                         followers = followers - 1;
-
                         followersCounter.setText(String.valueOf(followers));
-
                         currentUserFollowsThisUser = false;
-
                         sendNotificationToUser("unfollow");
+                        progressDialog.hide();
 
                     } else if (followBtn.getText().toString().equals("Follow")) {
-
                         // follow this user
                         usersRef.child(userID).child("followers").child(user.getUid()).setValue(user.getUid());
                         usersRef.child(user.getUid()).child("following").child(userID).setValue(userID);
-
                         followers = followers + 1;
-
                         followersCounter.setText(String.valueOf(followers));
-
                         followBtn.setText("Unfollow");
-
                         sendNotificationToUser("follow");
-
+                        progressDialog.hide();
                     }
 
                 }

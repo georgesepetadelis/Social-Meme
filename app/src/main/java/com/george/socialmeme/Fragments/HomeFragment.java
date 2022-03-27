@@ -1,8 +1,11 @@
 package com.george.socialmeme.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -50,6 +53,10 @@ import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 import maes.tech.intentanim.CustomIntent;
+import smartdevelop.ir.eram.showcaseviewlib.GuideView;
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType;
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
+import smartdevelop.ir.eram.showcaseviewlib.listener.GuideListener;
 
 public class HomeFragment extends Fragment {
 
@@ -59,6 +66,58 @@ public class HomeFragment extends Fragment {
     ArrayList<PostModel> postModelArrayList;
     RecyclerView recyclerView;
     PostRecyclerAdapter recyclerAdapter;
+    ImageButton notificationsBtn, searchUserButton;
+    View openNotificationsView;
+
+    void appShowCase() {
+
+        if (isAdded()) {
+            SharedPreferences sharedPref = getContext().getSharedPreferences("app_showcase", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+
+            if (!sharedPref.getBoolean("app_showcase", false)) {
+                new GuideView.Builder(getContext())
+                        .setTitle("Check your notifications")
+                        .setContentText("You can click here to see your notifications")
+                        .setTargetView(notificationsBtn)
+                        .setDismissType(DismissType.anywhere)
+                        .setGravity(Gravity.center)
+                        .setGuideListener(view -> {
+                            new GuideView.Builder(getContext())
+                                    .setTitle("Search a user")
+                                    .setContentText("You can search a user from here by clicking this\nbutton and typing their name")
+                                    .setTargetView(openNotificationsView)
+                                    .setDismissType(DismissType.anywhere)
+                                    .setGravity(Gravity.center)
+                                    .setGuideListener(view1 -> {
+                                        new GuideView.Builder(getContext())
+                                                .setTitle("Upload a new meme")
+                                                .setContentText("You can upload a new meme by clicking\nthis button and select the meme type you want to upload")
+                                                .setTargetView(HomeActivity.bottomNavBar.getViewById(R.id.new_post_fragment))
+                                                .setDismissType(DismissType.anywhere)
+                                                .setGravity(Gravity.center)
+                                                .setGuideListener(view2 -> {
+                                                    new GuideView.Builder(getContext())
+                                                            .setTitle("View your profile")
+                                                            .setContentText("You can see your memes, followers\ntrophies and access settings and more from here.")
+                                                            .setTargetView(HomeActivity.bottomNavBar.getViewById(R.id.my_profile_fragment))
+                                                            .setDismissType(DismissType.anywhere)
+                                                            .setGravity(Gravity.center)
+                                                            .build()
+                                                            .show();
+                                                })
+                                                .build()
+                                                .show();
+                                    })
+                                    .build()
+                                    .show();
+                        }).build().show();
+                editor.putBoolean("app_showcase", true);
+                editor.apply();
+            }
+        }
+
+    }
 
     void openDonateURL() {
         if (isAdded()) {
@@ -69,6 +128,10 @@ public class HomeFragment extends Fragment {
     }
 
     void fetchAllPostsFromDB(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
+
+        notificationsBtn.setEnabled(false);
+        searchUserButton.setEnabled(false);
+
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -76,10 +139,13 @@ public class HomeFragment extends Fragment {
 
                 if (HomeActivity.showLoadingScreen) {
                     new Handler().postDelayed(() -> {
+                        notificationsBtn.setEnabled(true);
+                        searchUserButton.setEnabled(true);
                         fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
                         HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
                         swipeRefreshLayout.setEnabled(true);
                         HomeActivity.showLoadingScreen = false;
+                        appShowCase();
                     }, 1200);
                 }
 
@@ -92,6 +158,12 @@ public class HomeFragment extends Fragment {
                     postModel.setName(postSnapshot.child("name").getValue(String.class));
                     postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
                     postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                    for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                        if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
+                            postModel.setAuthorID(user.child("id").getValue(String.class));
+                        }
+                    }
 
                     if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
                         postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
@@ -156,11 +228,12 @@ public class HomeFragment extends Fragment {
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
-        ImageButton notificationsBtn = view.findViewById(R.id.notificationsButton);
-        ImageButton searchUserButton = view.findViewById(R.id.enter_search_button);
+        notificationsBtn = view.findViewById(R.id.notificationsButton);
+        searchUserButton = view.findViewById(R.id.enter_search_button);
         recyclerView = view.findViewById(R.id.home_recycler_view);
         searchView = view.findViewById(R.id.search_view);
         progressDialog = LoadingDialog.Companion.get(getActivity());
+        openNotificationsView = view.findViewById(R.id.view18);
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -251,15 +324,12 @@ public class HomeFragment extends Fragment {
 
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     if (snap.child("name").getValue().toString().equals(searchView.getText().toString())) {
-
                         userFound = true;
-                        UserProfileActivity.username = searchView.getText().toString();
-                        UserProfileActivity.userID = snap.child("id").getValue().toString();
-
                         Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                        intent.putExtra("user_id", snap.child("id").getValue().toString());
+                        intent.putExtra("username", searchView.getText().toString());
                         getActivity().startActivity(intent);
                         CustomIntent.customType(getActivity(), "left-to-right");
-
                         break;
                     }
                 }

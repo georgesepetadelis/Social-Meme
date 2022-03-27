@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,12 +68,71 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
     public Context context;
     public CircleImageView profilePicture;
     public AudioPlayerView audioPlayerView;
-    public TextView likesCounter, usernameTV, commentsCounter, audioName;
+    public TextView likesCounter, usernameTV, commentsCounter, audioName, followBtn;
     public ImageButton playBtn, shareBtn, likeBtn, postOptionsBtn;
     public View openCommentsView, openUserProfileView;
     public ProgressBar audioViewProgressBar;
     public boolean isAudioPlaying, isPostLiked;
     public String postID, authorID, audioURL;
+    public ConstraintLayout followBtnView;
+
+    public interface FirebaseCallback {
+        void onCallback(String callback_userID, String callback_username);
+    }
+
+    void openUserProfile(ImageItemViewHolder.FirebaseCallback firebaseCallback) {
+        if (!HomeActivity.anonymous) {
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        if (snap.child("name").getValue().toString().equals(usernameTV.getText().toString())) {
+                            String uname = usernameTV.getText().toString();
+                            String userId = snap.child("id").getValue(String.class);
+                            firebaseCallback.onCallback(userId, uname);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
+    }
+
+    void followPostAuthor() {
+
+        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("following")) {
+                    // Logged-in user follows post author
+                    if (!snapshot.child("following").child(authorID).exists()) {
+                        usersRef.child(authorID).child("followers").child(user.getUid()).setValue(user.getUid());
+                        usersRef.child(user.getUid()).child("following").child(authorID).setValue(authorID);
+                        followBtn.setTextColor(context.getColor(R.color.gray));
+                        followBtn.setText("Following");
+                        followBtn.setEnabled(false);
+                        sendNotificationToPostAuthor("follow", "");
+                        Toast.makeText(context, "You started following " + usernameTV.getText().toString(), Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(context, "You already following this user.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     public AudioItemViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -90,9 +150,38 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         audioViewProgressBar = itemView.findViewById(R.id.progressBar4);
         openUserProfileView = itemView.findViewById(R.id.constraintLayout10);
         isAudioPlaying = false;
+        followBtnView = itemView.findViewById(R.id.follow_btn_img);
+        followBtn = itemView.findViewById(R.id.textView81);
 
         postOptionsBtn.setOnClickListener(view -> showPostOptionsBottomSheet());
         openCommentsView.setOnClickListener(view -> showCommentsDialog());
+        followBtn.setOnClickListener(view -> followPostAuthor());
+
+        if (!HomeActivity.anonymous && !usernameTV.getText().toString().equals(user.getDisplayName())) {
+            followBtnView.setVisibility(View.VISIBLE);
+        }else {
+            followBtnView.setVisibility(View.GONE);
+        }
+
+        // Check if logged-in user follows post author
+        // to hide follow btn
+        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("following")) {
+                    // Logged-in user follows post author
+                    // hide follow btn
+                    if (snapshot.child("following").child(authorID).exists()) {
+                        followBtnView.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         playBtn.setOnClickListener(view -> {
             isAudioPlaying = !isAudioPlaying;
@@ -130,30 +219,20 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
         openUserProfileView.setOnClickListener(v -> {
 
-            if (!HomeActivity.anonymous) {
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                usersRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snap : snapshot.getChildren()) {
-                            if (snap.child("name").getValue().toString().equals(usernameTV.getText().toString())) {
-                                UserProfileActivity.username = usernameTV.getText().toString();
-                                UserProfileActivity.userID = snap.child("id").getValue().toString();
-                                break;
-                            }
-                        }
+            openUserProfile((callback_userID, callback_username) -> {
+                if (callback_userID.equals(user.getUid())) {
+                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                    if (selectedItemId != R.id.my_profile_fragment) {
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                context.startActivity(intent);
-                CustomIntent.customType(context, "left-to-right");
-
-            }
+                } else {
+                    Intent intent = new Intent(context, UserProfileActivity.class);
+                    intent.putExtra("user_id", callback_userID);
+                    intent.putExtra("username", callback_username);
+                    context.startActivity(intent);
+                    CustomIntent.customType(context, "left-to-right");
+                }
+            });
 
         });
 

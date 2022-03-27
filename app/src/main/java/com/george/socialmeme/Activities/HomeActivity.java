@@ -1,8 +1,5 @@
 package com.george.socialmeme.Activities;
 
-import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,9 +7,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -26,8 +21,6 @@ import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,12 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -73,23 +62,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // TODO ONLY SET TOKEN ON LOGIN
         // Update token on real-time DB
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        if (user != null) {
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
-                    .child(user.getUid());
-
-            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    userRef.child("fcm_token").setValue(task.getResult());
-                }
-            });
-
-        }
-
+        DatabaseReference root = FirebaseDatabase.getInstance().getReference();
+        root.child("latest_version_code").setValue("13");
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

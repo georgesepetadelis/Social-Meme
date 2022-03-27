@@ -3,23 +3,32 @@ package com.george.socialmeme.Activities;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -53,6 +62,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         return sharedPref.getBoolean("dark_mode", false);
     }
 
+    void userHasTheLatestVersion() {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -79,14 +92,39 @@ public class SplashScreenActivity extends AppCompatActivity {
             FirebaseUser user = auth.getCurrentUser();
 
             if (checkInternetConnection()) {
-                finish();
-
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 } else {
-                    initializeNightModeSharedPref();
-                    HomeActivity.showLoadingScreen = true;
-                    startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                    // Check if user has the latest version
+                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                    rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            int appVersionCode = BuildConfig.VERSION_CODE;
+                            int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
+                            if (appVersionCode < latestAppVersion) {
+                                new AlertDialog.Builder(SplashScreenActivity.this)
+                                        .setTitle("Update required.")
+                                        .setCancelable(false)
+                                        .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                        .setPositiveButton("Update", (dialogInterface, i) -> {
+                                            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                            startActivity(intent);
+                                        }).show();
+                            }else {
+                                finish();
+                                initializeNightModeSharedPref();
+                                HomeActivity.showLoadingScreen = true;
+                                startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(SplashScreenActivity.this, "Error checking for latest version: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
 

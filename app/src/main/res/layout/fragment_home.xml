@@ -246,6 +246,16 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/view18"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/searchPersonButton"
+            app:layout_constraintEnd_toEndOf="@+id/searchPersonButton"
+            app:layout_constraintStart_toStartOf="@+id/searchPersonButton"
+            app:layout_constraintTop_toTopOf="@+id/searchPersonButton" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

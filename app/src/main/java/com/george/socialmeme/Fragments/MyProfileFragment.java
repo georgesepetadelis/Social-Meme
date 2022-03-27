@@ -301,6 +301,12 @@ public class MyProfileFragment extends Fragment {
                             postModel.setName(postSnapshot.child("name").getValue(String.class));
                             postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
+                            for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                                if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
+                                    postModel.setAuthorID(user.child("id").getValue(String.class));
+                                }
+                            }
+
                             if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
                                 postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
                                 postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));

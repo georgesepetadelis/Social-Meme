@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,10 +67,11 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
     public Context context;
     public String postID, userID, videoURL;
     public View openProfileView, openCommentsView;
-    public TextView username, like_counter_tv, commentsCount, postTitle, postContentText;
+    public TextView username, like_counter_tv, commentsCount, postTitle, postContentText, followBtn;
     public CircleImageView profilePicture;
     public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn;
     public boolean isPostLiked = false;
+    public ConstraintLayout followBtnView;
 
     public PostTextItemViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -85,9 +87,38 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         commentsBtn = itemView.findViewById(R.id.show_comments_btn);
         postTitle = itemView.findViewById(R.id.textView79);
         postContentText = itemView.findViewById(R.id.textView80);
+        followBtnView = itemView.findViewById(R.id.follow_btn_view);
+        followBtn = itemView.findViewById(R.id.textView81);
 
         openCommentsView.setOnClickListener(view -> showCommentsDialog() );
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
+        followBtn.setOnClickListener(view -> followPostAuthor());
+
+        if (!HomeActivity.anonymous && !username.getText().toString().equals(user.getDisplayName())) {
+            followBtnView.setVisibility(View.VISIBLE);
+        }else {
+            followBtnView.setVisibility(View.GONE);
+        }
+
+        // Check if logged-in user follows post author
+        // to hide follow btn
+        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("following")) {
+                    // Logged-in user follows post author
+                    // hide follow btn
+                    if (snapshot.child("following").child(userID).exists()) {
+                        followBtnView.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         like_btn.setOnClickListener(v -> {
 
@@ -127,30 +158,20 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
         openProfileView.setOnClickListener(v -> {
 
-            if (!HomeActivity.anonymous) {
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                usersRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snap : snapshot.getChildren()) {
-                            if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                                UserProfileActivity.username = username.getText().toString();
-                                UserProfileActivity.userID = snap.child("id").getValue().toString();
-                                break;
-                            }
-                        }
+            openUserProfile((callback_userID, callback_username) -> {
+                if (callback_userID.equals(user.getUid())) {
+                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                    if (selectedItemId != R.id.my_profile_fragment) {
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                context.startActivity(intent);
-                CustomIntent.customType(context, "left-to-right");
-
-            }
+                } else {
+                    Intent intent = new Intent(context, UserProfileActivity.class);
+                    intent.putExtra("user_id", callback_userID);
+                    intent.putExtra("username", callback_username);
+                    context.startActivity(intent);
+                    CustomIntent.customType(context, "left-to-right");
+                }
+            });
 
         });
 
@@ -173,6 +194,59 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         this.context = context;
     }
 
+    void openUserProfile(ImageItemViewHolder.FirebaseCallback firebaseCallback) {
+        if (!HomeActivity.anonymous) {
+            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
+                            String uname = username.getText().toString();
+                            String userId = snap.child("id").getValue(String.class);
+                            firebaseCallback.onCallback(userId, uname);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
+    }
+
+    void followPostAuthor() {
+
+        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("following")) {
+                    // Logged-in user follows post author
+                    if (!snapshot.child("following").child(userID).exists()) {
+                        usersRef.child(userID).child("followers").child(user.getUid()).setValue(user.getUid());
+                        usersRef.child(user.getUid()).child("following").child(userID).setValue(userID);
+                        followBtn.setTextColor(context.getColor(R.color.gray));
+                        followBtn.setText("Following");
+                        followBtn.setEnabled(false);
+                        sendNotificationToPostAuthor("follow", "");
+                        Toast.makeText(context, "You started following " + username.getText().toString(), Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(context, "You already following this user.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     private void deletePost() {
         postsRef.child(postID).removeValue().addOnCompleteListener(task -> {

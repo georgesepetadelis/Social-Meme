@@ -37,11 +37,13 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -69,11 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                             firebaseAuthWithGoogle(account.getIdToken());
                         } catch (ApiException e) {
                             progressDialog.hide();
-                            new AlertDialog.Builder(LoginActivity.this)
-                                    .setTitle("Error")
-                                    .setMessage(e.getLocalizedMessage())
-                                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                                    .show();
+                            SmartDialogBox.showErrorDialog(LoginActivity.this, e.getLocalizedMessage(), "OK");
                         }
                     } else {
                         progressDialog.hide();
@@ -88,12 +86,24 @@ public class LoginActivity extends AppCompatActivity {
         someActivityResultLauncher.launch(signInIntent);
     }
 
+    void updateUserTokenOnDB() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                userRef.child("fcm_token").setValue(task.getResult());
+            }
+        });
+    }
+
     void singIn(String email, String password) {
 
         progressDialog.show();
 
         mAuth.signInWithEmailAndPassword(email.trim(), password).addOnSuccessListener(authResult -> {
             progressDialog.hide();
+            updateUserTokenOnDB();
             finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
@@ -217,6 +227,11 @@ public class LoginActivity extends AppCompatActivity {
                         usersRef.child(user.getUid()).child("id").setValue(user.getUid());
                         usersRef.child(user.getUid()).child("name").setValue(user.getDisplayName());
                         usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
+                    }else {
+                        String username = snapshot.child(user.getUid()).child("name").getValue(String.class);
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(username).build();
+                        user.updateProfile(profileUpdates);
                     }
                 }
 
@@ -226,16 +241,13 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
 
+            updateUserTokenOnDB();
             finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
 
         } else {
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setTitle("Error")
-                    .setMessage(errorMsg.getLocalizedMessage())
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                    .show();
+            SmartDialogBox.showErrorDialog(LoginActivity.this, errorMsg.getLocalizedMessage(), "OK");
         }
         progressDialog.hide();
     }
