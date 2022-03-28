@@ -33,8 +33,10 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.NotificationsActivity;
+import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
+import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
@@ -132,84 +134,117 @@ public class HomeFragment extends Fragment {
         notificationsBtn.setEnabled(false);
         searchUserButton.setEnabled(false);
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+        if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+            // Add saved data
+            postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
+            notificationsBtn.setEnabled(true);
+            searchUserButton.setEnabled(true);
+        }else {
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                if (HomeActivity.showLoadingScreen) {
-                    new Handler().postDelayed(() -> {
-                        notificationsBtn.setEnabled(true);
-                        searchUserButton.setEnabled(true);
-                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                        swipeRefreshLayout.setEnabled(true);
-                        HomeActivity.showLoadingScreen = false;
-                        appShowCase();
-                    }, 1200);
-                }
+                    if (HomeActivity.showLoadingScreen) {
+                        new Handler().postDelayed(() -> {
 
-                for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+                            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int appVersionCode = BuildConfig.VERSION_CODE;
+                                    int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
+                                    if (appVersionCode < latestAppVersion) {
+                                        new AlertDialog.Builder(getContext())
+                                                .setTitle("Update required.")
+                                                .setCancelable(false)
+                                                .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                    startActivity(intent);
+                                                }).show();
+                                    } else {
+                                        notificationsBtn.setEnabled(true);
+                                        searchUserButton.setEnabled(true);
+                                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                                        swipeRefreshLayout.setEnabled(true);
+                                        HomeActivity.showLoadingScreen = false;
+                                        HomeActivity.savedPostsArrayList = postModelArrayList;
+                                        appShowCase();
+                                    }
+                                }
 
-                    PostModel postModel = new PostModel();
-                    postModel.setId(postSnapshot.child("id").getValue(String.class));
-                    postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                    postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                    postModel.setName(postSnapshot.child("name").getValue(String.class));
-                    postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
-                    postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Toast.makeText(getContext(), "Error checking for latest version: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }, 1000);
+                    }
 
-                    for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                        if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
-                            postModel.setAuthorID(user.child("id").getValue(String.class));
+                    for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+
+                        PostModel postModel = new PostModel();
+                        postModel.setId(postSnapshot.child("id").getValue(String.class));
+                        postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                        postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                        postModel.setName(postSnapshot.child("name").getValue(String.class));
+                        postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                        postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                        for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                            if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
+                                postModel.setAuthorID(user.child("id").getValue(String.class));
+                            }
                         }
-                    }
 
-                    if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                        postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                        postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                    }
+                        if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                            postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                            postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                        }
 
-                    if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
-                        postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
-                    }
+                        if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
+                            postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
+                        }
 
-                    if (postSnapshot.child("comments").exists()) {
-                        postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                    } else {
-                        postModel.setCommentsCount("0");
-                    }
+                        if (postSnapshot.child("comments").exists()) {
+                            postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                        } else {
+                            postModel.setCommentsCount("0");
+                        }
 
-                    if (!HomeActivity.anonymous) {
-                        // Show post in recycler adapter only if the user is not blocked
-                        if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                        if (!HomeActivity.anonymous) {
+                            // Show post in recycler adapter only if the user is not blocked
+                            if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                                postModelArrayList.add(postModel);
+                            }
+                        } else {
                             postModelArrayList.add(postModel);
                         }
-                    }else {
-                        postModelArrayList.add(postModel);
+                        recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                     }
-                    recyclerAdapter.notifyItemInserted(postModelArrayList.size() -1);
+
+                    // Add post's of the month view as RecyclerView item
+                    // to avoid using ScrollView
+                    PostModel postsOfTheMonthView = new PostModel();
+                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                    postModelArrayList.add(postsOfTheMonthView);
+                    recyclerAdapter.notifyDataSetChanged();
+
+                    // Reverse elements inside postModelArrayList
+                    // to show items inside RecyclerView reversed
+                    Collections.reverse(postModelArrayList);
+
                 }
 
-                // Add post's of the month view as RecyclerView item
-                // to avoid using ScrollView
-                PostModel postsOfTheMonthView = new PostModel();
-                postsOfTheMonthView.setPostType("postsOfTheMonth");
-                postModelArrayList.add(postsOfTheMonthView);
-                recyclerAdapter.notifyDataSetChanged();
-
-                // Reverse elements inside postModelArrayList
-                // to show items inside RecyclerView reversed
-                Collections.reverse(postModelArrayList);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -299,7 +334,7 @@ public class HomeFragment extends Fragment {
                 donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
                 donateDialog.show();
             }
-        }else {
+        } else {
             AlertDialog donateDialog = new AlertDialog.Builder(getContext())
                     .setTitle("Can you buy me a coffee?")
                     .setMessage(getString(R.string.donate_msg))

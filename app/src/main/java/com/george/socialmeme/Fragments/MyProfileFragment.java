@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,6 @@ public class MyProfileFragment extends Fragment {
     CircleImageView profilePicture;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageReference = storage.getReference();
-    DatabaseReference userRef;
 
     private int followers = 0;
     private int following = 0;
@@ -105,6 +105,7 @@ public class MyProfileFragment extends Fragment {
         fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
 
             // Update profile picture URL on Firebase Real-Time DB
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
             userRef.child("profileImgUrl").setValue(uri1.toString());
 
             // Update profile picture URL on FirebaseAuth
@@ -147,6 +148,7 @@ public class MyProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
         profilePicture = view.findViewById(R.id.my_profile_image);
         TextView username = view.findViewById(R.id.username_my_profile);
@@ -195,7 +197,6 @@ public class MyProfileFragment extends Fragment {
         final ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
-        final DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
 
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
@@ -235,108 +236,100 @@ public class MyProfileFragment extends Fragment {
             someActivityResultLauncher.launch(intent);
         });
 
-
         if (!HomeActivity.anonymous) {
-
-            userRef = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
-
-            // Set username
-            username.setText(user.getDisplayName());
-
-            // Load profile picture & following\followers counter and user trophies
-            usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @SuppressLint("DefaultLocale")
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    // set followers and following counter values
-                    if (snapshot.child("following").exists()) {
-                        following = (int) snapshot.child("following").getChildrenCount();
-                        followingCounter.setText(String.format("%d", following));
+            if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+                for (int postIndex = 0; postIndex < HomeActivity.savedPostsArrayList.size(); postIndex++) {
+                    if (HomeActivity.savedPostsArrayList.get(postIndex).getAuthorID().equals(user.getUid())) {
+                        postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
                     }
-
-                    if (snapshot.child("followers").exists()) {
-                        followers = (int) snapshot.child("followers").getChildrenCount();
-                        followersCounter.setText(String.format("%d", followers));
-                    }
-
-                    if (user.getPhotoUrl() != null) {
-                        Glide.with(getActivity()).load(user.getPhotoUrl().toString()).into(profilePicture);
-                    }
-
-                    if (snapshot.child("trophies").exists()) {
-
-                        String goldTrophies = snapshot.child(user.getUid()).child("trophies").child("gold").getValue(String.class);
-                        String silverTrophies = snapshot.child(user.getUid()).child("trophies").child("silver").getValue(String.class);
-                        String bronzeTrophies = snapshot.child(user.getUid()).child("trophies").child("bronze").getValue(String.class);
-
-                        goldTrophiesCount.setText(goldTrophies);
-                        silverTrophiesCount.setText(silverTrophies);
-                        bronzeTrophiesCount.setText(bronzeTrophies);
-
-                    }
-
                 }
+                progressBar.setVisibility(View.GONE);
+            }else {
+                rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                        int totalLikes = 0;
 
-            postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                    int totalLikes = 0;
-
-                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-
-                        if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
-                            PostModel postModel = new PostModel();
-                            postModel.setId(postSnapshot.child("id").getValue(String.class));
-                            postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                            postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                            postModel.setName(postSnapshot.child("name").getValue(String.class));
-                            postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
-
-                            for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                                if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
-                                    postModel.setAuthorID(user.child("id").getValue(String.class));
-                                }
-                            }
-
-                            if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                                postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                                postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                            }
-
-                            totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
-
-                            if (postSnapshot.child("comments").exists()) {
-                                postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                            }else {
-                                postModel.setCommentsCount("0");
-                            }
-
-                            // Set total likes
-                            totalLikesCounter.setText(String.valueOf(totalLikes));
-
-                            postModelArrayList.add(postModel);
-                            recyclerAdapter.notifyDataSetChanged();
+                        if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
+                            following = (int) snapshot.child("users").child(user.getUid()).child("following").getChildrenCount();
+                            followingCounter.setText(String.format("%d", following));
                         }
+
+                        if (snapshot.child("users").child(user.getUid()).child("followers").exists()) {
+                            followers = (int) snapshot.child("users").child(user.getUid()).child("followers").getChildrenCount();
+                            followersCounter.setText(String.format("%d", followers));
+                        }
+
+                        if (user.getPhotoUrl() != null) {
+                            Glide.with(getActivity()).load(user.getPhotoUrl().toString()).into(profilePicture);
+                        }
+
+                        if (snapshot.child("users").child(user.getUid()).child("trophies").exists()) {
+
+                            String goldTrophies = snapshot.child("users")
+                                    .child(user.getUid()).child(user.getUid()).child("trophies").child("gold").getValue(String.class);
+                            String silverTrophies = snapshot.child("users")
+                                    .child(user.getUid()).child(user.getUid()).child("trophies").child("silver").getValue(String.class);
+                            String bronzeTrophies = snapshot.child("users")
+                                    .child(user.getUid()).child(user.getUid()).child("trophies").child("bronze").getValue(String.class);
+
+                            goldTrophiesCount.setText(goldTrophies);
+                            silverTrophiesCount.setText(silverTrophies);
+                            bronzeTrophiesCount.setText(bronzeTrophies);
+
+                        }
+
+                        // Load user posts
+                        for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+
+                            if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                PostModel postModel = new PostModel();
+                                postModel.setId(postSnapshot.child("id").getValue(String.class));
+                                postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                                postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                                postModel.setName(postSnapshot.child("name").getValue(String.class));
+                                postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                                for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                                    if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
+                                        postModel.setAuthorID(user.child("id").getValue(String.class));
+                                    }
+                                }
+
+                                if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                                    postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                                    postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                                }
+
+                                totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
+
+                                if (postSnapshot.child("comments").exists()) {
+                                    postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                                }else {
+                                    postModel.setCommentsCount("0");
+                                }
+
+                                // Set total likes
+                                totalLikesCounter.setText(String.valueOf(totalLikes));
+
+                                postModelArrayList.add(postModel);
+                                recyclerAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        progressBar.setVisibility(View.GONE);
+
                     }
 
-                    progressBar.setVisibility(View.GONE);
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                        Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-                }
-
-                @Override
-                public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                    Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
-                }
-            });
         }else {
             progressBar.setVisibility(View.GONE);
             username.setText("Anonymous User");

@@ -258,28 +258,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                     }
                 }
 
-                // Find user token from DB
-                // and add notification to Firestore
-                for (DataSnapshot userSnap : snapshot.getChildren()) {
-                    if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
-
-                        if (userSnap.child("fcm_token").exists()) {
-                            // add notification to Firestore to send
-                            // push notification from back-end
-                            String firestoreNotificationID = usersRef.push().getKey();
-                            Map<String, Object> notification = new HashMap<>();
-                            notification.put("token", userSnap.child("fcm_token").getValue(String.class));
-                            notification.put("title", notification_title[0]);
-                            notification.put("message", notification_message[0]);
-                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                            firestore.collection("notifications")
-                                    .document(firestoreNotificationID).set(notification);
-                            break;
-                        }
-
-                    }
-                }
-
             }
 
             @Override

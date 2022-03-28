@@ -309,27 +309,14 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
                         break;
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Find user token from DB
-        // and add notification to Firestore
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                // Find user token from DB
+                // and add notification to Firestore
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
                     if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
-
                         if (userSnap.child("fcm_token").exists()) {
-                            // add notification to Firestore to send
+                            // Add notification to Firestore to send
                             // push notification from back-end
-                            String notificationID = usersRef.push().getKey();
                             Map<String, Object> notification = new HashMap<>();
                             notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                             notification.put("title", notification_title[0]);

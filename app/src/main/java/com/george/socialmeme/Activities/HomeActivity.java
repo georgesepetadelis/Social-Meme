@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
+import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,11 +32,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
+import java.util.ArrayList;
+
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean anonymous;
     public static boolean showLoadingScreen;
     public static ChipNavigationBar bottomNavBar;
+    public static ArrayList<PostModel> savedPostsArrayList;
 
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
@@ -66,14 +70,12 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        DatabaseReference root = FirebaseDatabase.getInstance().getReference();
-        root.child("latest_version_code").setValue("13");
-
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
 
         bottomNavBar = findViewById(R.id.bottom_nav);
+        savedPostsArrayList = new ArrayList<>();
 
         // Detect if system night mode is enabled
         // to auto enable in-app night mode
@@ -117,37 +119,6 @@ public class HomeActivity extends AppCompatActivity {
             alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
             alertDialog.show();
 
-        }
-
-        // Set fcm token if not exists
-        // inside real-time DB to be able
-        // to send push notifications from back-end
-        if (!HomeActivity.anonymous) {
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users")
-                    .child(user.getUid());
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // Check if token exists
-                    if (!snapshot.child("fcm_token").exists()) {
-                        // Token does not exists
-                        // add token to real-time DB
-                        FirebaseMessaging.getInstance().getToken()
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        userRef.child("fcm_token").setValue(task.getResult());
-                                    }else {
-                                        Toast.makeText(HomeActivity.this, "Unable to set user token", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
         }
 
         bottomNavBar.setOnItemSelectedListener(id -> {

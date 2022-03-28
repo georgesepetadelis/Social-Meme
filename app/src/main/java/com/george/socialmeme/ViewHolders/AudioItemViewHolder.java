@@ -403,7 +403,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                             notification_message[0] = user.getDisplayName() + " liked your post";
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + " " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                         }
                         if (notificationType.equals("meme_saved")) {
@@ -411,41 +411,29 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                             notification_message[0] = user.getDisplayName() + " has saved your post";
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Meme saved");
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + " " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
                         } else if (notificationType.equals("comment_added")) {
                             notification_title[0] = "New comment";
                             notification_message[0] = user.getDisplayName() + ": " + commentText;
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("comment_added");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + " " + currentHour + ":" + currentMinutes);
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
                         }
 
                         break;
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Find user token from DB
-        // and add notification to Firestore
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                // Find user token from DB
+                // and add notification to Firestore
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
                     if (userSnap.child("name").getValue(String.class).equals(usernameTV.getText().toString())) {
 
                         if (userSnap.child("fcm_token").exists()) {
                             // add notification to Firestore to send
                             // push notification from back-end
-                            String notificationID = usersRef.push().getKey();
                             Map<String, Object> notification = new HashMap<>();
                             notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                             notification.put("title", notification_title[0]);

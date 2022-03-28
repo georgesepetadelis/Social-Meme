@@ -41,13 +41,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         return activeNetwork != null && activeNetwork.isConnected();
     }
 
-    void saveCurrentAppVersionToSharedPrefs() {
-        SharedPreferences sharedPref = getSharedPreferences("current_app_version", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        String versionName = BuildConfig.VERSION_NAME;
-        editor.putString("current_app_version", versionName);
-    }
-
     void initializeNightModeSharedPref() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
         if (!sharedPref.contains("dark_mode")) {
@@ -60,10 +53,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
         return sharedPref.getBoolean("dark_mode", false);
-    }
-
-    void userHasTheLatestVersion() {
-
     }
 
     @Override
@@ -95,38 +84,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 } else {
-                    // Check if user has the latest version
-                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                    rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            int appVersionCode = BuildConfig.VERSION_CODE;
-                            int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
-                            if (appVersionCode < latestAppVersion) {
-                                new AlertDialog.Builder(SplashScreenActivity.this)
-                                        .setTitle("Update required.")
-                                        .setCancelable(false)
-                                        .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                        .setPositiveButton("Update", (dialogInterface, i) -> {
-                                            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                            startActivity(intent);
-                                        }).show();
-                            }else {
-                                finish();
-                                initializeNightModeSharedPref();
-                                HomeActivity.showLoadingScreen = true;
-                                startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(SplashScreenActivity.this, "Error checking for latest version: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    finish();
+                    initializeNightModeSharedPref();
+                    HomeActivity.showLoadingScreen = true;
+                    startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                 }
-                CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
 
             }else {
                 new AlertDialog.Builder(SplashScreenActivity.this)
