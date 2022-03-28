@@ -21,6 +21,7 @@ import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.Models.PostModel;
+import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean showLoadingScreen;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsArrayList;
+    public static UserModel savedUserData = null;
 
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);

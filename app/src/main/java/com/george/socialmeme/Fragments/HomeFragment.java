@@ -135,6 +135,7 @@ public class HomeFragment extends Fragment {
         searchUserButton.setEnabled(false);
 
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+            Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
             // Add saved data
             postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
             notificationsBtn.setEnabled(true);

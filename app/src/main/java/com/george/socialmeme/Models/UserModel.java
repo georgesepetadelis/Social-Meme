@@ -2,7 +2,7 @@ package com.george.socialmeme.Models;
 
 public class UserModel {
 
-    String userID, username, profilePictureURL, followers;
+    String userID, username, profilePictureURL, followers, following, totalLikes, goldTrophiesCounter, silverTrophiesCounter, bronzeTrophiesCounter;
 
     public UserModel(String userID, String username, String profilePictureURL, String followers) {
         this.userID = userID;
@@ -11,7 +11,46 @@ public class UserModel {
         this.followers = followers;
     }
 
-    public UserModel() {
+    public UserModel() {}
+
+    public String getGoldTrophiesCounter() {
+        return goldTrophiesCounter;
+    }
+
+    public void setGoldTrophiesCounter(String goldTrophiesCounter) {
+        this.goldTrophiesCounter = goldTrophiesCounter;
+    }
+
+    public String getSilverTrophiesCounter() {
+        return silverTrophiesCounter;
+    }
+
+    public void setSilverTrophiesCounter(String silverTrophiesCounter) {
+        this.silverTrophiesCounter = silverTrophiesCounter;
+    }
+
+    public String getBronzeTrophiesCounter() {
+        return bronzeTrophiesCounter;
+    }
+
+    public void setBronzeTrophiesCounter(String bronzeTrophiesCounter) {
+        this.bronzeTrophiesCounter = bronzeTrophiesCounter;
+    }
+
+    public String getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(String following) {
+        this.following = following;
+    }
+
+    public String getTotalLikes() {
+        return totalLikes;
+    }
+
+    public void setTotalLikes(String totalLikes) {
+        this.totalLikes = totalLikes;
     }
 
     public String getUserID() {
