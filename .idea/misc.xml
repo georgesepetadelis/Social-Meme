@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/layout/alert_dialog.xml" value="0.19444444444444445" />
         <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/drawable/dialog_background.xml" value="0.22" />
         <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/drawable/dialogdark.xml" value="0.22" />
         <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/drawable/error_circle.xml" value="0.22" />
@@ -133,6 +134,7 @@
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.15" />
+        <entry key="app/src/main/res/layout/audio_post_item.xml" value="0.19198312236286919" />
         <entry key="app/src/main/res/layout/comment_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/comments_bottom_sheet.xml" value="0.1" />
         <entry key="app/src/main/res/layout/comments_dialog_fragment.xml" value="0.21" />

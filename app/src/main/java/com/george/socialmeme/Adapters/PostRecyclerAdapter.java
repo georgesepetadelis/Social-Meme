@@ -2,9 +2,12 @@ package com.george.socialmeme.Adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +37,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.hugomatilla.audioplayerview.AudioPlayerView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import maes.tech.intentanim.CustomIntent;
 
 public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
@@ -104,6 +111,46 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
+    private void deletePost(int position, String fileURL) {
+
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(fileURL);
+
+        if (fileURL.isEmpty() || fileURL == null) {
+            // Delete post from Database
+            postsRef.child(postList.get(position).getId()).removeValue().addOnCompleteListener(task -> {
+                // Remove item from recycler view
+                if (task.isSuccessful()) {
+                    postList.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, postList.size());
+                    Toast.makeText(context, "Post deleted!", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(context, "We cannot delete post from database.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            storageReference.delete()
+                    .addOnSuccessListener(unused -> {
+                        // Delete post from Database
+                        postsRef.child(postList.get(position).getId()).removeValue().addOnCompleteListener(task -> {
+                            // Remove item from recycler view
+                            if (task.isSuccessful()) {
+                                postList.remove(position);
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position, postList.size());
+                                Toast.makeText(context, "Post deleted!", Toast.LENGTH_SHORT).show();
+                            }else {
+                                Toast.makeText(context, "We cannot delete post from database.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        }
+
+    }
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
@@ -127,6 +174,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 textItemViewHolder.postOptionsButton.setVisibility(View.GONE);
                 textItemViewHolder.openCommentsView.setVisibility(View.GONE);
                 textItemViewHolder.shareBtn.setVisibility(View.GONE);
+            }else {
+                if (user.getUid().equals(postList.get(position).getAuthorID())) {
+                    textItemViewHolder.followBtnView.setVisibility(View.GONE);
+                }
             }
 
             // check if post is liked or not
@@ -139,10 +190,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         if (snapshot.child(textItemViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
                             textItemViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
-
+                            textItemViewHolder.isPostLiked = true;
                         } else {
                             // post is not liked from this user
                             textItemViewHolder.like_btn.setImageResource(R.drawable.ic_like);
+                            textItemViewHolder.isPostLiked = false;
                         }
                     } else {
                         textItemViewHolder.like_btn.setEnabled(false);
@@ -194,6 +246,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 audioViewHolder.postOptionsBtn.setVisibility(View.GONE);
                 audioViewHolder.openCommentsView.setVisibility(View.GONE);
                 audioViewHolder.shareBtn.setVisibility(View.GONE);
+            }else {
+                if (user.getUid().equals(postList.get(position).getAuthorID())) {
+                    audioViewHolder.followBtnView.setVisibility(View.GONE);
+                }
             }
 
             // check if post is liked or not
@@ -206,10 +262,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         if (snapshot.child(audioViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
                             audioViewHolder.likeBtn.setImageResource(R.drawable.ic_like_filled);
-
+                            audioViewHolder.isPostLiked = true;
                         } else {
                             // post is not liked from this user
                             audioViewHolder.likeBtn.setImageResource(R.drawable.ic_like);
+                            audioViewHolder.isPostLiked = false;
                         }
                     } else {
                         // disable like button
@@ -263,6 +320,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 videoViewHolder.postOptionsButton.setVisibility(View.GONE);
                 videoViewHolder.commentsBtn.setVisibility(View.GONE);
                 videoViewHolder.shareBtn.setVisibility(View.GONE);
+            }else {
+                if (user.getUid().equals(postList.get(position).getAuthorID())) {
+                    videoViewHolder.followBtnView.setVisibility(View.GONE);
+                }
             }
 
             // check if post is liked or not
@@ -275,9 +336,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         if (snapshot.child(videoViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
                             videoViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
-
+                            videoViewHolder.isPostLiked = true;
                         } else {
                             // post is not liked from this user
+                            videoViewHolder.isPostLiked = false;
                             videoViewHolder.like_btn.setImageResource(R.drawable.ic_like);
                         }
                     } else {
@@ -310,7 +372,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             player.addAnalyticsListener(new AnalyticsListener() {
                 @Override
                 public void onPlayerError(@NonNull EventTime eventTime, @NonNull PlaybackException error) {
-                    Toast.makeText(context, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.i("EXOPLAYER_ERROR", "" + error.getMessage());
                 }
             });
 
@@ -342,9 +405,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 imageViewHolder.show_comments_btn.setVisibility(View.GONE);
                 imageViewHolder.showPostOptionsButton.setVisibility(View.GONE);
                 imageViewHolder.shareBtn.setVisibility(View.GONE);
+            }else {
+                if (user.getUid().equals(postList.get(position).getAuthorID())) {
+                    imageViewHolder.followBtnView.setVisibility(View.GONE);
+                }
             }
 
-            // check if post is liked or not
+            // check if post is liked or not from the user
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
@@ -354,9 +421,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                         if (snapshot.child(imageViewHolder.postID).hasChild(user.getUid())) {
                             // post is liked form this user
                             imageViewHolder.like_btn.setImageResource(R.drawable.ic_like_filled);
-
+                            imageViewHolder.isPostLiked = true;
                         } else {
                             // post is not liked from this user
+                            imageViewHolder.isPostLiked = false;
                             imageViewHolder.like_btn.setImageResource(R.drawable.ic_like);
                         }
                     } else {

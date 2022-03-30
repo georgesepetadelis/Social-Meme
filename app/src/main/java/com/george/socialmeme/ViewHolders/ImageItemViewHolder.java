@@ -78,7 +78,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn;
     public ProgressBar loadingProgressBar;
     public CircleImageView profileImage;
-    public boolean isPostLiked = false;
+    public boolean isPostLiked;
     public ConstraintLayout openUserProfileView, followBtnView;
 
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
@@ -100,85 +100,49 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateLikesToDB(String postID, boolean likePost) {
-        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                String currentLikesToString = snapshot.child(postID).child("likes").getValue().toString();
-                int currentLikesToInt = Integer.parseInt(currentLikesToString);
+        String currentLikesToString = like_counter_tv.getText().toString();
+        int currentLikesToInt = Integer.parseInt(currentLikesToString);
 
-                if (likePost) {
+        if (likePost) {
 
-                    int newCurrentLikes = currentLikesToInt + 1;
-                    String newCurrentLikesToString = Integer.toString(newCurrentLikes);
+            int newCurrentLikes = currentLikesToInt + 1;
+            String newCurrentLikesToString = Integer.toString(newCurrentLikes);
 
-                    // Update likes on Real-time DB
-                    postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
+            // Update likes on Real-time DB
+            postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
 
-                    // update likes on TextView
-                    like_counter_tv.setText(newCurrentLikesToString);
+            // update likes on TextView
+            like_counter_tv.setText(newCurrentLikesToString);
 
-                    // Animate like counter TextView
-                    YoYo.with(Techniques.FadeInUp)
-                            .duration(500)
-                            .repeat(0)
-                            .playOn(like_counter_tv);
+            // Animate like counter TextView
+            YoYo.with(Techniques.FadeInUp)
+                    .duration(500)
+                    .repeat(0)
+                    .playOn(like_counter_tv);
 
-                } else {
+        } else {
 
-                    int newCurrentLikes = currentLikesToInt - 1;
-                    String newCurrentLikesToString = Integer.toString(newCurrentLikes);
+            int newCurrentLikes = currentLikesToInt - 1;
+            String newCurrentLikesToString = Integer.toString(newCurrentLikes);
 
-                    // Update likes on Real-time DB
-                    postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
+            // Update likes on Real-time DB
+            postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
 
-                    // update likes on TextView
-                    like_counter_tv.setText(newCurrentLikesToString);
+            // update likes on TextView
+            like_counter_tv.setText(newCurrentLikesToString);
 
-                    // Animate like counter TextView
-                    YoYo.with(Techniques.FadeInDown)
-                            .duration(500)
-                            .repeat(0)
-                            .playOn(like_counter_tv);
+            // Animate like counter TextView
+            YoYo.with(Techniques.FadeInDown)
+                    .duration(500)
+                    .repeat(0)
+                    .playOn(like_counter_tv);
+        }
 
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public interface FirebaseCallback {
         void onCallback(String callback_userID, String callback_username);
-    }
-
-    void openUserProfile(FirebaseCallback firebaseCallback) {
-        if (!HomeActivity.anonymous) {
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                            String uname = username.getText().toString();
-                            String userId = snap.child("id").getValue(String.class);
-                            firebaseCallback.onCallback(userId, uname);
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-        }
     }
 
     private void deletePost() {
@@ -258,27 +222,14 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                     }
                 }
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Find user token from DB
-        // and add notification to Firestore
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                // Find user token from DB
+                // and add notification to Firestore
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
                     if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
 
                         if (userSnap.child("fcm_token").exists()) {
                             // add notification to Firestore to send
                             // push notification from back-end
-                            String notificationID = usersRef.push().getKey();
                             Map<String, Object> notification = new HashMap<>();
                             notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                             notification.put("title", notification_title[0]);
@@ -315,7 +266,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             scanFile(context, Uri.fromFile(file));
             Toast.makeText(context, "Meme saved in: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
 
-            // send notification to user
+            // Send notification to user
             sendNotificationToPostAuthor("meme_saved", "");
 
         } catch (FileNotFoundException e) {
@@ -342,7 +293,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         View reportPostView = dialog.findViewById(R.id.view15);
         View deletePostView = dialog.findViewById(R.id.view17);
 
-        // Hide delete view if the current logged in user is not
+        // Hide delete view if the current
+        // logged in user is not
         // the author of the current post
         if (!username.getText().toString().equals(user.getDisplayName())) {
             dialog.findViewById(R.id.delete_post_view).setVisibility(View.GONE);
@@ -410,7 +362,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             }
         });
         
-        
     }
 
     public ImageItemViewHolder(@NonNull View itemView) {
@@ -437,30 +388,27 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         showPostOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         openCommentsView.setOnClickListener(view -> showCommentsDialog());
 
-        if (!HomeActivity.anonymous && !username.getText().toString().equals(user.getDisplayName())) {
-            followBtnView.setVisibility(View.VISIBLE);
-        }else {
+        if (HomeActivity.anonymous) {
             followBtnView.setVisibility(View.GONE);
+            openUserProfileView.setEnabled(false);
         }
 
         followBtn.setOnClickListener(view -> followPostAuthor());
 
         openUserProfileView.setOnClickListener(v -> {
 
-            openUserProfile((callback_userID, callback_username) -> {
-                if (callback_userID.equals(user.getUid())) {
-                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
-                    if (selectedItemId != R.id.my_profile_fragment) {
-                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
-                    }
-                } else {
-                    Intent intent = new Intent(context, UserProfileActivity.class);
-                    intent.putExtra("user_id", callback_userID);
-                    intent.putExtra("username", callback_username);
-                    context.startActivity(intent);
-                    CustomIntent.customType(context, "left-to-right");
+            if (userID.equals(user.getUid())) {
+                int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                if (selectedItemId != R.id.my_profile_fragment) {
+                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                 }
-            });
+            }else {
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                intent.putExtra("user_id", userID);
+                intent.putExtra("username", username.getText().toString());
+                context.startActivity(intent);
+                CustomIntent.customType(context, "left-to-right");
+            }
 
         });
 
@@ -497,35 +445,19 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                     .repeat(0)
                     .playOn(like_btn);
 
-            isPostLiked = true;
+            if (isPostLiked) {
+                isPostLiked = false;
+                like_btn.setImageResource(R.drawable.ic_like);
+                likesRef.child(postID).child(user.getUid()).removeValue();
+                updateLikesToDB(postID, false);
+            } else {
+                isPostLiked = true;
+                like_btn.setImageResource(R.drawable.ic_like_filled);
+                likesRef.child(postID).child(user.getUid()).setValue("true");
+                updateLikesToDB(postID, true);
+                sendNotificationToPostAuthor("like", "");
+            }
 
-            likesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    if (isPostLiked) {
-                        if (snapshot.child(postID).hasChild(user.getUid())) {
-                            like_btn.setImageResource(R.drawable.ic_like);
-                            likesRef.child(postID).child(user.getUid()).removeValue();
-                            isPostLiked = false;
-                            // Update likes to DB
-                            updateLikesToDB(postID, false);
-                        } else {
-                            like_btn.setImageResource(R.drawable.ic_like_filled);
-                            likesRef.child(postID).child(user.getUid()).setValue("true");
-                            // Update likes to DB
-                            updateLikesToDB(postID, true);
-                            sendNotificationToPostAuthor("like", "");
-
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
         });
 
     }

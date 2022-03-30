@@ -42,6 +42,8 @@ import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -49,6 +51,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -131,16 +134,19 @@ public class HomeFragment extends Fragment {
 
     void fetchAllPostsFromDB(View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
         notificationsBtn.setEnabled(false);
         searchUserButton.setEnabled(false);
 
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
-            Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
-            // Add saved data
+            // Load saved data
             postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
             notificationsBtn.setEnabled(true);
             searchUserButton.setEnabled(true);
-        }else {
+        } else {
+            // Load data from DB
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -148,40 +154,37 @@ public class HomeFragment extends Fragment {
 
                     if (HomeActivity.showLoadingScreen) {
                         new Handler().postDelayed(() -> {
-
-                            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    int appVersionCode = BuildConfig.VERSION_CODE;
-                                    int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
-                                    if (appVersionCode < latestAppVersion) {
-                                        new AlertDialog.Builder(getContext())
-                                                .setTitle("Update required.")
-                                                .setCancelable(false)
-                                                .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                                .setPositiveButton("Update", (dialogInterface, i) -> {
-                                                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                                    startActivity(intent);
-                                                }).show();
-                                    } else {
-                                        notificationsBtn.setEnabled(true);
-                                        searchUserButton.setEnabled(true);
-                                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                                        swipeRefreshLayout.setEnabled(true);
-                                        HomeActivity.showLoadingScreen = false;
-                                        HomeActivity.savedPostsArrayList = postModelArrayList;
-                                        appShowCase();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Toast.makeText(getContext(), "Error checking for latest version: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                            int appVersionCode = BuildConfig.VERSION_CODE;
+                            int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
+                            if (appVersionCode < latestAppVersion) {
+                                new AlertDialog.Builder(getContext())
+                                        .setTitle("Update required.")
+                                        .setCancelable(false)
+                                        .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                        .setPositiveButton("Update", (dialogInterface, i) -> {
+                                            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                            startActivity(intent);
+                                        }).show();
+                            } else {
+                                notificationsBtn.setEnabled(true);
+                                searchUserButton.setEnabled(true);
+                                fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                                swipeRefreshLayout.setEnabled(true);
+                                HomeActivity.showLoadingScreen = false;
+                                HomeActivity.savedPostsArrayList = postModelArrayList;
+                                appShowCase();
+                            }
                         }, 1000);
+                    }
+
+                    if (!snapshot.child("users").child(user.getUid()).child("fcm_token").exists()) {
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                rootRef.child("users").child(user.getUid()).child("fcm_token").setValue(task.getResult());
+                            }
+                        });
                     }
 
                     for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {

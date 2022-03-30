@@ -41,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean showLoadingScreen;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsArrayList;
+    public static ArrayList<UserModel> savedUserProfiles = null;
     public static UserModel savedUserData = null;
 
     boolean isNightModeEnabled() {
@@ -78,6 +79,7 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavBar = findViewById(R.id.bottom_nav);
         savedPostsArrayList = new ArrayList<>();
+        savedUserProfiles = new ArrayList<>();
 
         // Detect if system night mode is enabled
         // to auto enable in-app night mode

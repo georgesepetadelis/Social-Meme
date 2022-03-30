@@ -139,8 +139,7 @@ public class MyProfileFragment extends Fragment {
 
     }
 
-    void getUserDataFromDB(FirebaseCallback firebaseCallback) {
-        Toast.makeText(getContext(), "From db", Toast.LENGTH_SHORT).show();
+    void getUserDataFromDB(FirebaseCallback firebaseCallback)   {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -301,79 +300,30 @@ public class MyProfileFragment extends Fragment {
             intent.setType("image/*");
             someActivityResultLauncher.launch(intent);
         });
-        
-        if (HomeActivity.savedUserData == null) {
-            Toast.makeText(getContext(), "Null", Toast.LENGTH_SHORT).show();
-        }
 
         if (!HomeActivity.anonymous) {
-            int totalLikes = 0;
+
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 for (int postIndex = 1; postIndex < HomeActivity.savedPostsArrayList.size() - 1; postIndex++) {
                     if (HomeActivity.savedPostsArrayList.get(postIndex).getName().equals(user.getDisplayName())) {
                         postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
-                        // TODO SET TOTAL LIKES
-                        //totalLikes += Integer.parseInt(postModelArrayList.get(postIndex).getLikes());
                     }
                 }
-            }else {
-                rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                        // Load user posts
-                        for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
-
-                            if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
-                                PostModel postModel = new PostModel();
-                                postModel.setId(postSnapshot.child("id").getValue(String.class));
-                                postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                                postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                                postModel.setName(postSnapshot.child("name").getValue(String.class));
-                                postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
-
-                                for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                                    if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
-                                        postModel.setAuthorID(user.child("id").getValue(String.class));
-                                    }
-                                }
-
-                                if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                                    postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                                    postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                                }
-
-                                if (postSnapshot.child("comments").exists()) {
-                                    postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                                }else {
-                                    postModel.setCommentsCount("0");
-                                }
-
-                                postModelArrayList.add(postModel);
-                                recyclerAdapter.notifyDataSetChanged();
-                            }
-                        }
-
-                        progressBar.setVisibility(View.GONE);
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                        Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
 
-            if (HomeActivity.savedUserData != null) {
+            int totalLikes = 0;
+            for (PostModel post : postModelArrayList) {
+                int likesToInt = Integer.parseInt(post.getLikes());
+                totalLikes += likesToInt;
+            }
 
-                Toast.makeText(getContext(), "Saved data", Toast.LENGTH_SHORT).show();
+            totalLikesCounter.setText(String.valueOf(totalLikes));
+
+            if (HomeActivity.savedUserData != null) {
 
                 // Load saved user data
                 String followingCounter_saved = HomeActivity.savedUserData.getFollowing();
                 String followersCounter_saved = HomeActivity.savedUserData.getFollowers();
-                String photoURL_saved = HomeActivity.savedUserData.getProfilePictureURL();
                 String goldTrophies_saved = HomeActivity.savedUserData.getGoldTrophiesCounter();
                 String silverTrophies_saved = HomeActivity.savedUserData.getSilverTrophiesCounter();
                 String bronzeTrophies_saved = HomeActivity.savedUserData.getBronzeTrophiesCounter();

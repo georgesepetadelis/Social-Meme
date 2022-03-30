@@ -206,15 +206,15 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
                 }
 
-                if (username.getText().length() > 13 || username.getText().length() < 3) {
-                    SmartDialogBox.showErrorDialog(AccountSettingsActivity.this, "Username must be 5-13 characters.", "OK");
+                if (username.getText().length() > 25 || username.getText().length() < 3) {
+                    SmartDialogBox.showErrorDialog(AccountSettingsActivity.this, "Username must be 5-25 characters.", "OK");
                 }else {
 
                     if (!user.getDisplayName().equals(username.getText().toString())) {
 
                         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-                        usersRef.addValueEventListener(new ValueEventListener() {
+                        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
 

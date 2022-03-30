@@ -7,10 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
-import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,9 +27,8 @@ import com.developer.kalert.KAlertDialog;
 import com.esc861.screenshotlistener.ScreenshotListener;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
-import com.george.socialmeme.Observers.ScreenShotContentObserver;
+import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
-import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,15 +40,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.transform.sax.SAXResult;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -67,7 +57,6 @@ public class UserProfileActivity extends AppCompatActivity {
     public int following = 0;
     public KAlertDialog progressDialog;
     private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
     ScreenshotListener listener;
 
     void sendNotificationToUser(String notificationType) {
@@ -139,9 +128,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             break;
                         }
                     }
-                }
-
-                else if (notificationType.equals("unfollow")) {
+                } else if (notificationType.equals("unfollow")) {
 
                     notification_title[0] = "You lost a follower :(";
                     notification_message[0] = user.getDisplayName() + " unfollowed you";
@@ -177,7 +164,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                     .document(firestoreNotificationID).set(notification);
                             break;
                         }
-                        
+
                     }
                 }
 
@@ -250,6 +237,10 @@ public class UserProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public interface FirebaseCallback {
+        void onComplete(String profilePictureURL, boolean userFollowsLoggedInUser, boolean followingCurrentUser);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (isNightModeEnabled()) {
@@ -274,7 +265,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 Toast.makeText(UserProfileActivity.this, "screenshot", Toast.LENGTH_SHORT).show();
             }
         };
-
         listener.startListening();
 
         ImageButton backBtn = findViewById(R.id.imageButton2);
@@ -308,12 +298,11 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
+        sendNotificationToUser("profile_visit");
         backBtn.setOnClickListener(v -> onBackPressed());
 
         postsOfTheMonthInfo.setOnClickListener(view -> {
@@ -343,157 +332,202 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-        if (userID != null && username != null) {
-            sendNotificationToUser("profile_visit");
+        // Load user posts
+        if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+            for (int postIndex = 1; postIndex < HomeActivity.savedPostsArrayList.size() - 1; postIndex++) {
+                if (HomeActivity.savedPostsArrayList.get(postIndex).getName().equals(username)) {
+                    postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
+                }
+            }
+
+            // Load total likes
+            int totalLikes = 0;
+            for (PostModel postModel : postModelArrayList) {
+                int likesToInt = Integer.parseInt(postModel.getLikes());
+                totalLikes += likesToInt;
+            }
+            totalLikesCounter.setText(String.valueOf(totalLikes));
+
         }
 
-        // Load user data
-        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+        // Load user info
+        if (HomeActivity.savedUserProfiles != null && !HomeActivity.savedUserProfiles.isEmpty()) {
+            // Load saved user data
+            for (int userIndex = 1; userIndex < HomeActivity.savedUserProfiles.size() - 1; userIndex++) {
+                if (HomeActivity.savedUserProfiles.get(userIndex).getUsername().equals(username)) {
 
-                String profilePictureURL = "none";
-                String username_from_db = snapshot.child("users").child(userID).child("name").getValue(String.class);
-                username_tv.setText(username_from_db);
-                int totalLikes = 0;
+                    UserModel userModel = HomeActivity.savedUserProfiles.get(userIndex);
+                    
+                    if (!userID.equals(user.getUid())) {
+                        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                        toolbar.setTitle("");
+                        setSupportActionBar(toolbar);
+                    }
+                    
+                    if (userModel.currentUserFollowLoggedInUser()) {
+                        userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                    } else {
+                        userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
+                    }
 
-                // Check if logged-in user has
-                // blocked current user to show an alert
-                if (snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userID).exists()) {
-
-                    new AlertDialog.Builder(UserProfileActivity.this)
-                            .setTitle("Blocked user")
-                            .setMessage("You have blocked this user. You want to unblock this user?")
-                            .setPositiveButton("Yes", (dialogInterface, i) ->
-                                    usersRef.child(user.getUid())
-                                            .child("blockedUsers").child(userID)
-                                            .removeValue().addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            dialogInterface.dismiss();
-                                            Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
-                                            onBackPressed();
-                                        }
-                                    })).setNegativeButton("No", (dialogInterface, i) -> {
-                        dialogInterface.dismiss();
-                        onBackPressed();
-                    }).setCancelable(false).show();
-
-                }
-
-                // Show report/block options only
-                // if this profile is not the current
-                // logged-in user profile
-                if (!userID.equals(user.getUid())) {
-                    Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
-                    toolbar.setTitle("");
-                    setSupportActionBar(toolbar);
-                }
-
-                if (snapshot.child("users").child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
-                    followBtn.setVisibility(View.GONE);
-                    userFollowsCurrentUserTextView.setVisibility(View.GONE);
-                }
-
-                if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {
-                    profilePictureURL = snapshot.child("users").child(userID).child("profileImgUrl").getValue(String.class);
-                }
-
-                if (!profilePictureURL.equals("none")) {
-                    Glide.with(getApplicationContext()).load(profilePictureURL).into(profilePicture);
-                }
-
-                if (!snapshot.child("users").child(userID).child("following").child(user.getUid()).exists()) {
-                    userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
-                } else {
-                    userFollowsCurrentUserTextView.setVisibility(View.GONE);
-                }
-
-                // check logged in user follows this user
-                if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
-
-                    if (snapshot.child("users").child(user.getUid()).child("following").child(userID).exists()) {
-                        currentUserFollowsThisUser = true;
+                    if (userModel.isFollowingCurrentUser()) {
                         followBtn.setText("Unfollow");
                     } else {
-                        currentUserFollowsThisUser = false;
+                        followBtn.setText("Follow");
                     }
+
+                    username_tv.setText(userModel.getUsername());
+                    Glide.with(this).load(userModel.getProfilePictureURL()).into(profilePicture);
+                    totalLikesCounter.setText(userModel.getTotalLikes());
+                    followersCounter.setText(userModel.getFollowers());
+                    followingCounter.setText(userModel.getFollowing());
+                    goldTrophiesCount.setText(userModel.getGoldTrophiesCounter());
+                    silverTrophiesCount.setText(userModel.getSilverTrophiesCounter());
+                    bronzeTrophiesCount.setText(userModel.getBronzeTrophiesCounter());
+
+                    progressDialog.hide();
+                    
+                    break;
                 }
+            }
 
-                // set followers and following counter values
-                if (snapshot.child("users").child(userID).child("following").exists()) {
-                    following = (int) snapshot.child("users").child(userID).child("following").getChildrenCount();
-                    followingCounter.setText(String.format("%d", following));
-                }
+        } else {
 
-                if (snapshot.child("users").child(userID).child("followers").exists()) {
-                    followers = (int) snapshot.child("users").child(userID).child("followers").getChildrenCount();
-                    followersCounter.setText(String.format("%d", followers));
-                }
+            FirebaseCallback firebaseCallback = (profilePictureURL, userFollowsLoggedInUser, followingCurrentUser) -> {
+                // Save current user data to avoid
+                // loading data from the same user again later
+                UserModel userModel = new UserModel();
+                userModel.setUserID(userID);
+                userModel.setFollowers(followersCounter.getText().toString());
+                userModel.setFollowing(followingCounter.getText().toString());
+                userModel.setUsername(username);
+                userModel.setProfilePictureURL(profilePictureURL);
+                userModel.setGoldTrophiesCounter(goldTrophiesCount.getText().toString());
+                userModel.setSilverTrophiesCounter(silverTrophiesCount.getText().toString());
+                userModel.setBronzeTrophiesCounter(bronzeTrophiesCount.getText().toString());
+                userModel.setTotalLikes(userModel.getTotalLikes());
+                userModel.setUserFollowingLoggedInUser(followingCurrentUser);
+                userModel.setFollowingCurrentUser(followingCurrentUser);
+                HomeActivity.savedUserProfiles.add(userModel);
+            };
 
-                // Load user trophies
-                if (snapshot.child("users").child(userID).child("trophies").exists()) {
+            // Load user data from DB
+            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
-                    String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
-                    String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
+                    String profilePictureURL = "none";
+                    String username_from_db = snapshot.child("users").child(userID).child("name").getValue(String.class);
+                    username_tv.setText(username_from_db);
 
-                    goldTrophiesCount.setText(goldTrophies);
-                    silverTrophiesCount.setText(silverTrophies);
-                    bronzeTrophiesCount.setText(bronzeTrophies);
+                    boolean followingCurrentUser = false;
+                    boolean userFollowsLoggedInUser = false;
 
-                }
+                    // Check if logged-in user has
+                    // blocked current user to show an alert
+                    if (snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userID).exists()) {
 
-                // Load user posts
-                for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+                        new AlertDialog.Builder(UserProfileActivity.this)
+                                .setTitle("Blocked user")
+                                .setMessage("You have blocked this user. You want to unblock this user?")
+                                .setPositiveButton("Yes", (dialogInterface, i) ->
+                                        usersRef.child(user.getUid())
+                                                .child("blockedUsers").child(userID)
+                                                .removeValue().addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                dialogInterface.dismiss();
+                                                Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                                onBackPressed();
+                                            }
+                                        })).setNegativeButton("No", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                            onBackPressed();
+                        }).setCancelable(false).show();
 
-                    if (postSnapshot.child("name").getValue(String.class).equals(username_from_db)) {
-                        PostModel postModel = new PostModel();
-                        postModel.setId(postSnapshot.child("id").getValue(String.class));
-                        postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                        postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                        postModel.setName(postSnapshot.child("name").getValue(String.class));
-                        postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+                    }
 
-                        for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                            if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
-                                postModel.setAuthorID(user.child("id").getValue(String.class));
-                            }
-                        }
+                    // Show report/block options only
+                    // if this profile is not the current
+                    // logged-in user profile
+                    if (!userID.equals(user.getUid())) {
+                        Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                        toolbar.setTitle("");
+                        setSupportActionBar(toolbar);
+                    }
 
-                        if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                            postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                            postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                        }
+                    if (snapshot.child("users").child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
+                        followBtn.setVisibility(View.GONE);
+                        userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                    }
 
-                        totalLikes += Integer.parseInt(postSnapshot.child("likes").getValue(String.class));
+                    if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {
+                        profilePictureURL = snapshot.child("users").child(userID).child("profileImgUrl").getValue(String.class);
+                    }
 
-                        if (postSnapshot.child("comments").exists()) {
-                            postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                    if (!profilePictureURL.equals("none")) {
+                        Glide.with(getApplicationContext()).load(profilePictureURL).into(profilePicture);
+                    }
+
+                    if (!snapshot.child("users").child(userID).child("following").child(user.getUid()).exists()) {
+                        userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                        userFollowsLoggedInUser = true;
+                    }
+
+                    // check logged in user follows this user
+                    if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
+
+                        if (snapshot.child("users").child(user.getUid()).child("following").child(userID).exists()) {
+                            currentUserFollowsThisUser = true;
+                            followingCurrentUser = true;
+                            followBtn.setText("Unfollow");
                         } else {
-                            postModel.setCommentsCount("0");
+                            followingCurrentUser = false;
+                            currentUserFollowsThisUser = false;
                         }
+                    }
 
-                        postModelArrayList.add(postModel);
+                    // set followers and following counter values
+                    if (snapshot.child("users").child(userID).child("following").exists()) {
+                        following = (int) snapshot.child("users").child(userID).child("following").getChildrenCount();
+                        followingCounter.setText(String.format("%d", following));
+                    }
+
+                    if (snapshot.child("users").child(userID).child("followers").exists()) {
+                        followers = (int) snapshot.child("users").child(userID).child("followers").getChildrenCount();
+                        followersCounter.setText(String.format("%d", followers));
+                    }
+
+                    // Load user trophies
+                    if (snapshot.child("users").child(userID).child("trophies").exists()) {
+
+                        String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
+                        String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
+                        String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
+
+                        goldTrophiesCount.setText(goldTrophies);
+                        silverTrophiesCount.setText(silverTrophies);
+                        bronzeTrophiesCount.setText(bronzeTrophies);
 
                     }
 
+                    recyclerAdapter.notifyDataSetChanged();
+                    progressDialog.hide();
+                    firebaseCallback.onComplete(profilePictureURL, userFollowsLoggedInUser, followingCurrentUser);
+
                 }
 
-                // Set total likes
-                totalLikesCounter.setText(String.valueOf(totalLikes));
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
-                recyclerAdapter.notifyDataSetChanged();
-                progressDialog.hide();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        
 
         followBtn.setOnClickListener(v -> {
 

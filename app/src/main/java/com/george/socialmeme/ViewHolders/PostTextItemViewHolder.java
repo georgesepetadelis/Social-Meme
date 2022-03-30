@@ -70,7 +70,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
     public TextView username, like_counter_tv, commentsCount, postTitle, postContentText, followBtn;
     public CircleImageView profilePicture;
     public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn;
-    public boolean isPostLiked = false;
+    public boolean isPostLiked;
     public ConstraintLayout followBtnView;
 
     public PostTextItemViewHolder(@NonNull View itemView) {
@@ -128,50 +128,39 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
                     .repeat(0)
                     .playOn(like_btn);
 
-            isPostLiked = true;
+            if (isPostLiked) {
+                isPostLiked = false;
+                like_btn.setImageResource(R.drawable.ic_like);
+                likesRef.child(postID).child(user.getUid()).removeValue();
+                updateLikesToDB(postID, false);
+            } else {
+                isPostLiked = true;
+                like_btn.setImageResource(R.drawable.ic_like_filled);
+                likesRef.child(postID).child(user.getUid()).setValue("true");
+                updateLikesToDB(postID, true);
+                sendNotificationToPostAuthor("like", "");
+            }
 
-            likesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    if (isPostLiked) {
-                        if (snapshot.child(postID).hasChild(user.getUid())) {
-                            // Post is liked from this user, so user wants to unlike this post
-                            like_btn.setImageResource(R.drawable.ic_like);
-                            likesRef.child(postID).child(user.getUid()).removeValue();
-                            isPostLiked = false;
-                            updateLikesToDB(postID, false);
-                        } else {
-                            like_btn.setImageResource(R.drawable.ic_like_filled);
-                            likesRef.child(postID).child(user.getUid()).setValue("true");
-                            updateLikesToDB(postID, true);
-                            sendNotificationToPostAuthor("like", "");
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                    Toast.makeText(itemView.getContext(), "Error: " + error, Toast.LENGTH_LONG).show();
-                }
-            });
         });
+
+        if (HomeActivity.anonymous) {
+            openProfileView.setEnabled(false);
+        }
 
         openProfileView.setOnClickListener(v -> {
 
-            openUserProfile((callback_userID, callback_username) -> {
-                if (callback_userID.equals(user.getUid())) {
-                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
-                    if (selectedItemId != R.id.my_profile_fragment) {
-                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
-                    }
-                } else {
-                    Intent intent = new Intent(context, UserProfileActivity.class);
-                    intent.putExtra("user_id", callback_userID);
-                    intent.putExtra("username", callback_username);
-                    context.startActivity(intent);
-                    CustomIntent.customType(context, "left-to-right");
+            if (userID.equals(user.getUid())) {
+                int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                if (selectedItemId != R.id.my_profile_fragment) {
+                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                 }
-            });
+            }else {
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                intent.putExtra("user_id", userID);
+                intent.putExtra("username", username.getText().toString());
+                context.startActivity(intent);
+                CustomIntent.customType(context, "left-to-right");
+            }
 
         });
 
@@ -192,31 +181,6 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    void openUserProfile(ImageItemViewHolder.FirebaseCallback firebaseCallback) {
-        if (!HomeActivity.anonymous) {
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
-                            String uname = username.getText().toString();
-                            String userId = snap.child("id").getValue(String.class);
-                            firebaseCallback.onCallback(userId, uname);
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-        }
     }
 
     void followPostAuthor() {
@@ -414,56 +378,46 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateLikesToDB(String postID, boolean isNotLiked) {
-        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                String currentLikesToString = snapshot.child(postID).child("likes").getValue().toString();
-                int currentLikesToInt = Integer.parseInt(currentLikesToString);
+        String currentLikesToString = like_counter_tv.getText().toString();
+        int currentLikesToInt = Integer.parseInt(currentLikesToString);
 
-                if (isNotLiked) {
+        if (isNotLiked) {
 
-                    int newCurrentLikes = currentLikesToInt + 1;
-                    String newCurrentLikesToString = Integer.toString(newCurrentLikes);
+            int newCurrentLikes = currentLikesToInt + 1;
+            String newCurrentLikesToString = Integer.toString(newCurrentLikes);
 
-                    // Update likes on Real-time DB
-                    postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
+            // Update likes on Real-time DB
+            postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
 
-                    // update likes on TextView
-                    like_counter_tv.setText(newCurrentLikesToString);
+            // update likes on TextView
+            like_counter_tv.setText(newCurrentLikesToString);
 
-                    // Animate like counter TextView
-                    YoYo.with(Techniques.FadeInUp)
-                            .duration(500)
-                            .repeat(0)
-                            .playOn(like_counter_tv);
+            // Animate like counter TextView
+            YoYo.with(Techniques.FadeInUp)
+                    .duration(500)
+                    .repeat(0)
+                    .playOn(like_counter_tv);
 
-                } else {
+        } else {
 
-                    int newCurrentLikes = currentLikesToInt - 1;
-                    String newCurrentLikesToString = Integer.toString(newCurrentLikes);
+            int newCurrentLikes = currentLikesToInt - 1;
+            String newCurrentLikesToString = Integer.toString(newCurrentLikes);
 
-                    // Update likes on Real-time DB
-                    postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
+            // Update likes on Real-time DB
+            postsRef.child(postID).child("likes").setValue(newCurrentLikesToString);
 
-                    // update likes on TextView
-                    like_counter_tv.setText(newCurrentLikesToString);
+            // update likes on TextView
+            like_counter_tv.setText(newCurrentLikesToString);
 
-                    // Animate like counter TextView
-                    YoYo.with(Techniques.FadeInDown)
-                            .duration(500)
-                            .repeat(0)
-                            .playOn(like_counter_tv);
+            // Animate like counter TextView
+            YoYo.with(Techniques.FadeInDown)
+                    .duration(500)
+                    .repeat(0)
+                    .playOn(like_counter_tv);
 
-                }
+        }
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     void copyUsernameToClipboard() {

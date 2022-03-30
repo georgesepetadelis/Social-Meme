@@ -172,6 +172,8 @@ public class SettingsActivity extends AppCompatActivity {
                     .setTitle("Are you sure?")
                     .setMessage("Are you sure you want to log out?")
                     .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+                        userRef.child("fcm_token").removeValue();
                         auth.signOut();
                         finish();
                         startActivity(new Intent(SettingsActivity.this, WelcomeActivity.class));
