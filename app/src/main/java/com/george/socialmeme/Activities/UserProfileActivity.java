@@ -302,7 +302,6 @@ public class UserProfileActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        sendNotificationToUser("profile_visit");
         backBtn.setOnClickListener(v -> onBackPressed());
 
         postsOfTheMonthInfo.setOnClickListener(view -> {
@@ -409,6 +408,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 userModel.setUserFollowingLoggedInUser(followingCurrentUser);
                 userModel.setFollowingCurrentUser(followingCurrentUser);
                 HomeActivity.savedUserProfiles.add(userModel);
+                sendNotificationToUser("profile_visit");
             };
 
             // Load user data from DB
