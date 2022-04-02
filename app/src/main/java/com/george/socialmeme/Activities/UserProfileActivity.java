@@ -333,7 +333,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         // Load user posts
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
-            for (int postIndex = 1; postIndex < HomeActivity.savedPostsArrayList.size() - 1; postIndex++) {
+            for (int postIndex = 0; postIndex < HomeActivity.savedPostsArrayList.size() - 1; postIndex++) {
                 if (HomeActivity.savedPostsArrayList.get(postIndex).getName().equals(username)) {
                     postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
                 }

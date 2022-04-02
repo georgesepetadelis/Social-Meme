@@ -19,9 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,17 +34,13 @@ import android.widget.Toast;
 
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.developer.kalert.KAlertDialog;
-import com.george.socialmeme.Activities.LoginActivity;
+import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.RegisterActivity;
 import com.george.socialmeme.Models.UploadPostModel;
-import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,10 +49,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -199,6 +191,31 @@ public class NewPostFragment extends Fragment {
                                 .addOnCompleteListener(task -> loadingDialog.hide());
                     }
 
+                    PostModel postModel = new PostModel();
+                    postModel.setId(postId);
+                    postModel.setAuthorID(user.getUid());
+                    postModel.setName(user.getDisplayName());
+                    postModel.setPostTitle(jokeTitleEditText.getText().toString());
+                    postModel.setPostContentText(jokeContentEditText.getText().toString());
+                    postModel.setLikes("0");
+                    postModel.setCommentsCount("0");
+                    postModel.setPostType(type);
+
+                    if (user.getPhotoUrl() == null) {
+                        postModel.setProfileImgUrl("none");
+                    }else {
+                        postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                    }
+
+                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                    HomeActivity.savedPostsArrayList.add(postModel);
+
+                    // Add post's of the month view as RecyclerView item
+                    // to avoid using ScrollView
+                    PostModel postsOfTheMonthView = new PostModel();
+                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+
                     Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
                     sendNewPostNotificationToFollowers();
                     HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
@@ -249,6 +266,30 @@ public class NewPostFragment extends Fragment {
                                     postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
                                 }
 
+                                PostModel postModel = new PostModel();
+                                postModel.setId(postId);
+                                postModel.setAuthorID(user.getUid());
+                                postModel.setName(user.getDisplayName());
+                                postModel.setAudioName(audioNameET.getText().toString());
+                                postModel.setLikes("0");
+                                postModel.setCommentsCount("0");
+                                postModel.setPostType(type);
+
+                                if (user.getPhotoUrl() == null) {
+                                    postModel.setProfileImgUrl("none");
+                                }else {
+                                    postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                                }
+
+                                HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                                HomeActivity.savedPostsArrayList.add(postModel);
+
+                                // Add post's of the month view as RecyclerView item
+                                // to avoid using ScrollView
+                                PostModel postsOfTheMonthView = new PostModel();
+                                postsOfTheMonthView.setPostType("postsOfTheMonth");
+                                HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+
                             })).addOnProgressListener(snapshot -> {
                         loadingDialog.show();
                     }).addOnFailureListener(e -> {
@@ -294,6 +335,30 @@ public class NewPostFragment extends Fragment {
                         postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
                     }
 
+                    PostModel postModel = new PostModel();
+                    postModel.setId(postId);
+                    postModel.setAuthorID(user.getUid());
+                    postModel.setName(user.getDisplayName());
+                    postModel.setImgUrl(uri1.toString());
+                    postModel.setLikes("0");
+                    postModel.setCommentsCount("0");
+                    postModel.setPostType(type);
+
+                    if (user.getPhotoUrl() == null) {
+                        postModel.setProfileImgUrl("none");
+                    }else {
+                        postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                    }
+
+                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                    HomeActivity.savedPostsArrayList.add(postModel);
+
+                    // Add post's of the month view as RecyclerView item
+                    // to avoid using ScrollView
+                    PostModel postsOfTheMonthView = new PostModel();
+                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+
                 })).addOnProgressListener(snapshot -> loadingDialog.show())
                         .addOnFailureListener(e -> {
                             loadingDialog.hide();
@@ -328,14 +393,18 @@ public class NewPostFragment extends Fragment {
         View selectAudio = view.findViewById(R.id.select_audio_btn);
         View uploadText = view.findViewById(R.id.upload_text_view);
 
-        if (HomeActivity.anonymous) {
+        if (HomeActivity.singedInAnonymously) {
             new AlertDialog.Builder(getContext())
                     .setTitle("Sign in required")
-                    .setMessage("You need to sign in to upload memes!")
-                    .setPositiveButton("Okay", (dialogInterface, i) -> {
+                    .setMessage("You need to login to upload memes!")
+                    .setPositiveButton("Register/Login", (dialogInterface, i) -> {
                         getActivity().finish();
                         startActivity(new Intent(getActivity(), RegisterActivity.class));
                         CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+                    })
+                    .setNegativeButton("Later", (dialog, which) -> {
+                        HomeActivity.bottomNavBar.setItemSelected(R.layout.fragment_home, true);
+                        dialog.dismiss();
                     })
                     .setCancelable(false)
                     .show();

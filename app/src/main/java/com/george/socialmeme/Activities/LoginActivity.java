@@ -1,12 +1,8 @@
 package com.george.socialmeme.Activities;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -107,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
-            HomeActivity.anonymous = false;
+            HomeActivity.singedInAnonymously = false;
         }).addOnFailureListener(e -> {
             progressDialog.hide();
             SmartDialogBox.showErrorDialog(LoginActivity.this, e.getLocalizedMessage(), "OK");

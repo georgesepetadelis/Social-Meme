@@ -28,7 +28,7 @@ public class WelcomeActivity extends AppCompatActivity {
         Button login_anonymously = findViewById(R.id.button3);
 
         login_anonymously.setOnClickListener(view -> {
-            HomeActivity.anonymous = true;
+            HomeActivity.singedInAnonymously = true;
             startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
             CustomIntent.customType(WelcomeActivity.this, "fadein-to-fadeout");
         });

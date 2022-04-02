@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -84,11 +86,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                 } else {
-                    finish();
                     initializeNightModeSharedPref();
                     HomeActivity.showLoadingScreen = true;
                     startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
                     CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                    finish();
                 }
 
             }else {
@@ -104,6 +106,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                         }).show();
             }
-        }, 1000);
+        }, 800);
     }
 }

@@ -12,7 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -25,19 +24,13 @@ import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public static boolean anonymous;
+    public static boolean singedInAnonymously;
     public static boolean showLoadingScreen;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsArrayList;
@@ -152,7 +145,7 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
-        if (!anonymous) {
+        if (!singedInAnonymously) {
             user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
                     .setTitle("Error")
                     .setMessage(e.getMessage())

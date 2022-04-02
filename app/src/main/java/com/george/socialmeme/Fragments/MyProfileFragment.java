@@ -260,13 +260,16 @@ public class MyProfileFragment extends Fragment {
             }
         }
 
+        ArrayList<PostModel> postModelArrayList = new ArrayList<>();
+        ArrayList<PostModel> allPostsArrayList = new ArrayList<>();
         final RecyclerView recyclerView = view.findViewById(R.id.recyclerView_my_profile);
-        final ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
 
         progressDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
@@ -301,12 +304,24 @@ public class MyProfileFragment extends Fragment {
             someActivityResultLauncher.launch(intent);
         });
 
-        if (!HomeActivity.anonymous) {
+        if (!HomeActivity.singedInAnonymously) {
 
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
-                for (int postIndex = 1; postIndex < HomeActivity.savedPostsArrayList.size() - 1; postIndex++) {
-                    if (HomeActivity.savedPostsArrayList.get(postIndex).getName().equals(user.getDisplayName())) {
+                allPostsArrayList.addAll(HomeActivity.savedPostsArrayList);
+                /*
+                for (int postIndex = 1; postIndex < postModelArrayList.size() - 1; postIndex++) {
+                    String authorNAME = postModelArrayList.get(postIndex).getName();
+                    Log.i("TEST32", "NAME IS: " + authorNAME);
+                    if (authorID.equals(user.getUid())) {
                         postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
+                    }
+                }*/
+
+                for (PostModel post : allPostsArrayList) {
+                    if (post.getName() != null) {
+                        if (post.getName().equals(user.getDisplayName())) {
+                            postModelArrayList.add(post);
+                        }
                     }
                 }
             }

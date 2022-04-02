@@ -39,7 +39,6 @@ import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,10 +48,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -94,7 +90,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         followBtn.setOnClickListener(view -> followPostAuthor());
 
-        if (!HomeActivity.anonymous && !username.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.singedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         }else {
             followBtnView.setVisibility(View.GONE);
@@ -143,7 +139,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-        if (HomeActivity.anonymous) {
+        if (HomeActivity.singedInAnonymously) {
             openProfileView.setEnabled(false);
         }
 
@@ -214,8 +210,16 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
     private void deletePost() {
         postsRef.child(postID).removeValue().addOnCompleteListener(task -> {
-            context.startActivity(new Intent(context, HomeActivity.class));
-            CustomIntent.customType(context, "fadein-to-fadeout");
+            like_btn.setVisibility(View.GONE);
+            like_counter_tv.setVisibility(View.GONE);
+            openCommentsView.setEnabled(false);
+            openCommentsView.setEnabled(false);
+            username.setText("DELETED POST");
+            postTitle.setText("DELETED POST");
+            postContentText.setText("DELETED POST");
+            profilePicture.setImageResource(R.drawable.user);
+            openProfileView.setEnabled(false);
+            postOptionsButton.setVisibility(View.GONE);
         });
     }
 

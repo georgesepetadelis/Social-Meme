@@ -49,7 +49,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -122,8 +121,15 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                 .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
         postsRef.child(postID).removeValue().addOnCompleteListener(task -> {
-            context.startActivity(new Intent(context, HomeActivity.class));
-            CustomIntent.customType(context, "fadein-to-fadeout");
+            like_btn.setVisibility(View.GONE);
+            like_counter_tv.setVisibility(View.GONE);
+            openCommentsView.setEnabled(false);
+            openCommentsView.setEnabled(false);
+            username.setText("DELETED POST");
+            andExoPlayerView.setVisibility(View.GONE);
+            profilePicture.setImageResource(R.drawable.user);
+            openProfileView.setEnabled(false);
+            postOptionsButton.setVisibility(View.GONE);
         });
 
     }
@@ -296,7 +302,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         followBtn.setOnClickListener(view -> followPostAuthor());
 
-        if (!HomeActivity.anonymous && !username.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.singedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         }else {
             followBtnView.setVisibility(View.GONE);
@@ -345,7 +351,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-        if (HomeActivity.anonymous) {
+        if (HomeActivity.singedInAnonymously) {
             openProfileView.setEnabled(false);
         }
 

@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +50,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -80,6 +78,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profileImage;
     public boolean isPostLiked;
     public ConstraintLayout openUserProfileView, followBtnView;
+    View openCommentsView;
 
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
@@ -153,8 +152,16 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                 .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
         postsRef.child(postID).removeValue().addOnCompleteListener(task -> {
-            context.startActivity(new Intent(context, HomeActivity.class));
-            CustomIntent.customType(context, "fadein-to-fadeout");
+            like_btn.setVisibility(View.GONE);
+            like_counter_tv.setVisibility(View.GONE);
+            openCommentsView.setEnabled(false);
+            show_comments_btn.setVisibility(View.GONE);
+            commentsCount.setVisibility(View.GONE);
+            username.setText("DELETED POST");
+            postImg.setVisibility(View.GONE);
+            profileImage.setImageResource(R.drawable.user);
+            openUserProfileView.setEnabled(false);
+            showPostOptionsButton.setVisibility(View.GONE);
         });
 
     }
@@ -383,12 +390,12 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         loadingProgressBar = itemView.findViewById(R.id.progressBar3);
         followBtn = itemView.findViewById(R.id.textView81);
         followBtnView = itemView.findViewById(R.id.follow_btn_view);
-        View openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
+        openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
 
         showPostOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         openCommentsView.setOnClickListener(view -> showCommentsDialog());
 
-        if (HomeActivity.anonymous) {
+        if (HomeActivity.singedInAnonymously) {
             followBtnView.setVisibility(View.GONE);
             openUserProfileView.setEnabled(false);
         }

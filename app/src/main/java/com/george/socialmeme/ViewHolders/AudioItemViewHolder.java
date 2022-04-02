@@ -48,7 +48,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -132,7 +131,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         openCommentsView.setOnClickListener(view -> showCommentsDialog());
         followBtn.setOnClickListener(view -> followPostAuthor());
 
-        if (!HomeActivity.anonymous && !usernameTV.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.singedInAnonymously && !usernameTV.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         }else {
             followBtnView.setVisibility(View.GONE);
@@ -308,8 +307,15 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                 .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
         postsRef.child(postID).removeValue().addOnCompleteListener(task -> {
-            context.startActivity(new Intent(context, HomeActivity.class));
-            CustomIntent.customType(context, "fadein-to-fadeout");
+            likeBtn.setVisibility(View.GONE);
+            likesCounter.setVisibility(View.GONE);
+            openCommentsView.setEnabled(false);
+            openCommentsView.setEnabled(false);
+            usernameTV.setText("DELETED POST");
+            playBtn.setEnabled(false);
+            profilePicture.setImageResource(R.drawable.user);
+            openUserProfileView.setEnabled(false);
+            postOptionsBtn.setVisibility(View.GONE);
         });
 
     }

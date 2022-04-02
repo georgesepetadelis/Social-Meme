@@ -2,11 +2,9 @@ package com.george.socialmeme.Adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,14 +37,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.hugomatilla.audioplayerview.AudioPlayerView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import maes.tech.intentanim.CustomIntent;
 
 public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
@@ -169,7 +164,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             PostTextItemViewHolder textItemViewHolder = (PostTextItemViewHolder) holder;
             textItemViewHolder.setContext(context);
 
-            if (HomeActivity.anonymous) {
+            if (HomeActivity.singedInAnonymously) {
                 textItemViewHolder.commentsCount.setVisibility(View.GONE);
                 textItemViewHolder.postOptionsButton.setVisibility(View.GONE);
                 textItemViewHolder.openCommentsView.setVisibility(View.GONE);
@@ -184,7 +179,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    if (!HomeActivity.anonymous) {
+                    if (!HomeActivity.singedInAnonymously) {
 
                         // check if current post is liked from this user
                         if (snapshot.child(textItemViewHolder.postID).hasChild(user.getUid())) {
@@ -241,7 +236,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             AudioItemViewHolder audioViewHolder = (AudioItemViewHolder) holder;
             audioViewHolder.setContext(context);
 
-            if (HomeActivity.anonymous) {
+            if (HomeActivity.singedInAnonymously) {
                 audioViewHolder.commentsCounter.setVisibility(View.GONE);
                 audioViewHolder.postOptionsBtn.setVisibility(View.GONE);
                 audioViewHolder.openCommentsView.setVisibility(View.GONE);
@@ -256,7 +251,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    if (!HomeActivity.anonymous) {
+                    if (!HomeActivity.singedInAnonymously) {
 
                         // check if current post is liked from this user
                         if (snapshot.child(audioViewHolder.postID).hasChild(user.getUid())) {
@@ -315,7 +310,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             VideoItemViewHolder videoViewHolder = (VideoItemViewHolder) holder;
             videoViewHolder.setContext(context);
 
-            if (HomeActivity.anonymous) {
+            if (HomeActivity.singedInAnonymously) {
                 videoViewHolder.commentsCount.setVisibility(View.GONE);
                 videoViewHolder.postOptionsButton.setVisibility(View.GONE);
                 videoViewHolder.commentsBtn.setVisibility(View.GONE);
@@ -330,7 +325,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    if (!HomeActivity.anonymous) {
+                    if (!HomeActivity.singedInAnonymously) {
 
                         // check if current post is liked from this user
                         if (snapshot.child(videoViewHolder.postID).hasChild(user.getUid())) {
@@ -400,7 +395,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             ImageItemViewHolder imageViewHolder = (ImageItemViewHolder) holder;
             imageViewHolder.setContext(context);
 
-            if (HomeActivity.anonymous) {
+            if (HomeActivity.singedInAnonymously) {
                 imageViewHolder.commentsCount.setVisibility(View.GONE);
                 imageViewHolder.show_comments_btn.setVisibility(View.GONE);
                 imageViewHolder.showPostOptionsButton.setVisibility(View.GONE);
@@ -415,7 +410,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    if (!HomeActivity.anonymous) {
+                    if (!HomeActivity.singedInAnonymously) {
 
                         // check if current post is liked from this user
                         if (snapshot.child(imageViewHolder.postID).hasChild(user.getUid())) {
