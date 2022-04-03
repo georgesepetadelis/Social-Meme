@@ -106,46 +106,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void deletePost(int position, String fileURL) {
-
-        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
-        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(fileURL);
-
-        if (fileURL.isEmpty() || fileURL == null) {
-            // Delete post from Database
-            postsRef.child(postList.get(position).getId()).removeValue().addOnCompleteListener(task -> {
-                // Remove item from recycler view
-                if (task.isSuccessful()) {
-                    postList.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, postList.size());
-                    Toast.makeText(context, "Post deleted!", Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(context, "We cannot delete post from database.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            storageReference.delete()
-                    .addOnSuccessListener(unused -> {
-                        // Delete post from Database
-                        postsRef.child(postList.get(position).getId()).removeValue().addOnCompleteListener(task -> {
-                            // Remove item from recycler view
-                            if (task.isSuccessful()) {
-                                postList.remove(position);
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position, postList.size());
-                                Toast.makeText(context, "Post deleted!", Toast.LENGTH_SHORT).show();
-                            }else {
-                                Toast.makeText(context, "We cannot delete post from database.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-
-        }
-
-    }
-
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 

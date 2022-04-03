@@ -118,6 +118,7 @@
         <entry key="app/src/main/res/drawable/search_bar_stye.xml" value="0.2641350210970464" />
         <entry key="app/src/main/res/layout/activity_account_informtion.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/activity_account_settings.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_all_user_posts.xml" value="0.19444444444444445" />
         <entry key="app/src/main/res/layout/activity_followers_and_following.xml" value="0.2012820512820513" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.2918803418803419" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.george.socialmeme">
+    package="com.george.socialmeme" >
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -25,7 +25,10 @@
         android:theme="@style/Theme.SocialMeme"
         tools:ignore="DataExtractionRules"
         tools:replace="android:allowBackup"
-        tools:targetApi="s">
+        tools:targetApi="s" >
+        <activity
+            android:name=".Activities.AllUserPostsActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.PostsOfTheMonthActivity"
             android:exported="false" />
@@ -72,7 +75,7 @@
         <activity
             android:name=".Activities.SplashScreenActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -84,7 +87,7 @@
             android:name=".Services.FirebaseNotificationReceiver"
             android:directBootAware="true"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />

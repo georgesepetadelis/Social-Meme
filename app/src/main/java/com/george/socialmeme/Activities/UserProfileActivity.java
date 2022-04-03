@@ -42,6 +42,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -272,6 +274,7 @@ public class UserProfileActivity extends AppCompatActivity {
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
         TextView username_tv = findViewById(R.id.textView12);
         Button followBtn = findViewById(R.id.follow_btn);
+        Button showAllPostsButton = findViewById(R.id.showAllUserPosts);
 
         TextView followersCounter = findViewById(R.id.followers_my_profile3);
         TextView followingCounter = findViewById(R.id.following_my_profile3);
@@ -289,18 +292,19 @@ public class UserProfileActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
+
         RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
+        recyclerView.setAdapter(recyclerAdapter);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-        recyclerView.setAdapter(recyclerAdapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
@@ -313,6 +317,13 @@ public class UserProfileActivity extends AppCompatActivity {
         username_tv.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
             return false;
+        });
+
+        showAllPostsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfileActivity.this, AllUserPostsActivity.class);
+            intent.putExtra("userID", userID);
+            startActivity(intent);
+            CustomIntent.customType(UserProfileActivity.this, "left-to-right");
         });
 
         showFollowersView.setOnClickListener(v -> {
@@ -333,9 +344,19 @@ public class UserProfileActivity extends AppCompatActivity {
 
         // Load user posts
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
-            for (int postIndex = 0; postIndex < HomeActivity.savedPostsArrayList.size() - 1; postIndex++) {
-                if (HomeActivity.savedPostsArrayList.get(postIndex).getName().equals(username)) {
-                    postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
+
+            ArrayList<PostModel> allPostsRevered = new ArrayList<>(HomeActivity.savedPostsArrayList);
+            Collections.reverse(allPostsRevered);
+
+            int totalLoadedPosts = 0;
+            for (PostModel post : allPostsRevered) {
+                if (totalLoadedPosts < 5) {
+                    if (post.getAuthorID() != null) {
+                        if (post.getAuthorID().equals(userID)) {
+                            postModelArrayList.add(post);
+                            totalLoadedPosts+=1;
+                        }
+                    }
                 }
             }
 

@@ -138,26 +138,15 @@ public class HomeFragment extends Fragment {
         searchUserButton.setEnabled(false);
 
         if (refreshDataFromDB) {
-            // Clear previews loaded data
-            postModelArrayList.clear();
-            HomeActivity.savedPostsArrayList.clear();
-            progressBar.setVisibility(View.VISIBLE);
+
+            progressDialog.show();
+            ArrayList<PostModel> newPostData = new ArrayList<>();
 
             // Load data from DB
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    if (!HomeActivity.singedInAnonymously) {
-                        if (!snapshot.child("users").child(user.getUid()).child("fcm_token").exists()) {
-                            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    rootRef.child("users").child(user.getUid()).child("fcm_token").setValue(task.getResult());
-                                }
-                            });
-                        }
-                    }
 
                     for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
@@ -194,49 +183,31 @@ public class HomeFragment extends Fragment {
                             // Show post in recycler adapter only if the user is not blocked
                             if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
-                                postModelArrayList.add(postModel);
+                                newPostData.add(postModel);
                             }
                         } else {
-                            postModelArrayList.add(postModel);
+                            newPostData.add(postModel);
                         }
                         recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                     }
 
-                    if (HomeActivity.showLoadingScreen) {
-                        new Handler().postDelayed(() -> {
-                            int appVersionCode = BuildConfig.VERSION_CODE;
-                            int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
-                            if (appVersionCode < latestAppVersion) {
-                                new AlertDialog.Builder(getContext())
-                                        .setTitle("Update required.")
-                                        .setCancelable(false)
-                                        .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                        .setPositiveButton("Update", (dialogInterface, i) -> {
-                                            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                            startActivity(intent);
-                                        }).show();
-                            } else {
-                                notificationsBtn.setEnabled(true);
-                                searchUserButton.setEnabled(true);
-                                fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                                HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                                swipeRefreshLayout.setEnabled(true);
-                                HomeActivity.showLoadingScreen = false;
-                                HomeActivity.savedPostsArrayList = postModelArrayList;
-                                appShowCase();
-                            }
-                        }, 0);
-                    }
+                    // Clear previews loaded data
+                    postModelArrayList.clear();
+                    HomeActivity.savedPostsArrayList.clear();
 
                     // Add post's of the month view as RecyclerView item
                     // to avoid using ScrollView
                     PostModel postsOfTheMonthView = new PostModel();
                     postsOfTheMonthView.setPostType("postsOfTheMonth");
                     postModelArrayList.add(postsOfTheMonthView);
+                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
                     recyclerAdapter.notifyDataSetChanged();
 
-                    progressBar.setVisibility(View.GONE);
+                    postModelArrayList.addAll(newPostData);
+                    HomeActivity.savedPostsArrayList.addAll(newPostData);
+                    recyclerAdapter.notifyDataSetChanged();
+
+                    progressDialog.hide();
 
                 }
 

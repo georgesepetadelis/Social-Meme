@@ -52,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_profile_toolbar">
 
@@ -153,18 +154,38 @@
                 app:layout_constraintStart_toStartOf="@+id/textView12"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
 
+            <Button
+                android:id="@+id/showAllUserPosts"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="72dp"
+                android:background="@drawable/et_round_blue"
+                android:text="See all posts"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/recyclerView_user_profile"
+                app:layout_constraintStart_toStartOf="@+id/recyclerView_user_profile"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerView_user_profile" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_user_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="65dp"
+                android:layout_marginBottom="8dp"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/showAllUserPosts"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView20"
                 tools:itemCount="1"
-                tools:listitem="@layout/image_post_item" />
+                tools:listitem="@layout/image_post_item">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
             <TextView
                 android:id="@+id/textView20"
@@ -185,8 +206,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:text="Not follows you"
-                android:textStyle="bold"
                 android:textColor="?attr/titleTextColor"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/follow_btn"
                 app:layout_constraintEnd_toEndOf="@+id/textView12"
                 app:layout_constraintStart_toStartOf="@+id/textView12"
@@ -203,7 +224,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView20"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.0" />
 
             <View
                 android:id="@+id/view11"
@@ -238,9 +259,9 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="18dp"
                 android:layout_marginEnd="24dp"
+                android:background="@null"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="8dp"
-                android:background="@null"
                 app:layout_constraintBottom_toTopOf="@+id/follow_btn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
