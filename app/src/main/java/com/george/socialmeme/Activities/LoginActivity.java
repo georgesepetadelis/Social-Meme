@@ -100,10 +100,11 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email.trim(), password).addOnSuccessListener(authResult -> {
             progressDialog.hide();
             updateUserTokenOnDB();
-            finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
+            finish();
             HomeActivity.singedInAnonymously = false;
+            HomeActivity.showLoadingScreen = true;
         }).addOnFailureListener(e -> {
             progressDialog.hide();
             SmartDialogBox.showErrorDialog(LoginActivity.this, e.getLocalizedMessage(), "OK");
@@ -238,9 +239,10 @@ public class LoginActivity extends AppCompatActivity {
             });
 
             updateUserTokenOnDB();
-            finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
+            finish();
+            HomeActivity.showLoadingScreen = true;
 
         } else {
             SmartDialogBox.showErrorDialog(LoginActivity.this, errorMsg.getLocalizedMessage(), "OK");

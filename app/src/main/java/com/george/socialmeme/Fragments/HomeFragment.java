@@ -34,6 +34,7 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.NotificationsActivity;
+import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.BuildConfig;
@@ -138,85 +139,10 @@ public class HomeFragment extends Fragment {
         searchUserButton.setEnabled(false);
 
         if (refreshDataFromDB) {
-
-            progressDialog.show();
-            ArrayList<PostModel> newPostData = new ArrayList<>();
-
-            // Load data from DB
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
-
-                        PostModel postModel = new PostModel();
-                        postModel.setId(postSnapshot.child("id").getValue(String.class));
-                        postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                        postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                        postModel.setName(postSnapshot.child("name").getValue(String.class));
-                        postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
-                        postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
-
-                        for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                            if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
-                                postModel.setAuthorID(user.child("id").getValue(String.class));
-                            }
-                        }
-
-                        if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                            postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                            postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                        }
-
-                        if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
-                            postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
-                        }
-
-                        if (postSnapshot.child("comments").exists()) {
-                            postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                        } else {
-                            postModel.setCommentsCount("0");
-                        }
-
-                        if (!HomeActivity.singedInAnonymously) {
-                            // Show post in recycler adapter only if the user is not blocked
-                            if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
-                                newPostData.add(postModel);
-                            }
-                        } else {
-                            newPostData.add(postModel);
-                        }
-                        recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
-                    }
-
-                    // Clear previews loaded data
-                    postModelArrayList.clear();
-                    HomeActivity.savedPostsArrayList.clear();
-
-                    // Add post's of the month view as RecyclerView item
-                    // to avoid using ScrollView
-                    PostModel postsOfTheMonthView = new PostModel();
-                    postsOfTheMonthView.setPostType("postsOfTheMonth");
-                    postModelArrayList.add(postsOfTheMonthView);
-                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
-                    recyclerAdapter.notifyDataSetChanged();
-
-                    postModelArrayList.addAll(newPostData);
-                    HomeActivity.savedPostsArrayList.addAll(newPostData);
-                    recyclerAdapter.notifyDataSetChanged();
-
-                    progressDialog.hide();
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }else {
+            getActivity().recreate();
+            CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+        }
+        else {
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 // Load saved data
                 postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
@@ -384,7 +310,9 @@ public class HomeFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 // Avoid data reload on every scroll
-                swipeRefreshLayout.setEnabled(dy <= 5);
+                if (layoutManager.findFirstVisibleItemPosition() == 0) {
+                    swipeRefreshLayout.setEnabled(true);
+                }
             }
         });
 

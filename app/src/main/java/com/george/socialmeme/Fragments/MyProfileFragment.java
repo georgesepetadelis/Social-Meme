@@ -308,14 +308,6 @@ public class MyProfileFragment extends Fragment {
 
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 allPostsArrayList.addAll(HomeActivity.savedPostsArrayList);
-                /*
-                for (int postIndex = 1; postIndex < postModelArrayList.size() - 1; postIndex++) {
-                    String authorNAME = postModelArrayList.get(postIndex).getName();
-                    Log.i("TEST32", "NAME IS: " + authorNAME);
-                    if (authorID.equals(user.getUid())) {
-                        postModelArrayList.add(HomeActivity.savedPostsArrayList.get(postIndex));
-                    }
-                }*/
 
                 for (PostModel post : allPostsArrayList) {
                     if (post.getName() != null) {
