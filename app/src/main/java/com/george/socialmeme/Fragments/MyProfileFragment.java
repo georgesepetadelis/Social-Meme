@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -279,9 +280,9 @@ public class MyProfileFragment extends Fragment {
 
         showFollowersView.setOnClickListener(view1 -> {
             if (followers != 0) {
-                FollowerInfoActivity.userID = user.getUid();
-                FollowerInfoActivity.displayFollowers = true;
                 Intent intent = new Intent(getActivity(), FollowerInfoActivity.class);
+                intent.putExtra("userID", user.getUid());
+                intent.putExtra("display_followers", true);
                 startActivity(intent);
                 CustomIntent.customType(getActivity(), "left-to-right");
             }
@@ -289,9 +290,9 @@ public class MyProfileFragment extends Fragment {
 
         showFollowingUsersView.setOnClickListener(view12 -> {
             if (following != 0) {
-                FollowerInfoActivity.userID = user.getUid();
-                FollowerInfoActivity.displayFollowers = false;
                 Intent intent = new Intent(getActivity(), FollowerInfoActivity.class);
+                intent.putExtra("userID", user.getUid());
+                intent.putExtra("display_followers", false);
                 startActivity(intent);
                 CustomIntent.customType(getActivity(), "left-to-right");
             }

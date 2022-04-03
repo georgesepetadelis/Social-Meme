@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.Adapters.FollowerInfoRecyclerAdapter;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
@@ -27,12 +28,8 @@ import maes.tech.intentanim.CustomIntent;
 
 public class FollowerInfoActivity extends AppCompatActivity {
 
-    LoadingDialog progressDialog;
+    public KAlertDialog progressDialog;
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-    // if this equals false adapter will search for following users
-    public static boolean displayFollowers;
-    public static String userID;
 
     @Override
     public void onBackPressed() {
@@ -53,6 +50,10 @@ public class FollowerInfoActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followers_and_following);
+
+        Bundle extras = getIntent().getExtras();
+        String userID = extras.getString("userID");
+        boolean displayFollowers = extras.getBoolean("display_followers");
 
         ImageButton backBtn = findViewById(R.id.imageButton5);
         TextView title = findViewById(R.id.textView26);
@@ -76,7 +77,11 @@ public class FollowerInfoActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        progressDialog = LoadingDialog.Companion.get(FollowerInfoActivity.this);
+        progressDialog = new KAlertDialog(FollowerInfoActivity.this, KAlertDialog.PROGRESS_TYPE);
+        progressDialog.getProgressHelper().setBarColor(R.color.main);
+        progressDialog.setTitleText("Loading users...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         progressDialog.show();
 
         usersRef.addValueEventListener(new ValueEventListener() {

@@ -328,17 +328,21 @@ public class UserProfileActivity extends AppCompatActivity {
 
         showFollowersView.setOnClickListener(v -> {
             if (followers != 0) {
-                FollowerInfoActivity.userID = userID;
-                FollowerInfoActivity.displayFollowers = true;
-                openUsersList();
+                Intent intent = new Intent(UserProfileActivity.this, FollowerInfoActivity.class);
+                intent.putExtra("userID", userID);
+                intent.putExtra("display_followers", true);
+                startActivity(intent);
+                CustomIntent.customType(UserProfileActivity.this, "left-to-right");
             }
         });
 
         showFollowingUsersView.setOnClickListener(v -> {
             if (following != 0) {
-                FollowerInfoActivity.userID = userID;
-                FollowerInfoActivity.displayFollowers = false;
-                openUsersList();
+                Intent intent = new Intent(UserProfileActivity.this, FollowerInfoActivity.class);
+                intent.putExtra("userID", userID);
+                intent.putExtra("display_followers", false);
+                startActivity(intent);
+                CustomIntent.customType(UserProfileActivity.this, "left-to-right");
             }
         });
 
@@ -631,9 +635,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void openUsersList() {
-        Intent intent = new Intent(UserProfileActivity.this, FollowerInfoActivity.class);
-        startActivity(intent);
-        CustomIntent.customType(UserProfileActivity.this, "left-to-right");
+
     }
 
     @Override
