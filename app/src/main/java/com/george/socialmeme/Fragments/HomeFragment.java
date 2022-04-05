@@ -34,7 +34,6 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.NotificationsActivity;
-import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.BuildConfig;
@@ -130,7 +129,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    void fetchAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
+    void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
@@ -139,8 +138,9 @@ public class HomeFragment extends Fragment {
         searchUserButton.setEnabled(false);
 
         if (refreshDataFromDB) {
-            getActivity().recreate();
+            getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
             CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+            getActivity().finish();
         }
         else {
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
@@ -319,7 +319,7 @@ public class HomeFragment extends Fragment {
         // Reload data
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
-            fetchAllPostsFromDB(true, view, swipeRefreshLayout);
+            getAllPostsFromDB(true, view, swipeRefreshLayout);
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -329,7 +329,7 @@ public class HomeFragment extends Fragment {
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
         }
 
-        fetchAllPostsFromDB(false, view, swipeRefreshLayout);
+        getAllPostsFromDB(false, view, swipeRefreshLayout);
 
         // Display donate dialog (1 in 15 cases)
         // except the user is singed in anonymously
