@@ -24,7 +24,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class FirebaseNotificationReceiver extends FirebaseMessagingService {
+public class FirebaseNotificationService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(@NonNull String token) {

@@ -230,7 +230,6 @@ public class HomeFragment extends Fragment {
                                     swipeRefreshLayout.setEnabled(true);
                                     HomeActivity.showLoadingScreen = false;
                                     HomeActivity.savedPostsArrayList = postModelArrayList;
-                                    appShowCase();
                                 }
                             }, 0);
                         }
@@ -240,7 +239,8 @@ public class HomeFragment extends Fragment {
                         PostModel postsOfTheMonthView = new PostModel();
                         postsOfTheMonthView.setPostType("postsOfTheMonth");
                         postModelArrayList.add(postsOfTheMonthView);
-                        recyclerAdapter.notifyDataSetChanged();
+                        recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+                        appShowCase();
 
                     }
 

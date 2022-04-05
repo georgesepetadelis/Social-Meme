@@ -84,7 +84,7 @@
         </activity>
 
         <service
-            android:name=".Services.FirebaseNotificationReceiver"
+            android:name=".Services.FirebaseNotificationService"
             android:directBootAware="true"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >

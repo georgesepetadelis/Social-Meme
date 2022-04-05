@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
@@ -26,7 +27,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class PostsOfTheMonthActivity extends AppCompatActivity {
 
-    LoadingDialog loadingDialog;
+    public KAlertDialog loadingDialog;
 
     @Override
     public void onBackPressed() {
@@ -50,7 +51,10 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts_of_the_month);
 
-        loadingDialog = LoadingDialog.Companion.get(PostsOfTheMonthActivity.this);
+        loadingDialog = new KAlertDialog(PostsOfTheMonthActivity.this, KAlertDialog.PROGRESS_TYPE);
+        loadingDialog.getProgressHelper().setBarColor(R.color.main);
+        loadingDialog.setTitleText("Loading posts...");
+        loadingDialog.setCancelable(false);
         loadingDialog.show();
 
         final RecyclerView firstRecyclerView = findViewById(R.id.first_post_recycler_view);
@@ -114,7 +118,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 goldPostModel.setImgUrl(snapshot.child("posts").child(goldPostID).child("imgUrl").getValue(String.class));
 
                 for (DataSnapshot userSnap : snapshot.child("users").getChildren()) {
-                    if (userSnap.child("name").equals(snapshot.child("posts").child(goldPostID).child("name").getValue(String.class))) {
+                    if (userSnap.child("name").getValue(String.class).equals(snapshot.child("posts").child(goldPostID).child("name").getValue(String.class))) {
                         goldPostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }
@@ -136,7 +140,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 silverPostModel.setImgUrl(snapshot.child("posts").child(silverPostID).child("imgUrl").getValue(String.class));
 
                 for (DataSnapshot userSnap : snapshot.child("users").getChildren()) {
-                    if (userSnap.child("name").equals(snapshot.child("posts").child(silverPostID).child("name").getValue(String.class))) {
+                    if (userSnap.child("name").getValue(String.class).equals(snapshot.child("posts").child(silverPostID).child("name").getValue(String.class))) {
                         silverPostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }
@@ -158,7 +162,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 bronzePostModel.setImgUrl(snapshot.child("posts").child(bronzePostID).child("imgUrl").getValue(String.class));
 
                 for (DataSnapshot userSnap : snapshot.child("users").getChildren()) {
-                    if (userSnap.child("name").equals(snapshot.child("posts").child(bronzePostID).child("name").getValue(String.class))) {
+                    if (userSnap.child("name").getValue(String.class).equals(snapshot.child("posts").child(bronzePostID).child("name").getValue(String.class))) {
                         bronzePostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }
