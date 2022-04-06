@@ -65,7 +65,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
     public Context context;
     public StyledPlayerView andExoPlayerView;
-    public String postID, userID, videoURL;
+    public String postID, postAuthorID, videoURL;
     public ConstraintLayout openProfileView, followBtnView;
     public View openCommentsView;
     public TextView username, like_counter_tv, commentsCount, followBtn;
@@ -91,9 +91,9 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("following")) {
                     // Logged-in user follows post author
-                    if (!snapshot.child("following").child(userID).exists()) {
-                        usersRef.child(userID).child("followers").child(user.getUid()).setValue(user.getUid());
-                        usersRef.child(user.getUid()).child("following").child(userID).setValue(userID);
+                    if (!snapshot.child("following").child(postAuthorID).exists()) {
+                        usersRef.child(postAuthorID).child("followers").child(user.getUid()).setValue(user.getUid());
+                        usersRef.child(user.getUid()).child("following").child(postAuthorID).setValue(postAuthorID);
                         followBtn.setTextColor(context.getColor(R.color.gray));
                         followBtn.setText("Following");
                         followBtn.setEnabled(false);
@@ -316,7 +316,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                 if (snapshot.hasChild("following")) {
                     // Logged-in user follows post author
                     // hide follow btn
-                    if (snapshot.child("following").child(userID).exists()) {
+                    if (snapshot.child("following").child(postAuthorID).exists()) {
                         followBtnView.setVisibility(View.GONE);
                     }
                 }
@@ -346,7 +346,11 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                 like_btn.setImageResource(R.drawable.ic_like_filled);
                 likesRef.child(postID).child(user.getUid()).setValue("true");
                 updateLikesToDB(postID, true);
-                sendNotificationToPostAuthor("like", "");
+
+                if (!user.getUid().equals(postAuthorID)) {
+                    sendNotificationToPostAuthor("like", "");
+                }
+
             }
 
         });
@@ -357,14 +361,14 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
         openProfileView.setOnClickListener(v -> {
 
-            if (userID.equals(user.getUid())) {
+            if (postAuthorID.equals(user.getUid())) {
                 int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
                 if (selectedItemId != R.id.my_profile_fragment) {
                     HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                 }
             }else {
                 Intent intent = new Intent(context, UserProfileActivity.class);
-                intent.putExtra("user_id", userID);
+                intent.putExtra("user_id", postAuthorID);
                 intent.putExtra("username", username.getText().toString());
                 context.startActivity(intent);
                 CustomIntent.customType(context, "left-to-right");

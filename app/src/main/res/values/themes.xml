@@ -10,6 +10,7 @@
         <item name="colorOnPrimary">@color/white</item>
         <item name="cardBackgroundColor">@color/white</item>
         <item name="background">@color/white</item>
+        <item name="android:navigationBarColor">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/main</item>
         <item name="colorSecondaryVariant">@color/main</item>
@@ -27,6 +28,7 @@
         <item name="background">@color/main_dark</item>
         <item name="cardBackgroundColor">@color/cardBackgroundColorDark</item>
         <item name="android:statusBarColor">@color/actionBarColorDark</item>
+        <item name="android:navigationBarColor">@color/main_dark</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/main</item>
         <item name="colorSecondaryVariant">@color/main</item>

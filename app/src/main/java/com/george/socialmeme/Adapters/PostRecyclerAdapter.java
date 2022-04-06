@@ -35,8 +35,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -165,7 +163,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
             textItemViewHolder.postID = postList.get(position).getId();
             textItemViewHolder.username.setText(postList.get(position).getName());
-            textItemViewHolder.userID = postList.get(position).getAuthorID();
+            textItemViewHolder.postAuthorID = postList.get(position).getAuthorID();
             textItemViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             textItemViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
@@ -238,7 +236,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
             audioViewHolder.postID = postList.get(position).getId();
             audioViewHolder.usernameTV.setText(postList.get(position).getName());
-            audioViewHolder.authorID = postList.get(position).getAuthorID();
+            audioViewHolder.postAuthorID = postList.get(position).getAuthorID();
             audioViewHolder.likesCounter.setText(postList.get(position).getLikes());
             audioViewHolder.audioURL = postList.get(position).getImgUrl();
             audioViewHolder.audioName.setText(postList.get(position).getAudioName());
@@ -312,7 +310,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
             videoViewHolder.postID = postList.get(position).getId();
             videoViewHolder.username.setText(postList.get(position).getName());
-            videoViewHolder.userID = postList.get(position).getAuthorID();
+            videoViewHolder.postAuthorID = postList.get(position).getAuthorID();
             videoViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             videoViewHolder.videoURL = postList.get(position).getImgUrl();
             videoViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
@@ -396,7 +394,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
             imageViewHolder.postID = postList.get(position).getId();
             imageViewHolder.username.setText(postList.get(position).getName());
-            imageViewHolder.userID = postList.get(position).getAuthorID();
+            imageViewHolder.postAuthorID = postList.get(position).getAuthorID();
             imageViewHolder.like_counter_tv.setText(postList.get(position).getLikes());
             imageViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 

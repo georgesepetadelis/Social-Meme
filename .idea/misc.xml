@@ -38,12 +38,14 @@
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/ActivitiesLayouts/drawable/ic_close_black.xml" value="0.22" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/ActivitiesLayouts/drawable/ic_filter.xml" value="0.22" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/ActivitiesLayouts/drawable/ic_wave_header.xml" value="0.2525" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/bottom_nav_style.xml" value="0.2145" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/bottom_sheet_background.xml" value="0.1665" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/circle_ripple_effect.xml" value="0.1675" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/circular_bg.xml" value="0.22" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/default_btn_style.xml" value="0.2525" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/et_round_blue.xml" value="0.22" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/google_sign_in_style.xml" value="0.2105" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/ic_close.xml" value="0.1565" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/drawable/ic_notifications.xml" value="0.2145" />
@@ -60,7 +62,7 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_account_settings.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_all_user_posts.xml" value="0.24166666666666667" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_full_screen_video_player.xml" value="0.24166666666666667" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_home.xml" value="0.29743589743589743" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_home.xml" value="0.2" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_login.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_notifications.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/activity_privacy_policy.xml" value="0.27586206896551724" />
@@ -82,6 +84,7 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_options_bottom_sheet.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.25" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/posts_filter_bottom_sheet.xml" value="0.24166666666666667" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/posts_of_the_month_view_item.xml" value="0.1" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/text_post_item.xml" value="0.21" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/upload_text_dialog.xml" value="0.24166666666666667" />

@@ -207,7 +207,14 @@ public class NewPostFragment extends Fragment {
                         postModel.setProfileImgUrl(user.getPhotoUrl().toString());
                     }
 
+                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
                     HomeActivity.savedPostsArrayList.add(postModel);
+
+                    // Add post's of the month view as RecyclerView item
+                    // to avoid using ScrollView
+                    PostModel postsOfTheMonthView = new PostModel();
+                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
                     Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
                     sendNewPostNotificationToFollowers();
@@ -275,7 +282,14 @@ public class NewPostFragment extends Fragment {
                                     postModel.setProfileImgUrl(user.getPhotoUrl().toString());
                                 }
 
+                                HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
                                 HomeActivity.savedPostsArrayList.add(postModel);
+
+                                // Add post's of the month view as RecyclerView item
+                                // to avoid using ScrollView
+                                PostModel postsOfTheMonthView = new PostModel();
+                                postsOfTheMonthView.setPostType("postsOfTheMonth");
+                                HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
                                 Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
                                 sendNewPostNotificationToFollowers();
@@ -286,10 +300,7 @@ public class NewPostFragment extends Fragment {
                     }).addOnFailureListener(e -> {
                                 loadingDialog.hide();
                                 Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            })
-                    .addOnSuccessListener(taskSnapshot -> {
-
-                    });
+                            });
 
                 } else {
                     Toast.makeText(getActivity(), "Please provide a name for your sound and try again", Toast.LENGTH_LONG).show();
@@ -340,7 +351,14 @@ public class NewPostFragment extends Fragment {
                         postModel.setProfileImgUrl(user.getPhotoUrl().toString());
                     }
 
+                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
                     HomeActivity.savedPostsArrayList.add(postModel);
+
+                    // Add post's of the month view as RecyclerView item
+                    // to avoid using ScrollView
+                    PostModel postsOfTheMonthView = new PostModel();
+                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
                     Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
                     sendNewPostNotificationToFollowers();

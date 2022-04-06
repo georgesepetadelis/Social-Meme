@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -22,6 +23,8 @@ import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
@@ -36,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
     public static ArrayList<PostModel> savedPostsArrayList;
     public static ArrayList<UserModel> savedUserProfiles = null;
     public static UserModel savedUserData = null;
+    public static ExtendedFloatingActionButton filtersBtn;
 
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
@@ -70,6 +74,7 @@ public class HomeActivity extends AppCompatActivity {
         window.setStatusBarColor(Color.BLUE);
 
         bottomNavBar = findViewById(R.id.bottom_nav);
+        filtersBtn = findViewById(R.id.filters_btn);
         savedPostsArrayList = new ArrayList<>();
         savedUserProfiles = new ArrayList<>();
 
@@ -123,12 +128,15 @@ public class HomeActivity extends AppCompatActivity {
             switch (id) {
                 case R.id.home_fragment:
                     selectedFragment = new HomeFragment();
+                    filtersBtn.setVisibility(View.VISIBLE);
                     break;
                 case R.id.new_post_fragment:
                     selectedFragment = new NewPostFragment();
+                    filtersBtn.setVisibility(View.INVISIBLE);
                     break;
                 case R.id.my_profile_fragment:
                     selectedFragment = new MyProfileFragment();
+                    filtersBtn.setVisibility(View.INVISIBLE);
                     break;
             }
 

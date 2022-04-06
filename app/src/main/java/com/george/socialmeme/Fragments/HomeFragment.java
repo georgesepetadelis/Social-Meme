@@ -2,7 +2,10 @@ package com.george.socialmeme.Fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
+
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,10 +14,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,6 +59,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import maes.tech.intentanim.CustomIntent;
@@ -61,7 +69,7 @@ import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
 
 public class HomeFragment extends Fragment {
 
-    ArrayList<PostModel> postModelArrayList;
+    ArrayList<PostModel> postModelArrayList, filteredPostsArrayList;
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
     ProgressBar progressBar;
@@ -70,6 +78,12 @@ public class HomeFragment extends Fragment {
     ImageButton notificationsBtn, searchUserButton;
     View openNotificationsView;
     boolean isSearchViewExpanded = false;
+
+    // Variables for filter dialog
+    final boolean[] imagesItemSelected = {true};
+    final boolean[] videosItemSelected = {true};
+    final boolean[] soundsItemSelected = {true};
+    final boolean[] textItemSelected = {true};
 
     void appShowCase() {
 
@@ -129,6 +143,136 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    void showFiltersDialog() {
+
+        Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.posts_filter_bottom_sheet);
+
+        View imagesItem = dialog.findViewById(R.id.view23);
+        View videosItem = dialog.findViewById(R.id.view21);
+        View soundsItem = dialog.findViewById(R.id.view22);
+        View textItem = dialog.findViewById(R.id.view20);
+        Button applyFiltersBtn = dialog.findViewById(R.id.apply_filters);
+
+        if (!imagesItemSelected[0]) {
+            dialog.findViewById(R.id.imageView30).setVisibility(View.GONE);
+        }
+
+        if (!videosItemSelected[0]) {
+            dialog.findViewById(R.id.imageView32).setVisibility(View.GONE);
+        }
+
+        if (!soundsItemSelected[0]) {
+            dialog.findViewById(R.id.imageView34).setVisibility(View.GONE);
+        }
+
+        if (!textItemSelected[0]) {
+            dialog.findViewById(R.id.imageView36).setVisibility(View.GONE);
+        }
+
+        imagesItem.setOnClickListener(view -> {
+            if (imagesItemSelected[0]) {
+                imagesItemSelected[0] = false;
+                dialog.findViewById(R.id.imageView30).setVisibility(View.GONE);
+            } else {
+                imagesItemSelected[0] = true;
+                dialog.findViewById(R.id.imageView30).setVisibility(View.VISIBLE);
+            }
+        });
+
+        videosItem.setOnClickListener(view -> {
+            if (videosItemSelected[0]) {
+                videosItemSelected[0] = false;
+                dialog.findViewById(R.id.imageView32).setVisibility(View.GONE);
+            } else {
+                videosItemSelected[0] = true;
+                dialog.findViewById(R.id.imageView32).setVisibility(View.VISIBLE);
+            }
+        });
+
+        soundsItem.setOnClickListener(view -> {
+            if (soundsItemSelected[0]) {
+                soundsItemSelected[0] = false;
+                dialog.findViewById(R.id.imageView34).setVisibility(View.GONE);
+            } else {
+                soundsItemSelected[0] = true;
+                dialog.findViewById(R.id.imageView34).setVisibility(View.VISIBLE);
+            }
+        });
+
+        textItem.setOnClickListener(view -> {
+            if (textItemSelected[0]) {
+                textItemSelected[0] = false;
+                dialog.findViewById(R.id.imageView36).setVisibility(View.GONE);
+            } else {
+                textItemSelected[0] = true;
+                dialog.findViewById(R.id.imageView36).setVisibility(View.VISIBLE);
+            }
+        });
+
+        applyFiltersBtn.setOnClickListener(view -> {
+
+            filteredPostsArrayList.clear();
+            applyFiltersBtn.setText("Filtering...");
+            applyFiltersBtn.setEnabled(false);
+            dialog.setCancelable(false);
+
+            for (PostModel postModel : postModelArrayList) {
+
+                if (postModel.getPostType().equals("image")) {
+                    if (imagesItemSelected[0]) {
+                        filteredPostsArrayList.add(postModel);
+                    }
+                }
+
+                if (postModel.getPostType().equals("video")) {
+                    if (videosItemSelected[0]) {
+                        filteredPostsArrayList.add(postModel);
+                    }
+                }
+
+                if (postModel.getPostType().equals("audio")) {
+                    if (soundsItemSelected[0]) {
+                        filteredPostsArrayList.add(postModel);
+                    }
+                }
+
+                if (postModel.getPostType().equals("text")) {
+                    if (textItemSelected[0]) {
+                        filteredPostsArrayList.add(postModel);
+                    }
+                }
+
+            }
+
+            // Add post's of the month view as RecyclerView item
+            // to avoid using ScrollView
+            PostModel postsOfTheMonthView = new PostModel();
+            postsOfTheMonthView.setPostType("postsOfTheMonth");
+            filteredPostsArrayList.add(postsOfTheMonthView);
+
+            // Update RecyclerView adapter
+            recyclerAdapter = new PostRecyclerAdapter(filteredPostsArrayList, getContext(), getActivity());
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            layoutManager.setStackFromEnd(true);
+            layoutManager.setReverseLayout(true);
+            recyclerView.setAdapter(recyclerAdapter);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerAdapter.notifyDataSetChanged();
+
+            dialog.dismiss();
+
+        });
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(android.view.Gravity.BOTTOM);
+
+    }
+
     void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -137,17 +281,21 @@ public class HomeFragment extends Fragment {
         notificationsBtn.setEnabled(false);
         searchUserButton.setEnabled(false);
 
+        if (HomeActivity.showLoadingScreen) {
+            filtersBtn.setVisibility(View.INVISIBLE);
+        }
+
         if (refreshDataFromDB) {
             getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
             CustomIntent.customType(getActivity(), "fadein-to-fadeout");
             getActivity().finish();
-        }
-        else {
+        } else {
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 // Load saved data
                 postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
                 notificationsBtn.setEnabled(true);
                 searchUserButton.setEnabled(true);
+                progressBar.setVisibility(View.GONE);
             } else {
                 // Load data from DB
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -169,14 +317,20 @@ public class HomeFragment extends Fragment {
 
                             PostModel postModel = new PostModel();
                             postModel.setId(postSnapshot.child("id").getValue(String.class));
-                            postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+
+                            if (postSnapshot.child("imgUrl").getValue(String.class) == null) {
+                                postModel.setImgUrl("none");
+                            }else {
+                                postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                            }
+
                             postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
                             postModel.setName(postSnapshot.child("name").getValue(String.class));
                             postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
                             postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
                             for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                                if (user.child("name").getValue(String.class).equals(postSnapshot.child("name").getValue(String.class))) {
+                                if (Objects.equals(user.child("name").getValue(String.class), postSnapshot.child("name").getValue(String.class))) {
                                     postModel.setAuthorID(user.child("id").getValue(String.class));
                                 }
                             }
@@ -208,24 +362,38 @@ public class HomeFragment extends Fragment {
                             recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                         }
 
+                        // Add post's of the month view as RecyclerView item
+                        // to avoid using ScrollView
+                        PostModel postsOfTheMonthView = new PostModel();
+                        postsOfTheMonthView.setPostType("postsOfTheMonth");
+                        postModelArrayList.add(postsOfTheMonthView);
+                        recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+                        appShowCase();
+
                         if (HomeActivity.showLoadingScreen) {
                             new Handler().postDelayed(() -> {
+                                filtersBtn.setVisibility(View.INVISIBLE);
                                 int appVersionCode = BuildConfig.VERSION_CODE;
                                 int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
                                 if (appVersionCode < latestAppVersion) {
-                                    new AlertDialog.Builder(getContext())
-                                            .setTitle("Update required.")
-                                            .setCancelable(false)
-                                            .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                            .setPositiveButton("Update", (dialogInterface, i) -> {
-                                                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                                startActivity(intent);
-                                            }).show();
+
+                                    if (getActivity() != null) {
+                                        new AlertDialog.Builder(getActivity())
+                                                .setTitle("Update required.")
+                                                .setCancelable(false)
+                                                .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                    startActivity(intent);
+                                                }).show();
+                                    }
+
                                 } else {
                                     notificationsBtn.setEnabled(true);
                                     searchUserButton.setEnabled(true);
                                     fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                    filtersBtn.setVisibility(View.VISIBLE);
                                     HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
                                     swipeRefreshLayout.setEnabled(true);
                                     HomeActivity.showLoadingScreen = false;
@@ -234,13 +402,7 @@ public class HomeFragment extends Fragment {
                             }, 0);
                         }
 
-                        // Add post's of the month view as RecyclerView item
-                        // to avoid using ScrollView
-                        PostModel postsOfTheMonthView = new PostModel();
-                        postsOfTheMonthView.setPostType("postsOfTheMonth");
-                        postModelArrayList.add(postsOfTheMonthView);
-                        recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
-                        appShowCase();
+                        progressBar.setVisibility(View.GONE);
 
                     }
 
@@ -267,9 +429,14 @@ public class HomeFragment extends Fragment {
             mAdView.loadAd(adRequest);
         }
 
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
+
         notificationsBtn = view.findViewById(R.id.notificationsButton);
         searchUserButton = view.findViewById(R.id.enter_search_button);
         recyclerView = view.findViewById(R.id.home_recycler_view);
@@ -278,15 +445,13 @@ public class HomeFragment extends Fragment {
         openNotificationsView = view.findViewById(R.id.view18);
         progressBar = view.findViewById(R.id.home_progress_bar);
 
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
         postModelArrayList = new ArrayList<>();
+        filteredPostsArrayList = new ArrayList<>();
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
+        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -330,6 +495,7 @@ public class HomeFragment extends Fragment {
         }
 
         getAllPostsFromDB(false, view, swipeRefreshLayout);
+        filtersBtn.setOnClickListener(view13 -> showFiltersDialog());
 
         // Display donate dialog (1 in 15 cases)
         // except the user is singed in anonymously
