@@ -213,55 +213,61 @@ public class HomeFragment extends Fragment {
 
         applyFiltersBtn.setOnClickListener(view -> {
 
-            filteredPostsArrayList.clear();
-            applyFiltersBtn.setText("Filtering...");
-            applyFiltersBtn.setEnabled(false);
-            dialog.setCancelable(false);
+            if (!imagesItemSelected[0] && !videosItemSelected[0] && !soundsItemSelected[0] && !textItemSelected[0]) {
+                dialog.dismiss();
+            } else {
 
-            for (PostModel postModel : postModelArrayList) {
+                applyFiltersBtn.setText("Filtering...");
+                applyFiltersBtn.setEnabled(false);
+                dialog.setCancelable(false);
 
-                if (postModel.getPostType().equals("image")) {
-                    if (imagesItemSelected[0]) {
-                        filteredPostsArrayList.add(postModel);
+                for (PostModel postModel : postModelArrayList) {
+
+                    if (postModel.getPostType().equals("image")) {
+                        if (imagesItemSelected[0]) {
+                            filteredPostsArrayList.add(postModel);
+                        }
                     }
+
+                    if (postModel.getPostType().equals("video")) {
+                        if (videosItemSelected[0]) {
+                            filteredPostsArrayList.add(postModel);
+                        }
+                    }
+
+                    if (postModel.getPostType().equals("audio")) {
+                        if (soundsItemSelected[0]) {
+                            filteredPostsArrayList.add(postModel);
+                        }
+                    }
+
+                    if (postModel.getPostType().equals("text")) {
+                        if (textItemSelected[0]) {
+                            filteredPostsArrayList.add(postModel);
+                        }
+                    }
+
                 }
 
-                if (postModel.getPostType().equals("video")) {
-                    if (videosItemSelected[0]) {
-                        filteredPostsArrayList.add(postModel);
-                    }
-                }
+                // Update RecyclerView adapter
+                recyclerAdapter = new PostRecyclerAdapter(filteredPostsArrayList, getContext(), getActivity());
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                layoutManager.setStackFromEnd(true);
+                layoutManager.setReverseLayout(true);
+                recyclerView.setAdapter(recyclerAdapter);
+                recyclerView.setLayoutManager(layoutManager);
 
-                if (postModel.getPostType().equals("audio")) {
-                    if (soundsItemSelected[0]) {
-                        filteredPostsArrayList.add(postModel);
-                    }
-                }
+                // Add post's of the month view as RecyclerView item
+                // to avoid using ScrollView
+                PostModel postsOfTheMonthView = new PostModel();
+                postsOfTheMonthView.setPostType("postsOfTheMonth");
+                filteredPostsArrayList.add(postsOfTheMonthView);
 
-                if (postModel.getPostType().equals("text")) {
-                    if (textItemSelected[0]) {
-                        filteredPostsArrayList.add(postModel);
-                    }
-                }
+                recyclerAdapter.notifyDataSetChanged();
+
+                dialog.dismiss();
 
             }
-
-            // Add post's of the month view as RecyclerView item
-            // to avoid using ScrollView
-            PostModel postsOfTheMonthView = new PostModel();
-            postsOfTheMonthView.setPostType("postsOfTheMonth");
-            filteredPostsArrayList.add(postsOfTheMonthView);
-
-            // Update RecyclerView adapter
-            recyclerAdapter = new PostRecyclerAdapter(filteredPostsArrayList, getContext(), getActivity());
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-            layoutManager.setStackFromEnd(true);
-            layoutManager.setReverseLayout(true);
-            recyclerView.setAdapter(recyclerAdapter);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerAdapter.notifyDataSetChanged();
-
-            dialog.dismiss();
 
         });
 

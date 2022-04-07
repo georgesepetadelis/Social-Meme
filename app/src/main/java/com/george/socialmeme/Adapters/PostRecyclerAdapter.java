@@ -94,7 +94,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     // Release ExoPlayer when a video item is recycled
-    // to avoid player errors on other video items
+    // to avoid player errors on other video items inside RecyclerView
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
