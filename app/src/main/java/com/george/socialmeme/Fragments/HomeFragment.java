@@ -72,11 +72,9 @@ public class HomeFragment extends Fragment {
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
     ProgressBar progressBar;
-    EditText searchView;
     RecyclerView recyclerView;
-    ImageButton notificationsBtn, searchUserButton;
+    ImageButton notificationsBtn;
     View openNotificationsView;
-    boolean isSearchViewExpanded = false;
 
     // Variables for filter dialog
     final boolean[] imagesItemSelected = {true};
@@ -155,51 +153,67 @@ public class HomeFragment extends Fragment {
         ImageButton submitUserSearchButton = dialog.findViewById(R.id.submit_user_search);
         ProgressBar progressBar = dialog.findViewById(R.id.progress_bar_top_sheet);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
         submitUserSearchButton.setOnClickListener(view -> {
 
             String usernameInput = usernameForSearch.getText().toString();
             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+            // Prevent user from dismissing the
+            // dialog while app is searching for the user
+            // to avoid any errors
+            dialog.setCancelable(false);
 
             if (!usernameInput.isEmpty()) {
 
                 submitUserSearchButton.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
 
-                usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (usernameInput.equals(user.getDisplayName())) {
+                    dialog.dismiss();
+                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+                } else {
+                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        boolean userFound = false;
+                            boolean userFound = false;
 
-                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                            if (userSnapshot.child("name").getValue(String.class).equals(usernameInput)) {
-                                userFound = true;
-                                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                                intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
-                                intent.putExtra("username", usernameInput);
-                                getActivity().startActivity(intent);
-                                CustomIntent.customType(getActivity(), "left-to-right");
-                                break;
+                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                if (Objects.equals(userSnapshot.child("name").getValue(String.class), usernameInput)) {
+                                    userFound = true;
+                                    Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                                    intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
+                                    intent.putExtra("username", usernameInput);
+                                    getActivity().startActivity(intent);
+                                    CustomIntent.customType(getActivity(), "left-to-right");
+                                    break;
+                                }
                             }
+
+                            if (!userFound) {
+                                SmartDialogBox.showSearchDialog(getActivity(), "We cannot find a user with this username", "OK");
+                            }
+
+                            progressBar.setVisibility(View.GONE);
+                            submitUserSearchButton.setVisibility(View.VISIBLE);
+                            dialog.setCancelable(true);
+
                         }
 
-                        if (!userFound) {
-                            SmartDialogBox.showSearchDialog(getActivity(), "We cannot find a user with this username", "OK");
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            dialog.setCancelable(true);
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-
-                        progressBar.setVisibility(View.GONE);
-                        submitUserSearchButton.setVisibility(View.VISIBLE);
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    });
+                }
 
             } else {
+                dialog.setCancelable(true);
                 progressBar.setVisibility(View.GONE);
                 SmartDialogBox.showInfoDialog(getActivity(), "Username cannot be empty", "OK");
             }
@@ -384,7 +398,6 @@ public class HomeFragment extends Fragment {
         FirebaseUser user = auth.getCurrentUser();
 
         notificationsBtn.setEnabled(false);
-        searchUserButton.setEnabled(false);
 
         if (HomeActivity.showLoadingScreen) {
             filtersBtn.setVisibility(View.INVISIBLE);
@@ -399,7 +412,6 @@ public class HomeFragment extends Fragment {
                 // Load saved data
                 postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
                 notificationsBtn.setEnabled(true);
-                searchUserButton.setEnabled(true);
                 progressBar.setVisibility(View.GONE);
             } else {
                 // Load data from DB
@@ -496,13 +508,20 @@ public class HomeFragment extends Fragment {
 
                                 } else {
                                     notificationsBtn.setEnabled(true);
-                                    searchUserButton.setEnabled(true);
-                                    fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
                                     filtersBtn.setVisibility(View.VISIBLE);
                                     HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
                                     swipeRefreshLayout.setEnabled(true);
                                     HomeActivity.showLoadingScreen = false;
                                     HomeActivity.savedPostsArrayList = postModelArrayList;
+
+                                    YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                        }
+                                    }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+
                                 }
                             }, 0);
                         }
@@ -543,9 +562,7 @@ public class HomeFragment extends Fragment {
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
 
         notificationsBtn = view.findViewById(R.id.notificationsButton);
-        searchUserButton = view.findViewById(R.id.enter_search_button);
         recyclerView = view.findViewById(R.id.home_recycler_view);
-        searchView = view.findViewById(R.id.search_view);
         progressDialog = LoadingDialog.Companion.get(getActivity());
         openNotificationsView = view.findViewById(R.id.view18);
         progressBar = view.findViewById(R.id.home_progress_bar);
@@ -559,9 +576,6 @@ public class HomeFragment extends Fragment {
         recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
-
-        searchView.setVisibility(View.GONE);
-        searchUserButton.setVisibility(View.GONE);
 
         if (!HomeActivity.singedInAnonymously) {
             usernameLoadingScreen.setText(user.getDisplayName());
@@ -643,100 +657,12 @@ public class HomeFragment extends Fragment {
             donateDialog.show();
         }
 
-        searchUserButton.setOnClickListener(v -> usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                boolean userFound = false;
-
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    if (snap.child("name").getValue().toString().equals(searchView.getText().toString())) {
-                        userFound = true;
-                        Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                        intent.putExtra("user_id", snap.child("id").getValue().toString());
-                        intent.putExtra("username", searchView.getText().toString());
-                        getActivity().startActivity(intent);
-                        CustomIntent.customType(getActivity(), "left-to-right");
-                        break;
-                    }
-                }
-
-                if (!userFound) {
-                    SmartDialogBox.showSearchDialog(getActivity(), "We cannot find a user with this username", "OK");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }));
-
         notificationsBtn.setOnClickListener(view12 -> {
             startActivity(new Intent(getActivity(), NotificationsActivity.class));
             CustomIntent.customType(getContext(), "left-to-right");
         });
 
-        searchUserBtn.setOnClickListener(view1 -> {
-            showSearchUserDialog();
-            /*
-            if (isSearchViewExpanded) {
-                // search is closed
-                searchUserBtn.setImageResource(R.drawable.ic_search);
-                isSearchViewExpanded = false;
-
-                // animate button
-                YoYo.with(Techniques.FadeInUp)
-                        .duration(500)
-                        .repeat(0)
-                        .playOn(searchUserBtn);
-
-                // hide and animate search view
-                YoYo.with(Techniques.FadeInUp)
-                        .duration(500)
-                        .repeat(0)
-                        .playOn(searchView);
-
-                YoYo.with(Techniques.FadeInUp)
-                        .duration(500)
-                        .repeat(0)
-                        .playOn(searchUserButton);
-
-                searchView.setVisibility(View.GONE);
-                searchUserButton.setVisibility(View.GONE);
-
-            } else {
-                // search is open
-                searchUserBtn.setImageResource(R.drawable.ic_close);
-                isSearchViewExpanded = true;
-
-                // animate button
-                YoYo.with(Techniques.FadeInDown)
-                        .duration(500)
-                        .repeat(0)
-                        .playOn(searchUserBtn);
-
-                // show and animate search view
-                searchView.setVisibility(View.VISIBLE);
-                searchUserButton.setVisibility(View.VISIBLE);
-
-                YoYo.with(Techniques.FadeInDown)
-                        .duration(500)
-                        .repeat(0)
-                        .playOn(searchView);
-
-                YoYo.with(Techniques.FadeInDown)
-                        .duration(500)
-                        .repeat(0)
-                        .playOn(searchUserButton);
-
-                // display keyboard to type
-                ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .showSoftInput(searchView, InputMethodManager.SHOW_FORCED);
-
-            }*/
-
-        });
+        searchUserBtn.setOnClickListener(view1 -> showSearchUserDialog());
 
         return view;
     }

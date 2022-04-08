@@ -10,6 +10,7 @@
         <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/drawable/red_button_background.xml" value="0.22" />
         <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/drawable/warning_sigh.xml" value="0.22" />
         <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/51bb2d6b14af77d7e98603b9424e83e5/transformed/jetified-KAlertDialog-14.0.19/res/layout/alert_dialog.xml" value="0.24166666666666667" />
+        <entry key="..\:/Users/giorg/.gradle/caches/transforms-3/acde2759d9af6ccb1f1a4ff8fb979aca/transformed/jetified-SmartDialog-1.0/res/layout/info.xml" value="0.23917525773195877" />
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/filled_button_style.xml" value="0.3106837606837607" />
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/ic_notifications.xml" value="0.3106837606837607" />
         <entry key="..\:/Users/giorg/AndroidStudioProjects/SocialMeme/app/src/main/res/drawable/ic_search.xml" value="0.3106837606837607" />
@@ -92,7 +93,7 @@
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_options_dialog.xml" value="0.29743589743589743" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/post_video_item.xml" value="0.25" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/posts_filter_bottom_sheet.xml" value="0.24166666666666667" />
-        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/posts_of_the_month_view_item.xml" value="0.1" />
+        <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/posts_of_the_month_view_item.xml" value="0.22" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/search_user_top_sheet.xml" value="0.24166666666666667" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/text_post_item.xml" value="0.21" />
         <entry key="..\:/Users/giorg/Desktop/SocialMeme/app/src/main/res/layout/upload_text_dialog.xml" value="0.24166666666666667" />

@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-black"
-        android:text="Posts filters"
+        android:text="Memes filters"
         android:textColor="?attr/textFillColor"
         android:textSize="32sp"
         android:textStyle="bold"

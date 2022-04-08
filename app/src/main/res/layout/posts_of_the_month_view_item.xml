@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-black"
-            android:text="3 most liked post's of the month"
+            android:text="3 most liked memes of the month"
             android:textColor="?attr/titleTextColor"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageView12"
