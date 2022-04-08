@@ -67,7 +67,6 @@
             android:indeterminate="true"
             android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
             android:indeterminateDuration="700"
-            app:layout_constraintBottom_toTopOf="@+id/adView5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView22" />

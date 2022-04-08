@@ -4,9 +4,10 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -19,23 +20,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.bumptech.glide.Glide;
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -57,6 +54,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -143,6 +142,78 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    void showSearchUserDialog() {
+
+        Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.search_user_top_sheet);
+
+        ImageButton dismissDialogButton = dialog.findViewById(R.id.dismiss_top_dialog_btn);
+        dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
+
+        EditText usernameForSearch = dialog.findViewById(R.id.user_search_et);
+        ImageButton submitUserSearchButton = dialog.findViewById(R.id.submit_user_search);
+        ProgressBar progressBar = dialog.findViewById(R.id.progress_bar_top_sheet);
+
+        submitUserSearchButton.setOnClickListener(view -> {
+
+            String usernameInput = usernameForSearch.getText().toString();
+            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+            if (!usernameInput.isEmpty()) {
+
+                submitUserSearchButton.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+
+                usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        boolean userFound = false;
+
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            if (userSnapshot.child("name").getValue(String.class).equals(usernameInput)) {
+                                userFound = true;
+                                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                                intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
+                                intent.putExtra("username", usernameInput);
+                                getActivity().startActivity(intent);
+                                CustomIntent.customType(getActivity(), "left-to-right");
+                                break;
+                            }
+                        }
+
+                        if (!userFound) {
+                            SmartDialogBox.showSearchDialog(getActivity(), "We cannot find a user with this username", "OK");
+                        }
+
+                        progressBar.setVisibility(View.GONE);
+                        submitUserSearchButton.setVisibility(View.VISIBLE);
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+                progressBar.setVisibility(View.GONE);
+                SmartDialogBox.showInfoDialog(getActivity(), "Username cannot be empty", "OK");
+            }
+
+        });
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.TopSheetDialogAnimation;
+        dialog.getWindow().setGravity(android.view.Gravity.TOP);
+
+    }
+
     void showFiltersDialog() {
 
         Dialog dialog = new Dialog(getActivity());
@@ -174,9 +245,16 @@ public class HomeFragment extends Fragment {
         imagesItem.setOnClickListener(view -> {
             if (imagesItemSelected[0]) {
                 imagesItemSelected[0] = false;
-                dialog.findViewById(R.id.imageView30).setVisibility(View.GONE);
+                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        dialog.findViewById(R.id.imageView30).setVisibility(View.GONE);
+                    }
+                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView30));
             } else {
                 imagesItemSelected[0] = true;
+                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView30));
                 dialog.findViewById(R.id.imageView30).setVisibility(View.VISIBLE);
             }
         });
@@ -184,9 +262,16 @@ public class HomeFragment extends Fragment {
         videosItem.setOnClickListener(view -> {
             if (videosItemSelected[0]) {
                 videosItemSelected[0] = false;
-                dialog.findViewById(R.id.imageView32).setVisibility(View.GONE);
+                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        dialog.findViewById(R.id.imageView32).setVisibility(View.GONE);
+                    }
+                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView32));
             } else {
                 videosItemSelected[0] = true;
+                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView32));
                 dialog.findViewById(R.id.imageView32).setVisibility(View.VISIBLE);
             }
         });
@@ -194,9 +279,16 @@ public class HomeFragment extends Fragment {
         soundsItem.setOnClickListener(view -> {
             if (soundsItemSelected[0]) {
                 soundsItemSelected[0] = false;
-                dialog.findViewById(R.id.imageView34).setVisibility(View.GONE);
+                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        dialog.findViewById(R.id.imageView34).setVisibility(View.GONE);
+                    }
+                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView34));
             } else {
                 soundsItemSelected[0] = true;
+                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView34));
                 dialog.findViewById(R.id.imageView34).setVisibility(View.VISIBLE);
             }
         });
@@ -204,9 +296,16 @@ public class HomeFragment extends Fragment {
         textItem.setOnClickListener(view -> {
             if (textItemSelected[0]) {
                 textItemSelected[0] = false;
-                dialog.findViewById(R.id.imageView36).setVisibility(View.GONE);
+                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        dialog.findViewById(R.id.imageView36).setVisibility(View.GONE);
+                    }
+                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView36));
             } else {
                 textItemSelected[0] = true;
+                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView36));
                 dialog.findViewById(R.id.imageView36).setVisibility(View.VISIBLE);
             }
         });
@@ -274,7 +373,7 @@ public class HomeFragment extends Fragment {
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
         dialog.getWindow().setGravity(android.view.Gravity.BOTTOM);
 
     }
@@ -467,8 +566,17 @@ public class HomeFragment extends Fragment {
         if (!HomeActivity.singedInAnonymously) {
             usernameLoadingScreen.setText(user.getDisplayName());
             if (user.getPhotoUrl() != null) {
-                Glide.with(getContext()).load(user.getPhotoUrl().toString())
-                        .into((ImageView) view.findViewById(R.id.my_profile_image));
+                Picasso.get().load(user.getPhotoUrl().toString()).into(view.findViewById(R.id.my_profile_image), new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        YoYo.with(Techniques.BounceIn).duration(1200).repeat(0).playOn(view.findViewById(R.id.my_profile_image));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.i("IMAGE_LOAD_HOME", "Error: " + e.getLocalizedMessage());
+                    }
+                });
             }
         } else {
             searchUserBtn.setVisibility(View.GONE);
@@ -487,7 +595,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Reload data
+        // Refresh posts
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
             getAllPostsFromDB(true, view, swipeRefreshLayout);
@@ -570,7 +678,8 @@ public class HomeFragment extends Fragment {
         });
 
         searchUserBtn.setOnClickListener(view1 -> {
-
+            showSearchUserDialog();
+            /*
             if (isSearchViewExpanded) {
                 // search is closed
                 searchUserBtn.setImageResource(R.drawable.ic_search);
@@ -625,7 +734,7 @@ public class HomeFragment extends Fragment {
                 ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                         .showSoftInput(searchView, InputMethodManager.SHOW_FORCED);
 
-            }
+            }*/
 
         });
 

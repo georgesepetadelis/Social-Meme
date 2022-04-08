@@ -35,9 +35,14 @@
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
-    <style name="DialogAnimation">
+    <style name="BottomSheetDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_in_bottom_sheet</item>
         <item name="android:windowExitAnimation">@anim/slide_out_bottom_sheet</item>
+    </style>
+
+    <style name="TopSheetDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_top</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_top</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

@@ -75,10 +75,6 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
     public String postID, postAuthorID, audioURL;
     public ConstraintLayout followBtnView;
 
-    public interface FirebaseCallback {
-        void onCallback(String callback_userID, String callback_username);
-    }
-
     void followPostAuthor() {
 
         usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -138,7 +134,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         }
 
         // Check if logged-in user follows post author
-        // to hide follow btn
+        // to hide follow button
         usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -472,7 +468,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
 
     }
@@ -624,7 +620,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
 
         dialog.setView(dialogView);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
         dialog.show();
 
     }

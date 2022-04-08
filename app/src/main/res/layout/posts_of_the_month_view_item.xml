@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="sans-serif-black"
-            android:text="Post's of the month"
+            android:text="Memes of the month"
             android:textColor="?attr/textFillColor"
             android:textSize="22sp"
             android:textStyle="bold"

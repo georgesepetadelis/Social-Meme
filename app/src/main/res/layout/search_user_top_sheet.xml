@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/top_sheet_background">
+
+    <TextView
+        android:id="@+id/textView90"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:gravity="start"
+        android:text="Search a user to see\ntheir profile and posts"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView93"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="You can copy the username of an user by\nlong clicking the username inside any post."
+        android:textColor="#8DFFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/textView90"
+        app:layout_constraintTop_toBottomOf="@+id/textView90" />
+
+    <ImageButton
+        android:id="@+id/dismiss_top_dialog_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/round_button_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textView90"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_close" />
+
+    <EditText
+        android:id="@+id/user_search_et"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/search_user_et_background"
+        android:ems="10"
+        android:hint="Enter username"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/dismiss_top_dialog_btn"
+        app:layout_constraintStart_toStartOf="@+id/textView93"
+        app:layout_constraintTop_toBottomOf="@+id/textView93" />
+
+    <ImageButton
+        android:id="@+id/submit_user_search"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/round_button_background"
+        app:layout_constraintBottom_toBottomOf="@+id/user_search_et"
+        app:layout_constraintEnd_toEndOf="@+id/user_search_et"
+        app:layout_constraintTop_toTopOf="@+id/user_search_et"
+        app:srcCompat="@drawable/ic_appintro_arrow" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar_top_sheet"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="10dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:indeterminateDrawable="@drawable/progress_bar_style_light"
+        android:indeterminateDuration="700"
+        app:layout_constraintBottom_toBottomOf="@+id/user_search_et"
+        app:layout_constraintEnd_toEndOf="@+id/user_search_et"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/user_search_et"
+        app:layout_constraintTop_toTopOf="@+id/user_search_et" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -55,7 +55,6 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -225,7 +224,7 @@ public class NewPostFragment extends Fragment {
 
             dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
 
-            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.setView(dialogView);
             dialog.show();

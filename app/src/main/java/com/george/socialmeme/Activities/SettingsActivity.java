@@ -171,6 +171,7 @@ public class SettingsActivity extends AppCompatActivity {
             new AlertDialog.Builder(SettingsActivity.this)
                     .setTitle("Are you sure?")
                     .setMessage("Are you sure you want to log out?")
+                    .setIcon(R.drawable.ic_report)
                     .setPositiveButton("Yes", (dialogInterface, i) -> {
                         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
                         userRef.child("fcm_token").removeValue();

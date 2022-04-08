@@ -337,7 +337,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
 
     }
@@ -620,7 +620,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
 
         dialog.setView(dialogView);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
         dialog.show();
 
     }

@@ -122,7 +122,7 @@
             android:elevation="10dp"
             android:hint="Search for user"
             android:textStyle="bold"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
@@ -227,7 +227,7 @@
                 android:text="username"
                 android:textColor="?attr/titleTextColor"
                 android:textSize="38sp"
-                android:textStyle="bold|italic"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView39" />
