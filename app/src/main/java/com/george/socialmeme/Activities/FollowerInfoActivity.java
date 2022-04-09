@@ -35,6 +35,11 @@ public class FollowerInfoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
         finish();
         CustomIntent.customType(FollowerInfoActivity.this, "right-to-left");
     }

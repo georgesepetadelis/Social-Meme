@@ -638,6 +638,11 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
         finish();
         CustomIntent.customType(UserProfileActivity.this, "right-to-left");
     }
