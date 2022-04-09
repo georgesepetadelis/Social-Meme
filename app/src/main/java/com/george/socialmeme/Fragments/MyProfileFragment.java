@@ -87,19 +87,25 @@ public class MyProfileFragment extends Fragment {
 
     private void uploadProfilePictureToFirebase(Uri uri) {
 
-        // Show loading dialog
         progressDialog.show();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        // Delete old profile picture file from storage
         if (user.getPhotoUrl() != null) {
-            storage.getReferenceFromUrl(user.getPhotoUrl().toString()).delete().addOnCompleteListener(task -> {
-                if (task.isCanceled()) {
-                    Toast.makeText(getContext(), "Error: we cannot delete your current profile picture", Toast.LENGTH_SHORT).show();
-                }
-            });
+            try {
+                storage.getReferenceFromUrl(user.getPhotoUrl().toString()).delete().addOnCompleteListener(task -> {
+                    if (task.isCanceled()) {
+                        Toast.makeText(getContext(), "Error: we cannot delete your current profile picture", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (Exception error) {
+                Log.i("MY_PROFILE_FRAGMENT", error.getMessage());
+            }
+
         }
 
+        // Upload new profile picture to storage
         StorageReference fileRef = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(uri));
         fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
 
@@ -279,17 +285,19 @@ public class MyProfileFragment extends Fragment {
         progressDialog.setCancelable(false);
 
         showFollowersView.setOnClickListener(view1 -> {
-            if (followers != 0) {
+            if (!followersCounter.getText().toString().equals("0")) {
                 Intent intent = new Intent(getActivity(), FollowerInfoActivity.class);
                 intent.putExtra("userID", user.getUid());
                 intent.putExtra("display_followers", true);
                 startActivity(intent);
                 CustomIntent.customType(getActivity(), "left-to-right");
+            } else {
+                Toast.makeText(getActivity(), "You don't have any followers", Toast.LENGTH_SHORT).show();
             }
         });
 
         showFollowingUsersView.setOnClickListener(view12 -> {
-            if (following != 0) {
+            if (!followingCounter.getText().toString().equals("0")) {
                 Intent intent = new Intent(getActivity(), FollowerInfoActivity.class);
                 intent.putExtra("userID", user.getUid());
                 intent.putExtra("display_followers", false);

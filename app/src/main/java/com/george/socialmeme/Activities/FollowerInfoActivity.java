@@ -23,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -115,8 +116,7 @@ public class FollowerInfoActivity extends AppCompatActivity {
 
                                 userModel.setUserID(followerSnapshot.getValue(String.class));
 
-
-                                if (usersSnapshot.child("id").getValue(String.class).equals(followerSnapshot.getValue(String.class))) {
+                                if (Objects.equals(usersSnapshot.child("id").getValue(String.class), followerSnapshot.getValue(String.class))) {
                                     userModel.setUsername(snapshot.child(usersSnapshot.child("id").getValue(String.class)).child("name").getValue(String.class));
 
                                     if (snapshot.child(usersSnapshot.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
