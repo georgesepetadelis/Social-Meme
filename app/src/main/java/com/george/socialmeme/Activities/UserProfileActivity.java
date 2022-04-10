@@ -327,17 +327,19 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         showFollowersView.setOnClickListener(v -> {
-            if (followers != 0) {
+            if (!followersCounter.getText().toString().equals("0")) {
                 Intent intent = new Intent(UserProfileActivity.this, FollowerInfoActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("display_followers", true);
                 startActivity(intent);
                 CustomIntent.customType(UserProfileActivity.this, "left-to-right");
+            } else {
+                Toast.makeText(this, "This user has no followers", Toast.LENGTH_SHORT).show();
             }
         });
 
         showFollowingUsersView.setOnClickListener(v -> {
-            if (following != 0) {
+            if (!followersCounter.getText().toString().equals("0")) {
                 Intent intent = new Intent(UserProfileActivity.this, FollowerInfoActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("display_followers", false);
@@ -504,7 +506,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
                     // check logged in user follows this user
                     if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
-
                         if (snapshot.child("users").child(user.getUid()).child("following").child(userID).exists()) {
                             currentUserFollowsThisUser = true;
                             followingCurrentUser = true;
@@ -634,13 +635,14 @@ public class UserProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void openUsersList() {
-
-    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
         finish();
         CustomIntent.customType(UserProfileActivity.this, "right-to-left");
     }

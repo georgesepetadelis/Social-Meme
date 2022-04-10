@@ -32,6 +32,11 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+
         finish();
         CustomIntent.customType(PostsOfTheMonthActivity.this, "right-to-left");
     }

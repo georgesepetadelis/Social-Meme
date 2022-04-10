@@ -152,7 +152,7 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
-        if (!singedInAnonymously) {
+        if (!singedInAnonymously && user != null) {
             user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
                     .setTitle("Error")
                     .setMessage(e.getMessage())
