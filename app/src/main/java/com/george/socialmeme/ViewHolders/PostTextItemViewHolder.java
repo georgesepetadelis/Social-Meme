@@ -247,59 +247,61 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
                 int currentMinutes = calendar.get(Calendar.MINUTE);
 
                 for (DataSnapshot snap : snapshot.getChildren()) {
+                    if (snap.child("name").getValue(String.class) != null) {
+                        if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
 
-                    if (snap.child("name").getValue().toString().equals(username.getText().toString())) {
+                            String postAuthorID = snap.child("id").getValue().toString();
+                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
 
-                        String postAuthorID = snap.child("id").getValue().toString();
-                        usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
+                            if (notificationType.equals("like")) {
+                                notification_title[0] = "New like";
+                                notification_message[0] = user.getDisplayName() + " liked your post";
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                            }
+                            if (notificationType.equals("meme_saved")) {
+                                notification_title[0] = "Meme saved";
+                                notification_message[0] = user.getDisplayName() + " has saved your post";
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Meme saved");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
+                            } else if (notificationType.equals("comment_added")) {
+                                notification_title[0] = "New comment";
+                                notification_message[0] = user.getDisplayName() + ": " + commentText;
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("comment_added");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                            }
 
-                        if (notificationType.equals("like")) {
-                            notification_title[0] = "New like";
-                            notification_message[0] = user.getDisplayName() + " liked your post";
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                            break;
                         }
-                        if (notificationType.equals("meme_saved")) {
-                            notification_title[0] = "Meme saved";
-                            notification_message[0] = user.getDisplayName() + " has saved your post";
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("Meme saved");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
-                        } else if (notificationType.equals("comment_added")) {
-                            notification_title[0] = "New comment";
-                            notification_message[0] = user.getDisplayName() + ": " + commentText;
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("comment_added");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
-                        }
-
-                        break;
                     }
                 }
 
                 // Find user token from DB
                 // and add notification to Firestore
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
-                    if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
-                        if (userSnap.child("fcm_token").exists()) {
-                            // Add notification to Firestore to send
-                            // push notification from back-end
-                            Map<String, Object> notification = new HashMap<>();
-                            notification.put("token", userSnap.child("fcm_token").getValue(String.class));
-                            notification.put("title", notification_title[0]);
-                            notification.put("message", notification_message[0]);
-                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                            firestore.collection("notifications")
-                                    .document(notificationID).set(notification);
+                    if (userSnap.child("name").getValue(String.class) != null) {
+                        if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
+                            if (userSnap.child("fcm_token").exists()) {
+                                // Add notification to Firestore to send
+                                // push notification from back-end
+                                Map<String, Object> notification = new HashMap<>();
+                                notification.put("token", userSnap.child("fcm_token").getValue(String.class));
+                                notification.put("title", notification_title[0]);
+                                notification.put("message", notification_message[0]);
+                                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                                firestore.collection("notifications")
+                                        .document(notificationID).set(notification);
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
-
             }
 
             @Override

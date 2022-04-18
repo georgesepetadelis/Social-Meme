@@ -8,7 +8,6 @@
     tools:context=".Activities.SettingsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layoutDescription="@xml/activity_settings_xml_constraintlayout3_scene">
@@ -52,7 +51,6 @@
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
-            android:id="@+id/textView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -107,7 +105,6 @@
                     app:layout_constraintTop_toTopOf="@+id/imageView22" />
 
                 <TextView
-                    android:id="@+id/textView68"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Enable or disable night mode"
@@ -194,7 +191,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView38" />
 
                 <ImageView
-                    android:id="@+id/imageView24"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
@@ -242,7 +238,6 @@
                     app:layout_constraintTop_toTopOf="@+id/imageView8" />
 
                 <TextView
-                    android:id="@+id/textView51"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Report a bug or vulnerability"
@@ -265,14 +260,12 @@
                     app:srcCompat="@drawable/bug" />
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="parent"
                     tools:layout_editor_absoluteX="8dp" />
 
                 <ImageView
-                    android:id="@+id/imageView25"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
@@ -330,7 +323,6 @@
                     app:layout_constraintTop_toTopOf="@+id/imageView10" />
 
                 <TextView
-                    android:id="@+id/textView54"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tell your app suggestions"
@@ -341,7 +333,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView53" />
 
                 <ImageView
-                    android:id="@+id/imageView26"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
@@ -401,7 +392,6 @@
                     app:layout_constraintTop_toTopOf="@+id/imageView11" />
 
                 <TextView
-                    android:id="@+id/textView56"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Social Meme Privacy Policy"
@@ -412,7 +402,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView55" />
 
                 <ImageView
-                    android:id="@+id/imageView27"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"

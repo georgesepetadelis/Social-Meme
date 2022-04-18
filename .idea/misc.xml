@@ -147,7 +147,7 @@
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.19914529914529913" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.18" />
-        <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.15" />
         <entry key="app/src/main/res/layout/audio_post_item.xml" value="0.19198312236286919" />
         <entry key="app/src/main/res/layout/comment_item.xml" value="0.22" />
@@ -169,6 +169,7 @@
         <entry key="app/src/main/res/layout/text_post_item.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/layout/upload_text_dialog.xml" value="0.1928270042194093" />
         <entry key="app/src/main/res/layout/user_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/user_item_horizontal.xml" value="0.33" />
         <entry key="app/src/main/res/layout/user_profile_item.xml" value="0.25427350427350426" />
         <entry key="app/src/main/res/layout/video_post_item.xml" value="0.1952991452991453" />
         <entry key="app/src/main/res/menu/bottom_nav.xml" value="0.2918803418803419" />

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Social Meme</string>
-    <string name="welcome_to_social_meme">Welcome to\n<b>Social Meme</b></string>
     <string name="privacy_policy">Data collection:\n\nSocial Meme does not collect any additional data except the data that the user their self gives to the application, such as username, email, profile picture etc.
     \n\n
     </string>

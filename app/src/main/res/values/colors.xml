@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="main">#0099ff</color>
@@ -13,12 +10,6 @@
     <!--Night Color-->
     <color name="colorPrimaryNight">#212121</color>
     <color name="colorPrimaryDarkNight">#000000</color>
-    <color name="colorAccentNight">#f44336</color>
-    <color name="primaryTitleColorNight">#FFFFFF</color>
-    <color name="primaryDescriptionColorNight">#B3FFFFFF</color>
-    <color name="primaryDateColorNight">#B3FFFFFF</color>
-    <color name="primaryBackgroundColorNight">#303030</color>
-    <color name="primaryCardBackgroundColorNight">#424242</color>
     <color name="actionBarColorDark">#002AFF</color>
     <color name="cardBackgroundColorDark">#636363</color>
     <color name="titleTextColor">#A5A5A5</color>

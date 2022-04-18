@@ -8,17 +8,13 @@ plugins {
 android {
     compileSdk 31
 
-    lintOptions {
-        checkReleaseBuilds false
-    }
 
     defaultConfig {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 31
-        versionCode 16
-        versionName "2.1.3"
-
+        versionCode 17
+        versionName "2.1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,6 +34,9 @@ android {
                 srcDirs 'src/main/res', 'src/main/res/Activities', 'src/main/res/ActivitiesLayouts'
             }
         }
+    }
+    lint {
+        checkReleaseBuilds false
     }
 }
 

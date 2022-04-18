@@ -26,9 +26,11 @@ import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
 import com.esc861.screenshotlistener.ScreenshotListener;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
+import com.george.socialmeme.Adapters.RecommendedUsersRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
+import com.george.socialmeme.ViewHolders.RecommendedUserViewHolder;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +48,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -85,14 +89,16 @@ public class UserProfileActivity extends AppCompatActivity {
                     notification_title[0] = "New profile visitor";
                     notification_message[0] = user.getDisplayName() + " visited your profile";
 
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue().toString().equals(username)) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
-                            break;
+                    for (DataSnapshot userSnap : snapshot.getChildren()) {
+                        if (userSnap.child("name").getValue(String.class) != null) {
+                            if (Objects.requireNonNull(userSnap.child("name").getValue(String.class)).equals(username)) {
+                                String postAuthorID = userSnap.child("id").getValue().toString();
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue("New profile visitor");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
+                                break;
+                            }
                         }
                     }
                 }
@@ -103,13 +109,15 @@ public class UserProfileActivity extends AppCompatActivity {
                     notification_message[0] = user.getDisplayName() + " started following you";
 
                     for (DataSnapshot snap : snapshot.getChildren()) {
-                        if (snap.child("name").getValue().toString().equals(username)) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
-                            break;
+                        if (snap.child("name").getValue(String.class) != null) {
+                            if (snap.child("name").getValue().toString().equals(username)) {
+                                String postAuthorID = snap.child("id").getValue().toString();
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                break;
+                            }
                         }
                     }
                 }
@@ -120,14 +128,15 @@ public class UserProfileActivity extends AppCompatActivity {
                     notification_message[0] = user.getDisplayName() + " screenshotted your profile";
 
                     for (DataSnapshot snap : snapshot.getChildren()) {
-
-                        if (snap.child("name").getValue().toString().equals(username)) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
-                            break;
+                        if (snap.child("name").getValue(String.class) != null) {
+                            if (snap.child("name").getValue().toString().equals(username)) {
+                                String postAuthorID = snap.child("id").getValue().toString();
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                break;
+                            }
                         }
                     }
                 } else if (notificationType.equals("unfollow")) {
@@ -136,14 +145,15 @@ public class UserProfileActivity extends AppCompatActivity {
                     notification_message[0] = user.getDisplayName() + " unfollowed you";
 
                     for (DataSnapshot snap : snapshot.getChildren()) {
-
-                        if (snap.child("name").getValue().toString().equals(username)) {
-                            String postAuthorID = snap.child("id").getValue().toString();
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
-                            usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
-                            break;
+                        if (snap.child("name").getValue(String.class) != null) {
+                            if (snap.child("name").getValue().toString().equals(username)) {
+                                String postAuthorID = snap.child("id").getValue().toString();
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                break;
+                            }
                         }
                     }
                 }
@@ -151,25 +161,76 @@ public class UserProfileActivity extends AppCompatActivity {
                 // Find user token from DB
                 // and add notification to Firestore
                 for (DataSnapshot userSnap : snapshot.getChildren()) {
-                    if (userSnap.child("name").getValue(String.class).equals(username)) {
-
-                        if (userSnap.child("fcm_token").exists()) {
-                            // add notification to Firestore to send
-                            // push notification from back-end
-                            String firestoreNotificationID = usersRef.push().getKey();
-                            Map<String, Object> notification = new HashMap<>();
-                            notification.put("token", userSnap.child("fcm_token").getValue(String.class));
-                            notification.put("title", notification_title[0]);
-                            notification.put("message", notification_message[0]);
-                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                            firestore.collection("notifications")
-                                    .document(firestoreNotificationID).set(notification);
-                            break;
+                    if (userSnap.child("name").getValue(String.class) != null) {
+                        if (userSnap.child("name").getValue(String.class).equals(username)) {
+                            if (userSnap.child("fcm_token").exists()) {
+                                // add notification to Firestore to send
+                                // push notification from back-end
+                                String firestoreNotificationID = usersRef.push().getKey();
+                                Map<String, Object> notification = new HashMap<>();
+                                notification.put("token", userSnap.child("fcm_token").getValue(String.class));
+                                notification.put("title", notification_title[0]);
+                                notification.put("message", notification_message[0]);
+                                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                                firestore.collection("notifications")
+                                        .document(firestoreNotificationID).set(notification);
+                                break;
+                            }
                         }
-
                     }
                 }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    void loadRecommendedUsers() {
+
+        Random random = new Random();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        ArrayList<UserModel> recommendedUsersList = new ArrayList<>();
+        RecyclerView recommendedUsersRecyclerView = findViewById(R.id.recommended_users_recycler_view);
+        RecommendedUsersRecyclerAdapter recommendedUsersRecyclerAdapter =
+                new RecommendedUsersRecyclerAdapter(UserProfileActivity.this, recommendedUsersList);
+        recommendedUsersRecyclerView.setAdapter(recommendedUsersRecyclerAdapter);
+
+        // Find 8 random users to add
+        // who the logged-in user does not follow
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                int totalUsersAddedToRecyclerView = 0;
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    if (totalUsersAddedToRecyclerView < 8) {
+                        int addUser = random.nextInt(2);
+                        if (addUser == 1) {
+                            String currentUsername = userSnapshot.child("name").getValue(String.class);
+                            String currentUserID = userSnapshot.child("id").getValue(String.class);
+                            if (currentUserID != null && currentUsername != null) {
+                                if (!snapshot.child(user.getUid()).child("following").child(currentUserID).exists()
+                                        && !currentUsername.equals(user.getDisplayName())) {
+                                    totalUsersAddedToRecyclerView++;
+                                    UserModel userModel = new UserModel();
+                                    userModel.setUserID(currentUserID);
+                                    userModel.setUsername(currentUsername);
+                                    recommendedUsersList.add(userModel);
+                                    recommendedUsersRecyclerAdapter.notifyItemInserted(recommendedUsersList.size() - 1);
+                                }
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
             }
 
             @Override
@@ -235,7 +296,6 @@ public class UserProfileActivity extends AppCompatActivity {
                         .show();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -293,7 +353,6 @@ public class UserProfileActivity extends AppCompatActivity {
         mAdView.loadAd(adRequest);
 
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
-
         RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
 
@@ -306,6 +365,7 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
+        loadRecommendedUsers();
         backBtn.setOnClickListener(v -> onBackPressed());
 
         postsOfTheMonthInfo.setOnClickListener(view -> {
@@ -412,7 +472,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     bronzeTrophiesCount.setText(userModel.getBronzeTrophiesCounter());
 
                     progressDialog.hide();
-                    
                     break;
                 }
             }

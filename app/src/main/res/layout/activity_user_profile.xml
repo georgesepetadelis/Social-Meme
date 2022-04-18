@@ -20,7 +20,6 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <TextView
-        android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -76,6 +75,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/follow_btn" />
 
             <TextView
+                android:id="@+id/textView94"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:text="Recommended memers"
+                android:textColor="?attr/textFillColor"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/followers_my_profile3" />
+
+            <TextView
                 android:id="@+id/followers_my_profile3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -124,6 +136,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recommended_users_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView94"
+                tools:listitem="@layout/user_item_horizontal" />
 
             <TextView
                 android:id="@+id/textView12"
@@ -192,13 +216,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
                 android:text="Memes"
                 android:textColor="?attr/textFillColor"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/followers_my_profile3" />
+                app:layout_constraintTop_toBottomOf="@+id/recommended_users_recycler_view" />
 
             <TextView
                 android:id="@+id/textView28"
@@ -218,6 +241,7 @@
                 android:id="@+id/adView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:adSize="BANNER"
                 app:adUnitId="ca-app-pub-9627755439548346/4826089768"
                 app:layout_constraintBottom_toTopOf="@+id/recyclerView_user_profile"

@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottom_sheet_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_sheet_background"
@@ -10,7 +9,6 @@
     android:elevation="8dp">
 
     <View
-        android:id="@+id/textView64"
         android:layout_width="80dp"
         android:layout_height="15dp"
         android:layout_marginTop="15dp"
@@ -41,7 +39,6 @@
             app:srcCompat="@drawable/ic_report" />
 
         <TextView
-            android:id="@+id/textView72"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -87,7 +84,6 @@
             app:srcCompat="@drawable/ic_save" />
 
         <TextView
-            android:id="@+id/textView70"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -134,7 +130,6 @@
             app:srcCompat="@drawable/delete_icon" />
 
         <TextView
-            android:id="@+id/textView73"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

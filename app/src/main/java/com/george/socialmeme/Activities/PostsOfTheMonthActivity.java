@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -123,7 +124,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 goldPostModel.setImgUrl(snapshot.child("posts").child(goldPostID).child("imgUrl").getValue(String.class));
 
                 for (DataSnapshot userSnap : snapshot.child("users").getChildren()) {
-                    if (userSnap.child("name").getValue(String.class).equals(snapshot.child("posts").child(goldPostID).child("name").getValue(String.class))) {
+                    if (Objects.equals(userSnap.child("name").getValue(String.class), snapshot.child("posts").child(goldPostID).child("name").getValue(String.class))) {
                         goldPostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }
@@ -145,7 +146,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 silverPostModel.setImgUrl(snapshot.child("posts").child(silverPostID).child("imgUrl").getValue(String.class));
 
                 for (DataSnapshot userSnap : snapshot.child("users").getChildren()) {
-                    if (userSnap.child("name").getValue(String.class).equals(snapshot.child("posts").child(silverPostID).child("name").getValue(String.class))) {
+                    if (Objects.equals(userSnap.child("name").getValue(String.class), snapshot.child("posts").child(silverPostID).child("name").getValue(String.class))) {
                         silverPostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }
@@ -167,7 +168,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 bronzePostModel.setImgUrl(snapshot.child("posts").child(bronzePostID).child("imgUrl").getValue(String.class));
 
                 for (DataSnapshot userSnap : snapshot.child("users").getChildren()) {
-                    if (userSnap.child("name").getValue(String.class).equals(snapshot.child("posts").child(bronzePostID).child("name").getValue(String.class))) {
+                    if (Objects.equals(userSnap.child("name").getValue(String.class), snapshot.child("posts").child(bronzePostID).child("name").getValue(String.class))) {
                         bronzePostModel.setAuthorID(userSnap.child("id").getValue(String.class));
                         break;
                     }

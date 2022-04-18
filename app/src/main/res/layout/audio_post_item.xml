@@ -158,7 +158,6 @@
             app:layout_constraintTop_toTopOf="@+id/imageButton19" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout6"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"

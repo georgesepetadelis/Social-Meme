@@ -259,16 +259,9 @@ public class HomeFragment extends Fragment {
         imagesItem.setOnClickListener(view -> {
             if (imagesItemSelected[0]) {
                 imagesItemSelected[0] = false;
-                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        dialog.findViewById(R.id.imageView30).setVisibility(View.GONE);
-                    }
-                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView30));
+                dialog.findViewById(R.id.imageView30).setVisibility(View.GONE);
             } else {
                 imagesItemSelected[0] = true;
-                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView30));
                 dialog.findViewById(R.id.imageView30).setVisibility(View.VISIBLE);
             }
         });
@@ -276,16 +269,9 @@ public class HomeFragment extends Fragment {
         videosItem.setOnClickListener(view -> {
             if (videosItemSelected[0]) {
                 videosItemSelected[0] = false;
-                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        dialog.findViewById(R.id.imageView32).setVisibility(View.GONE);
-                    }
-                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView32));
+                dialog.findViewById(R.id.imageView32).setVisibility(View.GONE);
             } else {
                 videosItemSelected[0] = true;
-                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView32));
                 dialog.findViewById(R.id.imageView32).setVisibility(View.VISIBLE);
             }
         });
@@ -293,16 +279,9 @@ public class HomeFragment extends Fragment {
         soundsItem.setOnClickListener(view -> {
             if (soundsItemSelected[0]) {
                 soundsItemSelected[0] = false;
-                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        dialog.findViewById(R.id.imageView34).setVisibility(View.GONE);
-                    }
-                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView34));
+                dialog.findViewById(R.id.imageView34).setVisibility(View.GONE);
             } else {
                 soundsItemSelected[0] = true;
-                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView34));
                 dialog.findViewById(R.id.imageView34).setVisibility(View.VISIBLE);
             }
         });
@@ -310,16 +289,9 @@ public class HomeFragment extends Fragment {
         textItem.setOnClickListener(view -> {
             if (textItemSelected[0]) {
                 textItemSelected[0] = false;
-                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        dialog.findViewById(R.id.imageView36).setVisibility(View.GONE);
-                    }
-                }).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView36));
+                dialog.findViewById(R.id.imageView36).setVisibility(View.GONE);
             } else {
                 textItemSelected[0] = true;
-                YoYo.with(Techniques.FadeIn).duration(500).repeat(0).playOn(dialog.findViewById(R.id.imageView36));
                 dialog.findViewById(R.id.imageView36).setVisibility(View.VISIBLE);
             }
         });

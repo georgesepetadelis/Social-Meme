@@ -162,23 +162,17 @@ public class FollowerInfoActivity extends AppCompatActivity {
                         }
 
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-
                             // Confirm that the user exists
                             if (snapshot.child(followingUserSnapshot.getValue(String.class)).exists()) {
-
                                 userModel.setUserID(followingUserSnapshot.getValue(String.class));
-
-                                if (snapshot1.child("id").getValue(String.class).equals(followingUserSnapshot.getValue(String.class))) {
+                                if (Objects.equals(snapshot1.child("id").getValue(String.class), followingUserSnapshot.getValue(String.class))) {
                                     userModel.setUsername(snapshot.child(snapshot1.child("id").getValue(String.class)).child("name").getValue(String.class));
-
                                     if (snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").exists()) {
                                         userModel.setProfilePictureURL(snapshot.child(snapshot1.child("id").getValue(String.class)).child("profileImgUrl").getValue(String.class));
                                     } else {
                                         userModel.setProfilePictureURL("none");
                                     }
-
                                     usersArrayList.add(userModel);
-
                                 }
 
                             } else {

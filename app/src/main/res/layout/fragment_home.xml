@@ -23,7 +23,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <RelativeLayout
-            android:id="@+id/scrollView3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?attr/background"
@@ -112,7 +111,6 @@
             app:srcCompat="@drawable/ic_search" />
 
         <View
-            android:id="@+id/view14"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:foreground="@drawable/ic_wave_header"
@@ -121,7 +119,6 @@
             app:layout_constraintTop_toBottomOf="@+id/view3" />
 
         <TextView
-            android:id="@+id/textView9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -152,7 +149,6 @@
             tools:visibility="gone">
 
             <ProgressBar
-                android:id="@+id/progressBar2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"

@@ -17,7 +17,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -77,7 +76,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView45"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="0dp"
@@ -135,7 +133,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView44"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="0dp"
@@ -202,7 +199,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView43"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="0dp"
@@ -242,7 +238,6 @@
                     android:background="?attr/cardBackgroundColor">
 
                     <TextView
-                        android:id="@+id/textView77"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Upload Text"
@@ -281,7 +276,6 @@
     </ScrollView>
 
     <View
-        android:id="@+id/view16"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:background="@drawable/ic_wave_header"

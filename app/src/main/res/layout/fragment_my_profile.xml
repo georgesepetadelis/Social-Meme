@@ -36,7 +36,6 @@
         app:layout_goneMarginTop="10dp" />
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -278,7 +277,6 @@
                 tools:listitem="@layout/image_post_item" />
 
             <ImageView
-                android:id="@+id/imageView2"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:elevation="13dp"
@@ -387,7 +385,6 @@
         app:layout_constraintTop_toTopOf="@+id/view6" />
 
     <View
-        android:id="@+id/view8"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:background="@drawable/ic_wave_header"
