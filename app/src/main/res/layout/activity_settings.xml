@@ -47,7 +47,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/toolbar2"
-            app:srcCompat="@drawable/ic_back"
+            app:srcCompat="@drawable/ic_back_new"
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
@@ -484,14 +484,14 @@
             android:id="@+id/adView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="32dp"
             app:adSize="BANNER"
             app:adUnitId="ca-app-pub-9627755439548346/8213283972"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/instagram_button"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
             app:layout_constraintVertical_bias="1.0" />
 
         <ImageButton
@@ -522,6 +522,20 @@
             app:layout_constraintStart_toStartOf="@+id/cardView10"
             app:layout_constraintTop_toBottomOf="@+id/cardView10"
             app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="htpps://georgethedev.ga"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:textStyle="bold"
+            android:textColor="@color/main"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@+id/github_button"
+            app:layout_constraintStart_toStartOf="@+id/instagram_button"
+            app:layout_constraintTop_toBottomOf="@+id/instagram_button" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

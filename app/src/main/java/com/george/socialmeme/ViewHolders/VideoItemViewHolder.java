@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.george.socialmeme.Activities.FullScreenVideoActivity;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
@@ -70,7 +71,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
     public View openCommentsView;
     public TextView username, like_counter_tv, commentsCount, followBtn;
     public CircleImageView profilePicture;
-    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn;
+    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn, enterFullScreenBtn;
     public boolean isPostLiked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -300,6 +301,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
         commentsBtn = itemView.findViewById(R.id.imageButton11);
         followBtnView = itemView.findViewById(R.id.follow_btn_img);
         followBtn = itemView.findViewById(R.id.textView81);
+        enterFullScreenBtn = itemView.findViewById(R.id.enter_fullscreen_btn);
 
         openCommentsView.setOnClickListener(view -> showCommentsDialog());
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
@@ -362,6 +364,13 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
             openProfileView.setEnabled(false);
         }
 
+        enterFullScreenBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(context, FullScreenVideoActivity.class);
+            intent.putExtra("video_url", videoURL);
+            context.startActivity(intent);
+            CustomIntent.customType(context, "left-to-right");
+        });
+
         openProfileView.setOnClickListener(v -> {
 
             if (postAuthorID.equals(user.getUid())) {
@@ -369,7 +378,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                 if (selectedItemId != R.id.my_profile_fragment) {
                     HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                 }
-            }else {
+            } else {
                 Intent intent = new Intent(context, UserProfileActivity.class);
                 intent.putExtra("user_id", postAuthorID);
                 intent.putExtra("username", username.getText().toString());

@@ -87,6 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         ImageButton backBtn = findViewById(R.id.imageButton);
         TextView username = findViewById(R.id.textView49);
+        TextView website_tv = findViewById(R.id.textView3);
         CardView account_settings = findViewById(R.id.cardView2);
         Button logout = findViewById(R.id.button);
         CardView bugReport = findViewById(R.id.cardView3);
@@ -98,6 +99,7 @@ public class SettingsActivity extends AppCompatActivity {
         SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
         nightModeSwitch.setChecked(isNightModeEnabled());
 
+        website_tv.setOnClickListener(view -> openURL("https://georgethedev.ga"));
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
         instagram.setOnClickListener(view -> openURL("https://www.instagram.com/sepetadelhsss/"));
         github.setOnClickListener(view -> openURL("https://github.com/georgesepetadelis/Social-Meme"));

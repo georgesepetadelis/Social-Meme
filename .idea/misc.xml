@@ -134,6 +134,7 @@
         <entry key="app/src/main/res/layout/activity_account_settings.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_all_user_posts.xml" value="0.19444444444444445" />
         <entry key="app/src/main/res/layout/activity_followers_and_following.xml" value="0.2012820512820513" />
+        <entry key="app/src/main/res/layout/activity_full_screen_video.xml" value="0.2" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.2918803418803419" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19914529914529913" />
@@ -171,7 +172,7 @@
         <entry key="app/src/main/res/layout/user_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/user_item_horizontal.xml" value="0.33" />
         <entry key="app/src/main/res/layout/user_profile_item.xml" value="0.25427350427350426" />
-        <entry key="app/src/main/res/layout/video_post_item.xml" value="0.1952991452991453" />
+        <entry key="app/src/main/res/layout/video_post_item.xml" value="0.33" />
         <entry key="app/src/main/res/menu/bottom_nav.xml" value="0.2918803418803419" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1141025641025641" />
       </map>
