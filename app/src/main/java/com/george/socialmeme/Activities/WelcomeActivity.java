@@ -15,6 +15,7 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        HomeActivity.singedInAnonymously = false;
         finish();
         CustomIntent.customType(WelcomeActivity.this, "right-to-left");
     }

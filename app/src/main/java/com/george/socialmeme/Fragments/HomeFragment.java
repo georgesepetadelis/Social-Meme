@@ -58,6 +58,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -158,7 +159,7 @@ public class HomeFragment extends Fragment {
 
         submitUserSearchButton.setOnClickListener(view -> {
 
-            String usernameInput = usernameForSearch.getText().toString();
+            String usernameInput = usernameForSearch.getText().toString().trim();
             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
             // Prevent user from dismissing the
@@ -382,6 +383,7 @@ public class HomeFragment extends Fragment {
         } else {
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 // Load saved data
+                Collections.shuffle(HomeActivity.savedPostsArrayList);
                 postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
                 notificationsBtn.setEnabled(true);
                 progressBar.setVisibility(View.GONE);
@@ -450,6 +452,8 @@ public class HomeFragment extends Fragment {
                             }
                             recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                         }
+
+                        Collections.shuffle(postModelArrayList);
 
                         // Add post's of the month view as RecyclerView item
                         // to avoid using ScrollView
@@ -525,7 +529,6 @@ public class HomeFragment extends Fragment {
             mAdView.loadAd(adRequest);
         }
 
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 

@@ -26,11 +26,10 @@ import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
 import com.esc861.screenshotlistener.ScreenshotListener;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
-import com.george.socialmeme.Adapters.RecommendedUsersRecyclerAdapter;
+import com.george.socialmeme.Adapters.RecommendedUserRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
-import com.george.socialmeme.ViewHolders.RecommendedUserViewHolder;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +43,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -198,8 +196,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
         ArrayList<UserModel> recommendedUsersList = new ArrayList<>();
         RecyclerView recommendedUsersRecyclerView = findViewById(R.id.recommended_users_recycler_view);
-        RecommendedUsersRecyclerAdapter recommendedUsersRecyclerAdapter =
-                new RecommendedUsersRecyclerAdapter(UserProfileActivity.this, recommendedUsersList);
+        RecommendedUserRecyclerAdapter recommendedUsersRecyclerAdapter =
+                new RecommendedUserRecyclerAdapter(UserProfileActivity.this, recommendedUsersList);
         recommendedUsersRecyclerView.setAdapter(recommendedUsersRecyclerAdapter);
 
         // Find 8 random users to add
@@ -434,16 +432,26 @@ public class UserProfileActivity extends AppCompatActivity {
             }
             totalLikesCounter.setText(String.valueOf(totalLikes));
 
+        } else {
+            Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
         }
+
+        username_tv.setText(username);
 
         // Load user info
         if (HomeActivity.savedUserProfiles != null && !HomeActivity.savedUserProfiles.isEmpty()) {
+
+            boolean userFound = false;
+
             // Load saved user data
             for (int userIndex = 1; userIndex < HomeActivity.savedUserProfiles.size() - 1; userIndex++) {
+
                 if (HomeActivity.savedUserProfiles.get(userIndex).getUsername().equals(username)) {
 
+                    userFound = true;
+
                     UserModel userModel = HomeActivity.savedUserProfiles.get(userIndex);
-                    
+
                     if (!userID.equals(user.getUid())) {
                         Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
                         toolbar.setTitle("");
@@ -475,6 +483,123 @@ public class UserProfileActivity extends AppCompatActivity {
                     break;
                 }
             }
+
+            if (!userFound) {
+                // Load user data from DB
+                rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        String profilePictureURL = "none";
+                        String username_from_db = snapshot.child("users").child(userID).child("name").getValue(String.class);
+                        username_tv.setText(username_from_db);
+
+                        boolean followingCurrentUser = false;
+                        boolean userFollowsLoggedInUser = false;
+
+                        // Check if logged-in user has
+                        // blocked current user to show an alert
+                        if (snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userID).exists()) {
+
+                            new AlertDialog.Builder(UserProfileActivity.this)
+                                    .setTitle("Blocked user")
+                                    .setMessage("You have blocked this user. You want to unblock this user?")
+                                    .setPositiveButton("Yes", (dialogInterface, i) ->
+                                            usersRef.child(user.getUid())
+                                                    .child("blockedUsers").child(userID)
+                                                    .removeValue().addOnCompleteListener(task -> {
+                                                if (task.isSuccessful()) {
+                                                    dialogInterface.dismiss();
+                                                    Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                                    onBackPressed();
+                                                }
+                                            })).setNegativeButton("No", (dialogInterface, i) -> {
+                                dialogInterface.dismiss();
+                                onBackPressed();
+                            }).setCancelable(false).show();
+
+                        }
+
+                        // Show report/block options only
+                        // if this profile is not the current
+                        // logged-in user profile
+                        if (!userID.equals(user.getUid())) {
+                            Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                            toolbar.setTitle("");
+                            setSupportActionBar(toolbar);
+                        }
+
+                        if (snapshot.child("users").child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
+                            followBtn.setVisibility(View.GONE);
+                            userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                        }
+
+                        if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {
+                            profilePictureURL = snapshot.child("users").child(userID).child("profileImgUrl").getValue(String.class);
+                        }
+
+                        if (!profilePictureURL.equals("none")) {
+                            Glide.with(getApplicationContext()).load(profilePictureURL).into(profilePicture);
+                        }
+
+                        if (!snapshot.child("users").child(userID).child("following").child(user.getUid()).exists()) {
+                            userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                            userFollowsLoggedInUser = true;
+                        }
+
+                        // check logged in user follows this user
+                        if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
+                            if (snapshot.child("users").child(user.getUid()).child("following").child(userID).exists()) {
+                                currentUserFollowsThisUser = true;
+                                followingCurrentUser = true;
+                                followBtn.setText("Unfollow");
+                            } else {
+                                followingCurrentUser = false;
+                                currentUserFollowsThisUser = false;
+                            }
+                        }
+
+                        // set followers and following counter values
+                        if (snapshot.child("users").child(userID).child("following").exists()) {
+                            following = (int) snapshot.child("users").child(userID).child("following").getChildrenCount();
+                            followingCounter.setText(String.format("%d", following));
+                        }
+
+                        if (snapshot.child("users").child(userID).child("followers").exists()) {
+                            followers = (int) snapshot.child("users").child(userID).child("followers").getChildrenCount();
+                            followersCounter.setText(String.format("%d", followers));
+                        }
+
+                        // Load user trophies
+                        if (snapshot.child("users").child(userID).child("trophies").exists()) {
+
+                            String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
+                            String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
+                            String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
+
+                            goldTrophiesCount.setText(goldTrophies);
+                            silverTrophiesCount.setText(silverTrophies);
+                            bronzeTrophiesCount.setText(bronzeTrophies);
+
+                        }
+
+                        recyclerAdapter.notifyDataSetChanged();
+                        progressDialog.hide();
+                        //firebaseCallback.onComplete(profilePictureURL, userFollowsLoggedInUser, followingCurrentUser);
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
 
         } else {
 
@@ -612,8 +737,6 @@ public class UserProfileActivity extends AppCompatActivity {
             });
         }
 
-        
-
         followBtn.setOnClickListener(v -> {
 
             progressDialog.show();
@@ -686,10 +809,10 @@ public class UserProfileActivity extends AppCompatActivity {
         usersRef.child(user.getUid()).child("blockedUsers").child(username).setValue(userID).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 sendNotificationToUser("block");
-                Toast.makeText(UserProfileActivity.this, "User blocked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserProfileActivity.this, "You blocked " + username, Toast.LENGTH_SHORT).show();
                 onBackPressed();
             } else {
-                Toast.makeText(UserProfileActivity.this, "Error: Can't block this user", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserProfileActivity.this, "Error: Can't block this user", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -697,11 +820,8 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        if (progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-
+        progressDialog.setCancelable(true);
+        progressDialog.hide();
         finish();
         CustomIntent.customType(UserProfileActivity.this, "right-to-left");
     }

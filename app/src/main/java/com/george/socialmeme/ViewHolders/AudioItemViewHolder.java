@@ -135,23 +135,30 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
         // Check if logged-in user follows post author
         // to hide follow button
-        usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild("following")) {
-                    // Logged-in user follows post author
-                    // hide follow btn
-                    if (snapshot.child("following").child(postAuthorID).exists()) {
-                        followBtnView.setVisibility(View.GONE);
+        if (user != null) {
+            usersRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.hasChild("following")) {
+                        // Logged-in user follows post author
+                        // hide follow btn
+                        if (postAuthorID != null) {
+                            if (snapshot.child("following").child(postAuthorID).exists()) {
+                                followBtnView.setVisibility(View.GONE);
+                            }
+                        } else {
+                            followBtnView.setVisibility(View.GONE);
+                        }
+
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         playBtn.setOnClickListener(view -> {
             isAudioPlaying = !isAudioPlaying;
@@ -189,17 +196,19 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
         openUserProfileView.setOnClickListener(v -> {
 
-            if (postAuthorID.equals(user.getUid())) {
-                int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
-                if (selectedItemId != R.id.my_profile_fragment) {
-                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+            if (postAuthorID != null) {
+                if (postAuthorID.equals(user.getUid())) {
+                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                    if (selectedItemId != R.id.my_profile_fragment) {
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+                    }
+                } else {
+                    Intent intent = new Intent(context, UserProfileActivity.class);
+                    intent.putExtra("user_id", postAuthorID);
+                    intent.putExtra("username", usernameTV.getText().toString());
+                    context.startActivity(intent);
+                    CustomIntent.customType(context, "left-to-right");
                 }
-            }else {
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                intent.putExtra("user_id", postAuthorID);
-                intent.putExtra("username", usernameTV.getText().toString());
-                context.startActivity(intent);
-                CustomIntent.customType(context, "left-to-right");
             }
         });
 

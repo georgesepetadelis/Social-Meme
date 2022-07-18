@@ -13,9 +13,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -65,6 +68,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        // Animate text
+        TextView appLogo = findViewById(R.id.textView16);
+        YoYo.with(Techniques.FadeIn).duration(1200).repeat(0).playOn(appLogo);
+
         new Handler().postDelayed(() -> {
 
             FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -73,6 +80,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (isInternetConnectionAvailable()) {
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                 } else {
                     initializeNightModeSharedPref();
                     HomeActivity.showLoadingScreen = true;

@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 import maes.tech.intentanim.CustomIntent;
 
 public class AccountSettingsActivity extends AppCompatActivity {
@@ -221,7 +223,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                                 boolean nameExists = false;
 
                                 for (DataSnapshot snap : snapshot.getChildren()) {
-                                    if (snap.child("name").getValue(String.class).equals(username.getText().toString())) {
+                                    if (Objects.equals(snap.child("name").getValue(String.class), username.getText().toString())) {
                                         nameExists = true;
                                         break;
                                     }

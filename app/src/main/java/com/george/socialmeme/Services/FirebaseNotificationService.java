@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.util.Log;
@@ -73,7 +75,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationBody)
-                .setSmallIcon(R.drawable.app_logo)
+                .setSmallIcon(R.drawable.logo_new)
                 .setAutoCancel(false);
         notification.setContentIntent(pendingIntent);
         NotificationManagerCompat.from(this).notify(notificationID, notification.build());
