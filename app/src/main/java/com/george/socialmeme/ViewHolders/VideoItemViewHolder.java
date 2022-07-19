@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -376,6 +377,18 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
             intent.putExtra("video_url", videoURL);
             context.startActivity(intent);
             CustomIntent.customType(context, "left-to-right");
+        });
+
+        andExoPlayerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                Objects.requireNonNull(andExoPlayerView.getPlayer()).stop();
+            }
         });
 
         openProfileView.setOnClickListener(v -> {

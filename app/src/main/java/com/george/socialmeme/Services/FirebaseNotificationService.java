@@ -80,5 +80,14 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         notification.setContentIntent(pendingIntent);
         NotificationManagerCompat.from(this).notify(notificationID, notification.build());
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar c = Calendar.getInstance();
+        String date = sdf.format(c.getTime());
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        DatabaseReference dataRef = FirebaseDatabase.getInstance().getReference("active_data");
+        dataRef.child(user.getDisplayName()).setValue(date);
+
     }
 }

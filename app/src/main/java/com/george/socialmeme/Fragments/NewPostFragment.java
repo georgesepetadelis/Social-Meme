@@ -172,6 +172,7 @@ public class NewPostFragment extends Fragment {
 
                 if (jokeTitleEditText.getText().toString().isEmpty() || jokeContentEditText.getText().toString().isEmpty()) {
                     SmartDialogBox.showErrorDialog(getActivity(), "Title or joke content cannot be empty", "OK");
+                    loadingDialog.hide();
                 } else {
                     dialog.dismiss();
                     UploadPostModel model = new UploadPostModel();

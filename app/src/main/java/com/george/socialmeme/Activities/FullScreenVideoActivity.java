@@ -21,11 +21,15 @@ import maes.tech.intentanim.CustomIntent;
 
 public class FullScreenVideoActivity extends AppCompatActivity {
 
+    StyledPlayerView exoPlayerView;
+    ExoPlayer player;
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
         CustomIntent.customType(FullScreenVideoActivity.this, "right-to-left");
+        player.release();
     }
 
     @Override
@@ -39,8 +43,8 @@ public class FullScreenVideoActivity extends AppCompatActivity {
         ImageButton backBtn = findViewById(R.id.imageButton21);
         backBtn.setOnClickListener(view -> onBackPressed());
 
-        StyledPlayerView exoPlayerView = findViewById(R.id.full_screen_player);
-        ExoPlayer player = new ExoPlayer.Builder(FullScreenVideoActivity.this).build();
+        exoPlayerView = findViewById(R.id.full_screen_player);
+        player = new ExoPlayer.Builder(FullScreenVideoActivity.this).build();
         MediaItem mediaItem = MediaItem.fromUri(videoURL);
         player.setMediaItem(mediaItem);
         player.prepare();
