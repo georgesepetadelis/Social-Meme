@@ -310,7 +310,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
         if (!HomeActivity.singedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             followBtnView.setVisibility(View.GONE);
         }
 
@@ -377,6 +377,10 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
             intent.putExtra("video_url", videoURL);
             context.startActivity(intent);
             CustomIntent.customType(context, "left-to-right");
+
+            // stop video from playing inside recycler view
+            Objects.requireNonNull(andExoPlayerView.getPlayer()).pause();
+
         });
 
         andExoPlayerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -387,7 +391,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
             @Override
             public void onViewDetachedFromWindow(View v) {
-                Objects.requireNonNull(andExoPlayerView.getPlayer()).stop();
+                Objects.requireNonNull(andExoPlayerView.getPlayer()).pause();
             }
         });
 

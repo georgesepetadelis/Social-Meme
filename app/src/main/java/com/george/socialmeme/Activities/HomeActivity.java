@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        onDestroy();
+        //onDestroy();
         //finish();
     }
 
