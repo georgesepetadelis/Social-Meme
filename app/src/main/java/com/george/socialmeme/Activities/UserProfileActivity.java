@@ -409,7 +409,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Load user posts
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
 
-            ArrayList<PostModel> allPostsRevered = new ArrayList<>(HomeActivity.savedPostsArrayList);
+            ArrayList<PostModel> allPostsRevered = new ArrayList<>(HomeActivity.noSuffledPostsList);
             Collections.reverse(allPostsRevered);
 
             int totalLoadedPosts = 0;

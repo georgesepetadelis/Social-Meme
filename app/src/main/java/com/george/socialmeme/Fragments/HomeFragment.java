@@ -69,7 +69,7 @@ import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
 
 public class HomeFragment extends Fragment {
 
-    ArrayList<PostModel> postModelArrayList, filteredPostsArrayList;
+    ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray;
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
     ProgressBar progressBar;
@@ -383,6 +383,7 @@ public class HomeFragment extends Fragment {
         } else {
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 // Load saved data
+                HomeActivity.noSuffledPostsList = HomeActivity.savedPostsArrayList;
                 Collections.shuffle(HomeActivity.savedPostsArrayList);
                 postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
                 notificationsBtn.setEnabled(true);
@@ -453,6 +454,7 @@ public class HomeFragment extends Fragment {
                             recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                         }
 
+                        notSuffledPostsArray = postModelArrayList;
                         Collections.shuffle(postModelArrayList);
 
                         // Add post's of the month view as RecyclerView item
@@ -464,7 +466,9 @@ public class HomeFragment extends Fragment {
                         appShowCase();
 
                         if (HomeActivity.showLoadingScreen) {
+
                             new Handler().postDelayed(() -> {
+
                                 filtersBtn.setVisibility(View.INVISIBLE);
                                 int appVersionCode = BuildConfig.VERSION_CODE;
                                 int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));

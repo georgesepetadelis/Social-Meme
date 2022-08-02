@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean singedInAnonymously = false;
     public static boolean showLoadingScreen;
     public static ChipNavigationBar bottomNavBar;
-    public static ArrayList<PostModel> savedPostsArrayList;
+    public static ArrayList<PostModel> savedPostsArrayList, noSuffledPostsList;
     public static ArrayList<UserModel> savedUserProfiles = null;
     public static UserModel savedUserData = null;
     public static ExtendedFloatingActionButton filtersBtn;
