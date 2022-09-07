@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,8 +27,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
+import com.george.socialmeme.Activities.AllUserPostsActivity;
 import com.george.socialmeme.Activities.FollowerInfoActivity;
 import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
+import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
@@ -50,6 +53,7 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -228,6 +232,7 @@ public class MyProfileFragment extends Fragment {
         View showFollowersView = view.findViewById(R.id.showFollowersView_Profile);
         View showFollowingUsersView = view.findViewById(R.id.showFollowingView_Profile);
         ImageButton postsOfTheMonthInfo = view.findViewById(R.id.imageButton9);
+        Button allPostsBtn = view.findViewById(R.id.button5);
         progressBar = view.findViewById(R.id.progressBar);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -246,6 +251,14 @@ public class MyProfileFragment extends Fragment {
         bronzeTrophiesCount = view.findViewById(R.id.bronze_trophies_count);
 
         username.setText(user.getDisplayName());
+
+        allPostsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), AllUserPostsActivity.class);
+            intent.putExtra("userID", user.getUid());
+            intent.putExtra("reverse_list", true);
+            startActivity(intent);
+            CustomIntent.customType(getContext(), "left-to-right");
+        });
 
         postsOfTheMonthInfo.setOnClickListener(view13 -> {
             Intent intent = new Intent(getContext(), PostsOfTheMonthActivity.class);
@@ -268,7 +281,6 @@ public class MyProfileFragment extends Fragment {
         }
 
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
-        ArrayList<PostModel> allPostsArrayList = new ArrayList<>();
         final RecyclerView recyclerView = view.findViewById(R.id.recyclerView_my_profile);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
@@ -313,24 +325,38 @@ public class MyProfileFragment extends Fragment {
             someActivityResultLauncher.launch(intent);
         });
 
+        if (!HomeActivity.appStarted) {
+            HomeActivity.appStarted = true;
+            Collections.reverse(HomeActivity.savedPostsArrayList);
+        }
+
         if (!HomeActivity.singedInAnonymously) {
 
-            if (!HomeActivity.savedPostsArrayList.isEmpty()) {
-                allPostsArrayList.addAll(HomeActivity.savedPostsArrayList);
+            ArrayList<PostModel> reversedPosts = HomeActivity.savedPostsArrayList;
+            //Collections.reverse(reversedPosts);
 
-                for (PostModel post : allPostsArrayList) {
-                    if (post.getName() != null) {
-                        if (post.getName().equals(user.getDisplayName())) {
-                            postModelArrayList.add(post);
+            int postsCount = 0;
+                for (PostModel post : reversedPosts) {
+                    if (postsCount <= 4) {
+                        if (post.getName() != null) {
+                            if (post.getName().equals(user.getDisplayName())) {
+                                postModelArrayList.add(post);
+                                postsCount++;
+                            }
                         }
                     }
                 }
-            }
+
+            Collections.reverse(postModelArrayList);
 
             int totalLikes = 0;
-            for (PostModel post : postModelArrayList) {
-                int likesToInt = Integer.parseInt(post.getLikes());
-                totalLikes += likesToInt;
+            for (PostModel post : HomeActivity.savedPostsArrayList) {
+                if (post.getName() != null) {
+                    if (post.getName().equals(user.getDisplayName())) {
+                        int likesToInt = Integer.parseInt(post.getLikes());
+                        totalLikes += likesToInt;
+                    }
+                }
             }
 
             totalLikesCounter.setText(String.valueOf(totalLikes));

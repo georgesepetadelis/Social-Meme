@@ -41,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public static boolean singedInAnonymously = false;
     public static boolean showLoadingScreen;
+    public static boolean appStarted;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsArrayList, noSuffledPostsList;
     public static ArrayList<UserModel> savedUserProfiles = null;
@@ -90,6 +91,7 @@ public class HomeActivity extends AppCompatActivity {
         filtersBtn = findViewById(R.id.filters_btn);
         savedPostsArrayList = new ArrayList<>();
         savedUserProfiles = new ArrayList<>();
+        noSuffledPostsList = new ArrayList<>();
 
         // Detect if system night mode is enabled
         // to auto enable in-app night mode

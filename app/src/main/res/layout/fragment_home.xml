@@ -140,15 +140,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/background"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layoutDescription="@xml/fragment_home_xml_constraintlayout2_scene"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <ProgressBar
+                android:id="@+id/progressBar2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -206,6 +207,17 @@
                 android:textSize="23sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/loading_ad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:adSize="BANNER"
+                app:adUnitId="ca-app-pub-9627755439548346/7073935696"
+                app:layout_constraintBottom_toTopOf="@+id/progressBar2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 

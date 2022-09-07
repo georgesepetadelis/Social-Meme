@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -46,6 +47,7 @@ public class AllUserPostsActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         String userID = extras.getString("userID");
+        boolean reverseList = extras.getBoolean("reverse_list");
 
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         PostRecyclerAdapter adapter = new PostRecyclerAdapter(postModelArrayList, AllUserPostsActivity.this, AllUserPostsActivity.this);
@@ -64,6 +66,10 @@ public class AllUserPostsActivity extends AppCompatActivity {
                     postModelArrayList.add(post);
                 }
             }
+        }
+
+        if (reverseList) {
+            Collections.reverse(postModelArrayList);
         }
 
 

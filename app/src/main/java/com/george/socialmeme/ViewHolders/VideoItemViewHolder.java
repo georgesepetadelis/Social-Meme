@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +54,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -407,6 +409,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     intent.putExtra("user_id", postAuthorID);
                     intent.putExtra("username", username.getText().toString());
+                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }

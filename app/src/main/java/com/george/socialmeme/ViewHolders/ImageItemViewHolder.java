@@ -53,6 +53,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -418,6 +419,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     intent.putExtra("user_id", postAuthorID);
                     intent.putExtra("username", username.getText().toString());
+                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }

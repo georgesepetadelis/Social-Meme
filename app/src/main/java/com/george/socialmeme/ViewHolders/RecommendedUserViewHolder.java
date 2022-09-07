@@ -10,12 +10,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -52,6 +54,7 @@ public class RecommendedUserViewHolder extends RecyclerView.ViewHolder {
             Intent intent = new Intent(context, UserProfileActivity.class);
             intent.putExtra("user_id", recommendedUserID);
             intent.putExtra("username", usernameTV.getText().toString());
+            intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
             context.startActivity(intent);
             CustomIntent.customType(context, "left-to-right");
         });

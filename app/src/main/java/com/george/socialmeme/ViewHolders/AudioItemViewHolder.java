@@ -51,6 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 import com.hugomatilla.audioplayerview.AudioPlayerView;
 
 import java.io.IOException;
@@ -206,6 +207,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     intent.putExtra("user_id", postAuthorID);
                     intent.putExtra("username", usernameTV.getText().toString());
+                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }

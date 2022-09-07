@@ -271,7 +271,7 @@
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:itemCount="0"
+                tools:itemCount="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/adView5"
                 tools:listitem="@layout/image_post_item" />
@@ -364,6 +364,21 @@
                 app:layout_constraintEnd_toEndOf="@+id/textView75"
                 app:layout_constraintStart_toStartOf="@+id/textView75"
                 app:layout_constraintTop_toBottomOf="@+id/textView75" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/et_round_blue"
+                android:text="See all posts"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/recyclerView_my_profile"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/recyclerView_my_profile"
+                app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,11 +42,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -57,10 +63,10 @@ public class UserProfileActivity extends AppCompatActivity {
     public static String userID;
     public static String username;
     public static boolean currentUserFollowsThisUser;
+    private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     public int followers = 0;
     public int following = 0;
     public KAlertDialog progressDialog;
-    private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     ScreenshotListener listener;
 
     void sendNotificationToUser(String notificationType) {
@@ -297,10 +303,6 @@ public class UserProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public interface FirebaseCallback {
-        void onComplete(String profilePictureURL, boolean userFollowsLoggedInUser, boolean followingCurrentUser);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (isNightModeEnabled()) {
@@ -312,6 +314,10 @@ public class UserProfileActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         userID = extras.getString("user_id");
         username = extras.getString("username");
+
+        Type type = new TypeToken<List<PostModel>>() {}.getType();
+
+        ArrayList<PostModel> allPosts = new Gson().fromJson(getIntent().getStringExtra("allPosts"), type);
 
         progressDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
         progressDialog.getProgressHelper().setBarColor(R.color.main);
@@ -409,28 +415,35 @@ public class UserProfileActivity extends AppCompatActivity {
         // Load user posts
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
 
-            ArrayList<PostModel> allPostsRevered = new ArrayList<>(HomeActivity.noSuffledPostsList);
-            Collections.reverse(allPostsRevered);
+            Collections.reverse(allPosts);
 
             int totalLoadedPosts = 0;
-            for (PostModel post : allPostsRevered) {
+            for (PostModel post : allPosts) {
                 if (totalLoadedPosts < 5) {
                     if (post.getAuthorID() != null) {
                         if (post.getAuthorID().equals(userID)) {
                             postModelArrayList.add(post);
-                            totalLoadedPosts+=1;
+                            totalLoadedPosts += 1;
                         }
                     }
                 }
             }
 
+            Collections.reverse(allPosts);
+
+
             // Load total likes
             int totalLikes = 0;
-            for (PostModel postModel : postModelArrayList) {
-                int likesToInt = Integer.parseInt(postModel.getLikes());
-                totalLikes += likesToInt;
+            for (PostModel postModel : allPosts) {
+                if (postModel.getAuthorID() != null) {
+                    if (postModel.getAuthorID().equals(userID)) {
+                        int likesToInt = Integer.parseInt(postModel.getLikes());
+                        totalLikes += likesToInt;
+                    }
+                }
             }
             totalLikesCounter.setText(String.valueOf(totalLikes));
+
 
         } else {
             Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
@@ -457,7 +470,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         toolbar.setTitle("");
                         setSupportActionBar(toolbar);
                     }
-                    
+
                     if (userModel.currentUserFollowLoggedInUser()) {
                         userFollowsCurrentUserTextView.setVisibility(View.GONE);
                     } else {
@@ -824,6 +837,10 @@ public class UserProfileActivity extends AppCompatActivity {
         progressDialog.hide();
         finish();
         CustomIntent.customType(UserProfileActivity.this, "right-to-left");
+    }
+
+    public interface FirebaseCallback {
+        void onComplete(String profilePictureURL, boolean userFollowsLoggedInUser, boolean followingCurrentUser);
     }
 
 }

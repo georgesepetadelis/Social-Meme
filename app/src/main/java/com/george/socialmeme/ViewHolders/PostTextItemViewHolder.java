@@ -49,6 +49,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -166,6 +167,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     intent.putExtra("user_id", postAuthorID);
                     intent.putExtra("username", username.getText().toString());
+                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }

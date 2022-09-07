@@ -44,8 +44,10 @@ import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -54,6 +56,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -69,7 +72,7 @@ import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
 
 public class HomeFragment extends Fragment {
 
-    ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray;
+    ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray, randomArrayList;
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
     ProgressBar progressBar;
@@ -188,6 +191,7 @@ public class HomeFragment extends Fragment {
                                     Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                                     intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
                                     intent.putExtra("username", usernameInput);
+                                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                                     getActivity().startActivity(intent);
                                     CustomIntent.customType(getActivity(), "left-to-right");
                                     break;
@@ -367,6 +371,10 @@ public class HomeFragment extends Fragment {
 
     void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
 
+        AdView mAdView = fragmentView.findViewById(R.id.loading_ad);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
@@ -384,10 +392,20 @@ public class HomeFragment extends Fragment {
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 // Load saved data
                 HomeActivity.noSuffledPostsList = HomeActivity.savedPostsArrayList;
-                Collections.shuffle(HomeActivity.savedPostsArrayList);
-                postModelArrayList.addAll(HomeActivity.savedPostsArrayList);
+                //Collections.shuffle(HomeActivity.savedPostsArrayList);
+                randomArrayList.addAll(HomeActivity.savedPostsArrayList);
                 notificationsBtn.setEnabled(true);
+                Collections.shuffle(randomArrayList);
+
+                // Add post's of the month view as RecyclerView item
+                // to avoid using ScrollView
+                PostModel postsOfTheMonthView = new PostModel();
+                postsOfTheMonthView.setPostType("postsOfTheMonth");
+                randomArrayList.add(postsOfTheMonthView);
+                recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+
                 progressBar.setVisibility(View.GONE);
+
             } else {
                 // Load data from DB
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -446,64 +464,163 @@ public class HomeFragment extends Fragment {
                                 // Show post in recycler adapter only if the user is not blocked
                                 if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                                    HomeActivity.noSuffledPostsList.add(postModel);
                                     postModelArrayList.add(postModel);
+
                                 }
                             } else {
+                                HomeActivity.noSuffledPostsList.add(postModel);
                                 postModelArrayList.add(postModel);
+                                Toast.makeText(getActivity(), "home len is " + HomeActivity.noSuffledPostsList.size(), Toast.LENGTH_SHORT).show();
                             }
                             recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                         }
 
-                        notSuffledPostsArray = postModelArrayList;
-                        Collections.shuffle(postModelArrayList);
+                        randomArrayList.addAll(postModelArrayList);
+                        Collections.shuffle(randomArrayList);
 
                         // Add post's of the month view as RecyclerView item
                         // to avoid using ScrollView
                         PostModel postsOfTheMonthView = new PostModel();
                         postsOfTheMonthView.setPostType("postsOfTheMonth");
-                        postModelArrayList.add(postsOfTheMonthView);
+                        randomArrayList.add(postsOfTheMonthView);
                         recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
                         appShowCase();
 
                         if (HomeActivity.showLoadingScreen) {
 
-                            new Handler().postDelayed(() -> {
+                            if (!mAdView.isLoading()) {
+                                new Handler().postDelayed(() -> {
 
-                                filtersBtn.setVisibility(View.INVISIBLE);
-                                int appVersionCode = BuildConfig.VERSION_CODE;
-                                int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
-                                if (appVersionCode < latestAppVersion) {
+                                    filtersBtn.setVisibility(View.INVISIBLE);
+                                    int appVersionCode = BuildConfig.VERSION_CODE;
+                                    int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
+                                    if (appVersionCode < latestAppVersion) {
 
-                                    if (getActivity() != null) {
-                                        new AlertDialog.Builder(getActivity())
-                                                .setTitle("Update required.")
-                                                .setCancelable(false)
-                                                .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                                .setPositiveButton("Update", (dialogInterface, i) -> {
-                                                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                                    startActivity(intent);
-                                                }).show();
+                                        if (getActivity() != null) {
+                                            new AlertDialog.Builder(getActivity())
+                                                    .setTitle("Update required.")
+                                                    .setCancelable(false)
+                                                    .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                    .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        startActivity(intent);
+                                                    }).show();
+                                        }
+
+                                    } else {
+                                        notificationsBtn.setEnabled(true);
+                                        filtersBtn.setVisibility(View.VISIBLE);
+                                        HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                                        swipeRefreshLayout.setEnabled(true);
+                                        HomeActivity.showLoadingScreen = false;
+                                        HomeActivity.savedPostsArrayList = postModelArrayList;
+                                        HomeActivity.noSuffledPostsList = notSuffledPostsArray;
+
+                                        YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                super.onAnimationEnd(animation);
+                                                fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                            }
+                                        }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+
+                                    }
+                                }, 0);
+                            } else {
+                                mAdView.setAdListener(new AdListener() {
+
+                                    @Override
+                                    public void onAdLoaded() {
+                                        super.onAdLoaded();
+                                        Log.i("AD success", "LOADING AD SUCCESS");
+                                        new Handler().postDelayed(() -> {
+
+                                            filtersBtn.setVisibility(View.INVISIBLE);
+                                            int appVersionCode = BuildConfig.VERSION_CODE;
+                                            int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
+                                            if (appVersionCode < latestAppVersion) {
+
+                                                if (getActivity() != null) {
+                                                    new AlertDialog.Builder(getActivity())
+                                                            .setTitle("Update required.")
+                                                            .setCancelable(false)
+                                                            .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                            .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                                startActivity(intent);
+                                                            }).show();
+                                                }
+
+                                            } else {
+                                                notificationsBtn.setEnabled(true);
+                                                filtersBtn.setVisibility(View.VISIBLE);
+                                                HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                                                swipeRefreshLayout.setEnabled(true);
+                                                HomeActivity.showLoadingScreen = false;
+                                                HomeActivity.savedPostsArrayList = postModelArrayList;
+                                                HomeActivity.noSuffledPostsList = notSuffledPostsArray;
+
+                                                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                                                    @Override
+                                                    public void onAnimationEnd(Animator animation) {
+                                                        super.onAnimationEnd(animation);
+                                                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                                    }
+                                                }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+
+                                            }
+                                        }, 0);
                                     }
 
-                                } else {
-                                    notificationsBtn.setEnabled(true);
-                                    filtersBtn.setVisibility(View.VISIBLE);
-                                    HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
-                                    swipeRefreshLayout.setEnabled(true);
-                                    HomeActivity.showLoadingScreen = false;
-                                    HomeActivity.savedPostsArrayList = postModelArrayList;
+                                    @Override
+                                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                                        Log.i("AD FAILED", "LOADING AD FAILED");
+                                        super.onAdFailedToLoad(loadAdError);
+                                        new Handler().postDelayed(() -> {
 
-                                    YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
-                                        @Override
-                                        public void onAnimationEnd(Animator animation) {
-                                            super.onAnimationEnd(animation);
-                                            fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
-                                        }
-                                    }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+                                            filtersBtn.setVisibility(View.INVISIBLE);
+                                            int appVersionCode = BuildConfig.VERSION_CODE;
+                                            int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
+                                            if (appVersionCode < latestAppVersion) {
 
-                                }
-                            }, 0);
+                                                if (getActivity() != null) {
+                                                    new AlertDialog.Builder(getActivity())
+                                                            .setTitle("Update required.")
+                                                            .setCancelable(false)
+                                                            .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                            .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                                startActivity(intent);
+                                                            }).show();
+                                                }
+
+                                            } else {
+                                                notificationsBtn.setEnabled(true);
+                                                filtersBtn.setVisibility(View.VISIBLE);
+                                                HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
+                                                swipeRefreshLayout.setEnabled(true);
+                                                HomeActivity.showLoadingScreen = false;
+                                                HomeActivity.savedPostsArrayList = postModelArrayList;
+                                                HomeActivity.noSuffledPostsList = notSuffledPostsArray;
+
+                                                YoYo.with(Techniques.FadeOut).withListener(new AnimatorListenerAdapter() {
+                                                    @Override
+                                                    public void onAnimationEnd(Animator animation) {
+                                                        super.onAnimationEnd(animation);
+                                                        fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                                    }
+                                                }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+
+                                            }
+                                        }, 0);
+                                    }
+                                });
+                            }
+
                         }
 
                         progressBar.setVisibility(View.GONE);
@@ -533,12 +650,19 @@ public class HomeFragment extends Fragment {
             mAdView.loadAd(adRequest);
         }
 
+        if (!HomeActivity.showLoadingScreen) {
+            view.findViewById(R.id.constraintLayout2).setVisibility(View.INVISIBLE);
+        }
+        Log.i("TEST50", "TEST50 " + HomeActivity.showLoadingScreen);
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
         ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
+
+        randomArrayList = new ArrayList<PostModel>();
 
         notificationsBtn = view.findViewById(R.id.notificationsButton);
         recyclerView = view.findViewById(R.id.home_recycler_view);
@@ -552,7 +676,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
-        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
+        recyclerAdapter = new PostRecyclerAdapter(randomArrayList, getContext(), getActivity());
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -602,6 +726,11 @@ public class HomeFragment extends Fragment {
         }
 
         getAllPostsFromDB(false, view, swipeRefreshLayout);
+
+        if (randomArrayList.isEmpty() && !HomeActivity.savedPostsArrayList.isEmpty()) {
+            //getAllPostsFromDB(true, view, swipeRefreshLayout);
+        }
+
         filtersBtn.setOnClickListener(view13 -> showFiltersDialog());
 
         // Display donate dialog (1 in 15 cases)

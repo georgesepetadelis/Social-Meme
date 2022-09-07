@@ -14,12 +14,18 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.george.socialmeme.R;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -78,16 +84,54 @@ public class SplashScreenActivity extends AppCompatActivity {
             FirebaseUser user = auth.getCurrentUser();
 
             if (isInternetConnectionAvailable()) {
-                if (user == null) {
-                    startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
-                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                } else {
-                    initializeNightModeSharedPref();
-                    HomeActivity.showLoadingScreen = true;
-                    startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
-                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                    finish();
-                }
+
+                // Load ad banner and wait until ad is loaded
+                AdView mAdView = findViewById(R.id.splash_Ad);
+                AdRequest adRequest = new AdRequest.Builder().build();
+                mAdView.loadAd(adRequest);
+
+                mAdView.setAdListener(new AdListener() {
+
+                    @Override
+                    public void onAdImpression() {
+                        super.onAdImpression();
+                        Toast.makeText(SplashScreenActivity.this, "impression success", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onAdLoaded() {
+                        super.onAdLoaded();
+                        if (user == null) {
+                            startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                        } else {
+                            initializeNightModeSharedPref();
+                            HomeActivity.showLoadingScreen = true;
+                            startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        super.onAdFailedToLoad(loadAdError);
+                        //Toast.makeText(SplashScreenActivity.this, "Failed to load Ads", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SplashScreenActivity.this, loadAdError.getMessage(), Toast.LENGTH_SHORT).show();
+
+                        if (user == null) {
+                            startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                        } else {
+                            initializeNightModeSharedPref();
+                            HomeActivity.showLoadingScreen = true;
+                            startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                            finish();
+                        }
+                    }
+
+                });
             }else {
                 startActivity(new Intent(SplashScreenActivity.this, NoInternetConnectionActivity.class));
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");

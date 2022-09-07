@@ -13,8 +13,8 @@ android {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 31
-        versionCode 21
-        versionName "2.1.6"
+        versionCode 22
+        versionName "2.1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -127,5 +127,6 @@ dependencies {
     // Showcase
     implementation 'com.github.mreram:showcaseview:1.4.0'
 
+    implementation 'com.google.code.gson:gson:2.2.4'
 
 }
