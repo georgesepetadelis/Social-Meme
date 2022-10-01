@@ -221,15 +221,17 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (!snapshot.child(user.getUid()).exists()) {
+
                         usersRef.child(user.getUid()).child("id").setValue(user.getUid());
                         usersRef.child(user.getUid()).child("name").setValue(user.getDisplayName());
                         usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
                     }else {
-                        String username = snapshot.child(user.getUid()).child("name").getValue(String.class);
-                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(username).build();
-                        user.updateProfile(profileUpdates);
+                        usersRef.child(user.getUid()).child("id").setValue(user.getUid());
+                        usersRef.child(user.getUid()).child("name").setValue(user.getDisplayName());
+                        usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
+
                     }
+
                 }
 
                 @Override

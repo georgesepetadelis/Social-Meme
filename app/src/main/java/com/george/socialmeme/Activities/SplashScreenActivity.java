@@ -28,6 +28,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -116,8 +117,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
-                        //Toast.makeText(SplashScreenActivity.this, "Failed to load Ads", Toast.LENGTH_SHORT).show();
-                        //Toast.makeText(SplashScreenActivity.this, loadAdError.getMessage(), Toast.LENGTH_SHORT).show();
 
                         if (user == null) {
                             startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));

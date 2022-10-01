@@ -83,6 +83,12 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
+        if (user.getDisplayName() == null) {
+            Toast.makeText(HomeActivity.this, "null " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(HomeActivity.this, "null " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+        }
+
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);

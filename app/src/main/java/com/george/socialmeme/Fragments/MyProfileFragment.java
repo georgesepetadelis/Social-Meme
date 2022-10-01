@@ -370,6 +370,10 @@ public class MyProfileFragment extends Fragment {
                 String silverTrophies_saved = HomeActivity.savedUserData.getSilverTrophiesCounter();
                 String bronzeTrophies_saved = HomeActivity.savedUserData.getBronzeTrophiesCounter();
 
+                followingCounter.setText("0");
+                followersCounter.setText("0");
+
+
                 totalLikesCounter.setText(String.valueOf(totalLikes));
                 followingCounter.setText(followingCounter_saved);
                 followersCounter.setText(followersCounter_saved);
@@ -381,7 +385,11 @@ public class MyProfileFragment extends Fragment {
                     Glide.with(getContext()).load(user.getPhotoUrl()).into(profilePicture);
                 }
 
-            }else {
+            } else {
+
+                followingCounter.setText("0");
+                followersCounter.setText("0");
+
                 getUserDataFromDB(() -> {
                     UserModel userModel = new UserModel();
                     userModel.setFollowing(followingCounter.getText().toString());
