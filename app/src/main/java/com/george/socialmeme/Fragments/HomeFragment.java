@@ -425,55 +425,59 @@ public class HomeFragment extends Fragment {
 
                         for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
-                            PostModel postModel = new PostModel();
-                            postModel.setId(postSnapshot.child("id").getValue(String.class));
+                            if (postSnapshot.child("name").getValue(String.class) != null) {
 
-                            if (postSnapshot.child("imgUrl").getValue(String.class) == null) {
-                                postModel.setImgUrl("none");
-                            }else {
-                                postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                            }
+                                PostModel postModel = new PostModel();
+                                postModel.setId(postSnapshot.child("id").getValue(String.class));
 
-                            postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                            postModel.setName(postSnapshot.child("name").getValue(String.class));
-                            postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
-                            postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
-
-                            for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                                if (Objects.equals(user.child("name").getValue(String.class), postSnapshot.child("name").getValue(String.class))) {
-                                    postModel.setAuthorID(user.child("id").getValue(String.class));
+                                if (postSnapshot.child("imgUrl").getValue(String.class) == null) {
+                                    postModel.setImgUrl("none");
+                                } else {
+                                    postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
                                 }
-                            }
 
-                            if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                                postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                                postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                            }
+                                postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                                postModel.setName(postSnapshot.child("name").getValue(String.class));
+                                postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                                postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
-                            if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
-                                postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
-                            }
+                                for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                                    if (Objects.equals(user.child("name").getValue(String.class), postSnapshot.child("name").getValue(String.class))) {
+                                        postModel.setAuthorID(user.child("id").getValue(String.class));
+                                    }
+                                }
 
-                            if (postSnapshot.child("comments").exists()) {
-                                postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
-                            } else {
-                                postModel.setCommentsCount("0");
-                            }
+                                if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                                    postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                                    postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                                }
 
-                            if (!HomeActivity.singedInAnonymously) {
-                                // Show post in recycler adapter only if the user is not blocked
-                                if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                        .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                                if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
+                                    postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
+                                }
+
+                                if (postSnapshot.child("comments").exists()) {
+                                    postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                                } else {
+                                    postModel.setCommentsCount("0");
+                                }
+
+                                if (!HomeActivity.singedInAnonymously) {
+                                    // Show post in recycler adapter only if the user is not blocked
+                                    if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                            .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                                        HomeActivity.noSuffledPostsList.add(postModel);
+                                        postModelArrayList.add(postModel);
+
+                                    }
+                                } else {
                                     HomeActivity.noSuffledPostsList.add(postModel);
                                     postModelArrayList.add(postModel);
-
                                 }
-                            } else {
-                                HomeActivity.noSuffledPostsList.add(postModel);
-                                postModelArrayList.add(postModel);
-                                Toast.makeText(getActivity(), "home len is " + HomeActivity.noSuffledPostsList.size(), Toast.LENGTH_SHORT).show();
+                                recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+
                             }
-                            recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+
                         }
 
                         randomArrayList.addAll(postModelArrayList);

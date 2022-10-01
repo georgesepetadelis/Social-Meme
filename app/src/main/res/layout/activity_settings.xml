@@ -423,9 +423,10 @@
             android:focusable="true"
             android:foreground="?selectableItemBackground"
             android:padding="20dp"
+            android:visibility="invisible"
             app:cardCornerRadius="12dp"
-            app:cardElevation="8dp"
 
+            app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="@+id/cardView9"
             app:layout_constraintStart_toStartOf="@+id/cardView9"
             app:layout_constraintTop_toBottomOf="@+id/cardView9">
@@ -468,6 +469,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                     app:layout_constraintStart_toStartOf="@+id/textView59"
                     app:layout_constraintTop_toBottomOf="@+id/textView59" />
+
                 <ImageView
                     android:id="@+id/imageView28"
                     android:layout_width="wrap_content"

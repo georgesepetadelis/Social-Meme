@@ -415,7 +415,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Load user posts
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
 
-            Collections.reverse(allPosts);
+            //Collections.reverse(allPosts);
 
             int totalLoadedPosts = 0;
             for (PostModel post : allPosts) {
@@ -431,7 +431,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
             Collections.reverse(allPosts);
 
-
             // Load total likes
             int totalLikes = 0;
             for (PostModel postModel : allPosts) {
@@ -442,8 +441,8 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
             }
-            totalLikesCounter.setText(String.valueOf(totalLikes));
 
+            totalLikesCounter.setText(String.valueOf(totalLikes));
 
         } else {
             Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
