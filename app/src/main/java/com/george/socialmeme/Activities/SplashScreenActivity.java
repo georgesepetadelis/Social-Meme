@@ -96,7 +96,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onAdImpression() {
                         super.onAdImpression();
-                        Toast.makeText(SplashScreenActivity.this, "impression success", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -117,11 +116,19 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
+                        //Toast.makeText(SplashScreenActivity.this, "Failed to load Ads", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SplashScreenActivity.this, loadAdError.getMessage(), Toast.LENGTH_SHORT).show();
 
                         if (user == null) {
                             startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                         } else {
+
+                            if (user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
+                                startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                                CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                            }
+
                             initializeNightModeSharedPref();
                             HomeActivity.showLoadingScreen = true;
                             startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
