@@ -169,10 +169,7 @@ public class HomeFragment extends Fragment {
 
                 if (snapshot.child("ad_type").getValue(String.class).equals("default")) {
 
-                    MobileAds.initialize(context, new OnInitializationCompleteListener() {
-                        @Override
-                        public void onInitializationComplete(InitializationStatus initializationStatus) {
-                        }
+                    MobileAds.initialize(context, initializationStatus -> {
                     });
 
                     AdRequest adRequest = new AdRequest.Builder().build();
@@ -363,8 +360,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-
 
     }
 

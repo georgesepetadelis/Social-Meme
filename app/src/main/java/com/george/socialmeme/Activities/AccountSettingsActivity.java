@@ -186,92 +186,98 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
         save_changes_btn.setOnClickListener(v -> {
 
-            if (!(username.getText().toString().isEmpty() && email.getText().toString().isEmpty())) {
+            if (username.getText().toString().contains(".")) {
+                Toast.makeText(this, "Dots (.) are not allowed in usernames", Toast.LENGTH_SHORT).show();
+            } else {
 
-                save_changes_btn.setEnabled(false);
-                save_changes_btn.setText("Please Wait...");
+                if (!(username.getText().toString().isEmpty() && email.getText().toString().isEmpty())) {
 
-                if (!user.getEmail().equals(email.getText().toString())) {
+                    save_changes_btn.setEnabled(false);
+                    save_changes_btn.setText("Please Wait...");
 
-                    user.updateEmail(email.getText().toString()).addOnCompleteListener(task -> {
+                    if (!user.getEmail().equals(email.getText().toString())) {
 
-                        save_changes_btn.setEnabled(true);
-                        save_changes_btn.setText("Save Changes");
+                        user.updateEmail(email.getText().toString()).addOnCompleteListener(task -> {
 
-                        if (task.isSuccessful()) {
-                            Toast.makeText(AccountSettingsActivity.this, "Email updated!", Toast.LENGTH_SHORT).show();
-                        } else if (task.isCanceled()) {
-                            Toast.makeText(AccountSettingsActivity.this, "Error: Can't update email", Toast.LENGTH_SHORT).show();
-                        }
+                            save_changes_btn.setEnabled(true);
+                            save_changes_btn.setText("Save Changes");
 
-                    });
-
-                }
-
-                if (username.getText().length() > 25 || username.getText().length() < 3) {
-                    SmartDialogBox.showErrorDialog(AccountSettingsActivity.this, "Username must be 5-25 characters.", "OK");
-                }else {
-
-                    if (!user.getDisplayName().equals(username.getText().toString())) {
-
-                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-                        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                                boolean nameExists = false;
-
-                                for (DataSnapshot snap : snapshot.getChildren()) {
-                                    if (Objects.equals(snap.child("name").getValue(String.class), username.getText().toString())) {
-                                        nameExists = true;
-                                        break;
-                                    }
-                                }
-
-                                if (nameExists) {
-                                    save_changes_btn.setEnabled(true);
-                                    save_changes_btn.setText("Save Changes");
-                                    Toast.makeText(AccountSettingsActivity.this, "This username is already used by another user", Toast.LENGTH_LONG).show();
-                                } else {
-
-                                    // update username on current user node
-                                    usersRef.child(user.getUid()).child("name").setValue(username.getText().toString());
-
-                                    // update username on all user posts
-                                    updateUsernameOnUserPosts(user.getDisplayName(), username.getText().toString());
-
-                                    // update username on FirebaseAuth
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(username.getText().toString()).build();
-                                    user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
-
-                                        save_changes_btn.setEnabled(true);
-                                        save_changes_btn.setText("Save Changes");
-
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(AccountSettingsActivity.this, "Username updated!", Toast.LENGTH_SHORT).show();
-                                        } else if (task.isCanceled()) {
-                                            Toast.makeText(AccountSettingsActivity.this, "Error: Can't update username", Toast.LENGTH_SHORT).show();
-                                        }
-
-                                    });
-
-                                }
-
+                            if (task.isSuccessful()) {
+                                Toast.makeText(AccountSettingsActivity.this, "Email updated!", Toast.LENGTH_SHORT).show();
+                            } else if (task.isCanceled()) {
+                                Toast.makeText(AccountSettingsActivity.this, "Error: Can't update email", Toast.LENGTH_SHORT).show();
                             }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(AccountSettingsActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
                         });
 
                     }
 
-                }
+                    if (username.getText().length() > 25 || username.getText().length() < 3) {
+                        SmartDialogBox.showErrorDialog(AccountSettingsActivity.this, "Username must be 5-25 characters.", "OK");
+                    } else {
 
+                        if (!user.getDisplayName().equals(username.getText().toString())) {
+
+                            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+                            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                    boolean nameExists = false;
+
+                                    for (DataSnapshot snap : snapshot.getChildren()) {
+                                        if (Objects.equals(snap.child("name").getValue(String.class), username.getText().toString())) {
+                                            nameExists = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (nameExists) {
+                                        save_changes_btn.setEnabled(true);
+                                        save_changes_btn.setText("Save Changes");
+                                        Toast.makeText(AccountSettingsActivity.this, "This username is already used by another user", Toast.LENGTH_LONG).show();
+                                    } else {
+
+                                        // update username on current user node
+                                        usersRef.child(user.getUid()).child("name").setValue(username.getText().toString());
+
+                                        // update username on all user posts
+                                        updateUsernameOnUserPosts(user.getDisplayName(), username.getText().toString());
+
+                                        // update username on FirebaseAuth
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(username.getText().toString()).build();
+                                        user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+
+                                            save_changes_btn.setEnabled(true);
+                                            save_changes_btn.setText("Save Changes");
+
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(AccountSettingsActivity.this, "Username updated!", Toast.LENGTH_SHORT).show();
+                                            } else if (task.isCanceled()) {
+                                                Toast.makeText(AccountSettingsActivity.this, "Error: Can't update username", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                        });
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Toast.makeText(AccountSettingsActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+
+                    }
+
+                }
             }
+
         });
 
     }
