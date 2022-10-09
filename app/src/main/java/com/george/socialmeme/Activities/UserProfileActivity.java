@@ -415,7 +415,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Load user posts
         if (!HomeActivity.savedPostsArrayList.isEmpty()) {
 
-            //Collections.reverse(allPosts);
+            Collections.reverse(allPosts);
 
             int totalLoadedPosts = 0;
             for (PostModel post : allPosts) {
@@ -429,7 +429,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             }
 
-            Collections.reverse(allPosts);
+            //Collections.reverse(allPosts);
 
             // Load total likes
             int totalLikes = 0;

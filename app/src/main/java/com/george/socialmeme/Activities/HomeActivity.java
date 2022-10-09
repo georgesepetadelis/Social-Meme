@@ -42,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean singedInAnonymously = false;
     public static boolean showLoadingScreen;
     public static boolean appStarted;
+    public static boolean watched_ad;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsArrayList, noSuffledPostsList;
     public static ArrayList<UserModel> savedUserProfiles = null;

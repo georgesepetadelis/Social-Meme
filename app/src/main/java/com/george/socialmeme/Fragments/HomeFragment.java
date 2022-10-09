@@ -4,15 +4,22 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
 
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -28,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,10 +52,18 @@ import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -60,8 +76,11 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -72,6 +91,8 @@ import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
 
 public class HomeFragment extends Fragment {
 
+    private InterstitialAd mInterstitialAd;
+
     ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray, randomArrayList;
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
@@ -79,6 +100,9 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     ImageButton notificationsBtn;
     View openNotificationsView;
+
+    RewardedAd mRewardedAd;
+    final String TAG = "MainActivity";
 
     // Variables for filter dialog
     final boolean[] imagesItemSelected = {true};
@@ -133,6 +157,214 @@ public class HomeFragment extends Fragment {
                 editor.apply();
             }
         }
+
+    }
+
+    void loadFullScreenAd(Context context) {
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if (snapshot.child("ad_type").getValue(String.class).equals("default")) {
+
+                    MobileAds.initialize(context, new OnInitializationCompleteListener() {
+                        @Override
+                        public void onInitializationComplete(InitializationStatus initializationStatus) {
+                        }
+                    });
+
+                    AdRequest adRequest = new AdRequest.Builder().build();
+
+                    InterstitialAd.load(context, "ca-app-pub-9627755439548346/4088445598", adRequest,
+                            new InterstitialAdLoadCallback() {
+                                @Override
+                                public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                                    // The mInterstitialAd reference will be null until
+                                    // an ad is loaded.
+                                    mInterstitialAd = interstitialAd;
+                                    Log.i("ad_full", "onAdLoaded");
+
+                                    mInterstitialAd.show(getActivity());
+
+                                    mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                        @Override
+                                        public void onAdClicked() {
+                                            super.onAdClicked();
+                                        }
+
+                                        @Override
+                                        public void onAdDismissedFullScreenContent() {
+                                            super.onAdDismissedFullScreenContent();
+                                        }
+
+                                        @Override
+                                        public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                                            super.onAdFailedToShowFullScreenContent(adError);
+
+                                        }
+
+                                        @Override
+                                        public void onAdImpression() {
+                                            super.onAdImpression();
+                                            HomeActivity.watched_ad = true;
+                                        }
+
+                                        @Override
+                                        public void onAdShowedFullScreenContent() {
+                                            super.onAdShowedFullScreenContent();
+                                            HomeActivity.watched_ad = true;
+                                        }
+                                    });
+
+                                }
+
+                                @Override
+                                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                                    // Handle the error
+                                    Log.d("ad_full", loadAdError.toString());
+                                    mInterstitialAd = null;
+                                }
+                            });
+
+                } else {
+                    loadRewardAd(context);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+    void loadRewardAd(Context context) {
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        RewardedAd.load(context, "ca-app-pub-9627755439548346/8245739492",
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        super.onAdFailedToLoad(loadAdError);
+                        mRewardedAd = null;
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                        super.onAdLoaded(rewardedAd);
+                        mRewardedAd = rewardedAd;
+
+                        mRewardedAd.show(getActivity(), new OnUserEarnedRewardListener() {
+                            @Override
+                            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                                Log.i("AD REWARD", "wacthed_Ad");
+                            }
+                        });
+
+                        mRewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(TAG, "Ad was clicked.");
+                            }
+
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.d(TAG, "Ad dismissed fullscreen content.");
+                                mRewardedAd = null;
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e(TAG, "Ad failed to show fullscreen content.");
+                                mRewardedAd = null;
+                            }
+
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(TAG, "Ad recorded an impression.");
+                                HomeActivity.watched_ad = true;
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.");
+                                HomeActivity.watched_ad = true;
+                            }
+                        });
+
+                    }
+                });
+
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (!HomeActivity.watched_ad) {
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.child("show_full_ads").getValue(String.class).equals("enabled")) {
+                        checkForDailyAd(context);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        }
+
+    }
+
+    void checkForDailyAd(Context context) {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if (snapshot.child("only_daily").getValue(String.class).equals("enabled")) {
+
+                    SharedPreferences sharedPref = context.getSharedPreferences("last_ad", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    String date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
+                    if (sharedPref.getString("last_ad", "none").equals(null) || sharedPref.getString("last_ad", "none").equals("none") ||
+                            !sharedPref.getString("last_ad", "none").equals(date)) {
+                        editor.putString("last_ad", date);
+                        editor.apply();
+                        loadFullScreenAd(context);
+                    }
+                } else {
+                    loadFullScreenAd(context);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
 
     }
 
@@ -657,7 +889,6 @@ public class HomeFragment extends Fragment {
         if (!HomeActivity.showLoadingScreen) {
             view.findViewById(R.id.constraintLayout2).setVisibility(View.INVISIBLE);
         }
-        Log.i("TEST50", "TEST50 " + HomeActivity.showLoadingScreen);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
@@ -778,5 +1009,6 @@ public class HomeFragment extends Fragment {
 
         return view;
     }
+
 
 }
