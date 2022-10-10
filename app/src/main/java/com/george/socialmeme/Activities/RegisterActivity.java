@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,6 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -84,6 +88,14 @@ public class RegisterActivity extends AppCompatActivity {
         final Button submit = findViewById(R.id.submit_register);
         final TextView singIn_btn = findViewById(R.id.sign_in_register);
         final TextView privacyPolicyTV = findViewById(R.id.textView7);
+        final TextView terms_btn = findViewById(R.id.textView29);
+        final CheckBox terms_checkbox = findViewById(R.id.checkBox);
+
+        terms_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, TermsActivity.class);
+            startActivity(intent);
+            CustomIntent.customType(RegisterActivity.this, "left-to-right");
+        });
 
         privacyPolicyTV.setOnClickListener(view -> {
             startActivity(new Intent(RegisterActivity.this, PrivacyPolicyActivity.class));
@@ -91,21 +103,28 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         submit.setOnClickListener(v -> {
-            // check if input is empty
-            if (username_et.getText().toString().isEmpty() || email_et.getText().toString().isEmpty() || password_et.getText().toString().isEmpty() || confirm_password_et.getText().toString().isEmpty()) {
-                SmartDialogBox.showErrorDialog(RegisterActivity.this, "All fields are required", "OK");
-            } else {
-                // check if confirm password matches password
-                if (!confirm_password_et.getText().toString().equals(password_et.getText().toString())) {
-                    SmartDialogBox.showErrorDialog(RegisterActivity.this, "Passwords does not match.", "OK");
+
+            if (terms_checkbox.isChecked()) {
+
+                // check if input is empty
+                if (username_et.getText().toString().isEmpty() || email_et.getText().toString().isEmpty() || password_et.getText().toString().isEmpty() || confirm_password_et.getText().toString().isEmpty()) {
+                    SmartDialogBox.showErrorDialog(RegisterActivity.this, "All fields are required", "OK");
                 } else {
-                    if (username_et.getText().length() < 5 || username_et.getText().length() > 13) {
-                        SmartDialogBox.showInfoDialog(RegisterActivity.this, "Username must be 5-13 characters.", "OK");
-                    }else {
-                        singUp(username_et.getText().toString(), email_et.getText().toString(), password_et.getText().toString());
+                    // check if confirm password matches password
+                    if (!confirm_password_et.getText().toString().equals(password_et.getText().toString())) {
+                        SmartDialogBox.showErrorDialog(RegisterActivity.this, "Passwords does not match.", "OK");
+                    } else {
+                        if (username_et.getText().length() < 5 || username_et.getText().length() > 13) {
+                            SmartDialogBox.showInfoDialog(RegisterActivity.this, "Username must be 5-13 characters.", "OK");
+                        }else {
+                            singUp(username_et.getText().toString(), email_et.getText().toString(), password_et.getText().toString());
+                        }
                     }
+
                 }
 
+            } else {
+                SmartDialogBox.showErrorDialog(RegisterActivity.this, "Accepting Terms and Conditions is required to create an account.", "OK");
             }
 
         });

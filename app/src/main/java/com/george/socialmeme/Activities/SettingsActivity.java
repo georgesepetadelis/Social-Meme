@@ -1,5 +1,6 @@
 package com.george.socialmeme.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
@@ -20,13 +21,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -84,16 +89,20 @@ public class SettingsActivity extends AppCompatActivity {
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference bugRef = FirebaseDatabase.getInstance().getReference("bugs");
         DatabaseReference feedbackRef = FirebaseDatabase.getInstance().getReference("feedback");
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
         ImageButton backBtn = findViewById(R.id.imageButton);
         TextView username = findViewById(R.id.textView49);
         TextView website_tv = findViewById(R.id.textView3);
+        TextView version = findViewById(R.id.textView33);
+        version.setText("App version: " + BuildConfig.VERSION_NAME);
         CardView account_settings = findViewById(R.id.cardView2);
         Button logout = findViewById(R.id.button);
         CardView bugReport = findViewById(R.id.cardView3);
         CardView feedback = findViewById(R.id.cardView5);
         CardView privacyPolicy = findViewById(R.id.cardView6);
         CardView donateButton = findViewById(R.id.cardView10);
+        CardView terms = findViewById(R.id.cardView11);
         ImageButton instagram = findViewById(R.id.instagram_button);
         ImageButton github = findViewById(R.id.github_button);
         SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
@@ -103,6 +112,20 @@ public class SettingsActivity extends AppCompatActivity {
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
         instagram.setOnClickListener(view -> openURL("https://www.instagram.com/sepetadelhsss/"));
         github.setOnClickListener(view -> openURL("https://github.com/georgesepetadelis/Social-Meme"));
+
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("show_donate").getValue(String.class).equals("disabled")) {
+                    donateButton.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         nightModeSwitch.setOnClickListener(view -> {
 
@@ -117,6 +140,11 @@ public class SettingsActivity extends AppCompatActivity {
                     })
                     .show();
 
+        });
+
+        terms.setOnClickListener(v -> {
+            startActivity(new Intent(SettingsActivity.this, TermsActivity.class));
+            CustomIntent.customType(SettingsActivity.this, "left-to-right");
         });
 
         privacyPolicy.setOnClickListener(view -> {

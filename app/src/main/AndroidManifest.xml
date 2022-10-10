@@ -27,6 +27,9 @@
         tools:replace="android:allowBackup"
         tools:targetApi="s">
         <activity
+            android:name=".Activities.TermsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.FullScreenVideoActivity"
             android:exported="false" />
         <activity

@@ -152,7 +152,7 @@
                     android:id="@+id/submit_register"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/button_custom_style"
                     android:text="Sign up"
@@ -162,7 +162,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/confirm_password_register"
                     app:layout_constraintStart_toStartOf="@+id/confirm_password_register"
-                    app:layout_constraintTop_toBottomOf="@+id/confirm_password_register"
+                    app:layout_constraintTop_toBottomOf="@+id/checkBox"
                     app:layout_constraintVertical_bias="0.0" />
 
                 <TextView
@@ -181,6 +181,28 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/submit_register" />
+
+                <CheckBox
+                    android:id="@+id/checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="I agree to"
+                    app:layout_constraintStart_toStartOf="@+id/confirm_password_register"
+                    app:layout_constraintTop_toBottomOf="@+id/confirm_password_register" />
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Terms and Conditions"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:textStyle="bold"
+                    android:textColor="@color/main"
+                    app:layout_constraintBottom_toBottomOf="@+id/checkBox"
+                    app:layout_constraintStart_toEndOf="@+id/checkBox"
+                    app:layout_constraintTop_toTopOf="@+id/checkBox" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
