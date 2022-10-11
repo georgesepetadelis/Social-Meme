@@ -403,7 +403,10 @@ public class NewPostFragment extends Fragment {
                         CustomIntent.customType(getActivity(), "fadein-to-fadeout");
                     })
                     .setNegativeButton("Later", (dialog, which) -> {
-                        HomeActivity.bottomNavBar.setItemSelected(R.layout.fragment_home, true);
+                        getActivity().finish();
+                        HomeActivity.singedInAnonymously = true;
+                        startActivity(new Intent(getActivity(), HomeActivity.class));
+                        CustomIntent.customType(getActivity(), "fadein-to-fadeout");
                         dialog.dismiss();
                     })
                     .setCancelable(false)

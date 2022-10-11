@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment {
 
     void appShowCase() {
 
-        if (isAdded()) {
+        if (isAdded() && !HomeActivity.singedInAnonymously) {
             SharedPreferences sharedPref = getContext().getSharedPreferences("app_showcase", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -605,8 +605,6 @@ public class HomeFragment extends Fragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        notificationsBtn.setEnabled(false);
-
         if (HomeActivity.showLoadingScreen) {
             filtersBtn.setVisibility(View.INVISIBLE);
         }
@@ -877,6 +875,12 @@ public class HomeFragment extends Fragment {
         AdView mAdView = view.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
 
+        if (HomeActivity.singedInAnonymously) {
+            // Disable bottom nav options on anonymous mode
+            HomeActivity.bottomNavBar.setItemEnabled(R.id.new_post_fragment, false);
+            HomeActivity.bottomNavBar.setItemEnabled(R.id.my_profile_fragment, false);
+        }
+
         if (isAdded()) {
             mAdView.loadAd(adRequest);
         }
@@ -911,6 +915,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         if (!HomeActivity.singedInAnonymously) {
+
             usernameLoadingScreen.setText(user.getDisplayName());
             if (user.getPhotoUrl() != null) {
                 Picasso.get().load(user.getPhotoUrl().toString()).into(view.findViewById(R.id.my_profile_image), new Callback() {
@@ -956,10 +961,6 @@ public class HomeFragment extends Fragment {
         }
 
         getAllPostsFromDB(false, view, swipeRefreshLayout);
-
-        if (randomArrayList.isEmpty() && !HomeActivity.savedPostsArrayList.isEmpty()) {
-            //getAllPostsFromDB(true, view, swipeRefreshLayout);
-        }
 
         filtersBtn.setOnClickListener(view13 -> showFiltersDialog());
 

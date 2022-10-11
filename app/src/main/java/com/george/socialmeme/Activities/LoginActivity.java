@@ -241,10 +241,11 @@ public class LoginActivity extends AppCompatActivity {
             });
 
             updateUserTokenOnDB();
+            finish();
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
-            finish();
             HomeActivity.showLoadingScreen = true;
+            HomeActivity.singedInAnonymously = false;
 
         } else {
             SmartDialogBox.showErrorDialog(LoginActivity.this, errorMsg.getLocalizedMessage(), "OK");

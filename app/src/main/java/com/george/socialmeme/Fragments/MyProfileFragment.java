@@ -250,7 +250,13 @@ public class MyProfileFragment extends Fragment {
         silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
         bronzeTrophiesCount = view.findViewById(R.id.bronze_trophies_count);
 
-        username.setText(user.getDisplayName());
+        if (!HomeActivity.singedInAnonymously) username.setText(user.getDisplayName());
+        else {
+            getActivity().finish();
+            HomeActivity.singedInAnonymously = true;
+            startActivity(new Intent(getActivity(), HomeActivity.class));
+            CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+        }
 
         allPostsBtn.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), AllUserPostsActivity.class);
