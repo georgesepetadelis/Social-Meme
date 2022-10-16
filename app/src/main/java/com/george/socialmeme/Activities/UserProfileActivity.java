@@ -175,6 +175,8 @@ public class UserProfileActivity extends AppCompatActivity {
                                 notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                                 notification.put("title", notification_title[0]);
                                 notification.put("message", notification_message[0]);
+                                notification.put("not_type", notificationType);
+                                notification.put("userID", user.getUid());
                                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                                 firestore.collection("notifications")
                                         .document(firestoreNotificationID).set(notification);
@@ -413,40 +415,43 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         // Load user posts
-        if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+        if (HomeActivity.savedPostsArrayList != null) {
+            if (!HomeActivity.savedPostsArrayList.isEmpty()) {
 
-            Collections.reverse(allPosts);
+                Collections.reverse(allPosts);
 
-            int totalLoadedPosts = 0;
-            for (PostModel post : allPosts) {
-                if (totalLoadedPosts < 5) {
-                    if (post.getAuthorID() != null) {
-                        if (post.getAuthorID().equals(userID)) {
-                            postModelArrayList.add(post);
-                            totalLoadedPosts += 1;
+                int totalLoadedPosts = 0;
+                for (PostModel post : allPosts) {
+                    if (totalLoadedPosts < 5) {
+                        if (post.getAuthorID() != null) {
+                            if (post.getAuthorID().equals(userID)) {
+                                postModelArrayList.add(post);
+                                totalLoadedPosts += 1;
+                            }
                         }
                     }
                 }
-            }
 
-            //Collections.reverse(allPosts);
+                //Collections.reverse(allPosts);
 
-            // Load total likes
-            int totalLikes = 0;
-            for (PostModel postModel : allPosts) {
-                if (postModel.getAuthorID() != null) {
-                    if (postModel.getAuthorID().equals(userID)) {
-                        int likesToInt = Integer.parseInt(postModel.getLikes());
-                        totalLikes += likesToInt;
+                // Load total likes
+                int totalLikes = 0;
+                for (PostModel postModel : allPosts) {
+                    if (postModel.getAuthorID() != null) {
+                        if (postModel.getAuthorID().equals(userID)) {
+                            int likesToInt = Integer.parseInt(postModel.getLikes());
+                            totalLikes += likesToInt;
+                        }
                     }
                 }
+
+                totalLikesCounter.setText(String.valueOf(totalLikes));
+
+            } else {
+                Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
             }
-
-            totalLikesCounter.setText(String.valueOf(totalLikes));
-
-        } else {
-            Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
         }
+
 
         username_tv.setText(username);
 

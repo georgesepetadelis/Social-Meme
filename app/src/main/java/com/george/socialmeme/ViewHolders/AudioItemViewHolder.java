@@ -399,6 +399,8 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                                 notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                                 notification.put("title", notification_title[0]);
                                 notification.put("message", notification_message[0]);
+                                notification.put("not_type", notificationType);
+                                notification.put("postID", postID);
                                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                                 firestore.collection("notifications")
                                         .document(notificationID).set(notification);

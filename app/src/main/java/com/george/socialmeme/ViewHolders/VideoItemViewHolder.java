@@ -206,6 +206,14 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                                 notification.put("token", userSnap.child("fcm_token").getValue(String.class));
                                 notification.put("title", notification_title[0]);
                                 notification.put("message", notification_message[0]);
+                                notification.put("not_type", notificationType);
+
+                                if (notificationType.equals("follow")) {
+                                    notification.put("userID", user.getUid());
+                                } else {
+                                    notification.put("postID", postID);
+                                }
+
                                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                                 firestore.collection("notifications")
                                         .document(notificationID).set(notification);

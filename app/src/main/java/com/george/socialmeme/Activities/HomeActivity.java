@@ -49,6 +49,8 @@ public class HomeActivity extends AppCompatActivity {
     public static UserModel savedUserData = null;
     public static ExtendedFloatingActionButton filtersBtn;
 
+    public static boolean openNotification;
+
     @Override
     protected void onPause() {
         super.onPause();
