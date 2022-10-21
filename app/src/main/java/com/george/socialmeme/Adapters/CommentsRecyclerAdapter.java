@@ -58,6 +58,7 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
 
         viewHolder.usernameTV.setText(commentsList.get(position).getAuthorUsername());
         viewHolder.commentContent.setText(commentsList.get(position).getCommentText());
+        viewHolder.userID = commentsList.get(position).getAuthor();
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();

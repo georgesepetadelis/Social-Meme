@@ -2,15 +2,25 @@ package com.george.socialmeme.Models;
 
 public class NotificationModel {
 
-    String type, date, title, message;
+    String id, type, date, title, message;
 
-    public NotificationModel(String type, String date, String message) {
+    public NotificationModel(String id, String type, String date, String message) {
+        this.id = id;
         this.type = type;
         this.date = date;
         this.message = message;
     }
 
     public NotificationModel() {
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

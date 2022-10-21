@@ -1,9 +1,15 @@
 package com.george.socialmeme.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -57,6 +63,9 @@ import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
+import smartdevelop.ir.eram.showcaseviewlib.GuideView;
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType;
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
 
 
 public class MyProfileFragment extends Fragment {
@@ -87,6 +96,11 @@ public class MyProfileFragment extends Fragment {
         ContentResolver cr = getActivity().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cr.getType(mUri));
+    }
+
+    boolean copyUsernameFeature() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("copy_my_username", MODE_PRIVATE);
+        return sharedPref.getBoolean("copy_my_username", false);
     }
 
     private void uploadProfilePictureToFirebase(Uri uri) {
@@ -187,12 +201,13 @@ public class MyProfileFragment extends Fragment {
 
                 if (snapshot.child("users").child(user.getUid()).child("trophies").exists()) {
 
+
                     String goldTrophies = snapshot.child("users")
-                            .child(user.getUid()).child(user.getUid()).child("trophies").child("gold").getValue(String.class);
+                            .child(user.getUid()).child("trophies").child("gold").getValue(String.class);
                     String silverTrophies = snapshot.child("users")
-                            .child(user.getUid()).child(user.getUid()).child("trophies").child("silver").getValue(String.class);
+                            .child(user.getUid()).child("trophies").child("silver").getValue(String.class);
                     String bronzeTrophies = snapshot.child("users")
-                            .child(user.getUid()).child(user.getUid()).child("trophies").child("bronze").getValue(String.class);
+                            .child(user.getUid()).child("trophies").child("bronze").getValue(String.class);
 
                     goldTrophiesCount.setText(goldTrophies);
                     silverTrophiesCount.setText(silverTrophies);
@@ -218,6 +233,13 @@ public class MyProfileFragment extends Fragment {
 
     public interface FirebaseCallback {
         void onComplete();
+    }
+
+    void copyUsernameToClipboard(String username) {
+        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("username", username);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getActivity(), "Username copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -249,6 +271,25 @@ public class MyProfileFragment extends Fragment {
         goldTrophiesCount = view.findViewById(R.id.gold_trophies_count);
         silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
         bronzeTrophiesCount = view.findViewById(R.id.bronze_trophies_count);
+
+        username.setOnClickListener(v -> copyUsernameToClipboard(user.getDisplayName()));
+
+        if (!copyUsernameFeature()) {
+
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("copy_my_username", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("copy_my_username", true);
+            editor.apply();
+
+            new GuideView.Builder(getContext())
+                    .setTitle("Copy your username")
+                    .setContentText("Copy your username by clicking here")
+                    .setTargetView(username)
+                    .setDismissType(DismissType.targetView)
+                    .setGravity(Gravity.center)
+                    .build()
+                    .show();
+        }
 
         if (!HomeActivity.singedInAnonymously) username.setText(user.getDisplayName());
         else {

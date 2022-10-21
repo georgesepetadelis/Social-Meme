@@ -13,21 +13,27 @@ import android.icu.util.Calendar;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.PostActivity;
 import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -59,14 +65,17 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
         Intent homeIntent = new Intent(getApplicationContext(), SplashScreenActivity.class);
 
-        if (type.equals("user")) {
-            String userID = dataMap.get("userID");
-            homeIntent = new Intent(getApplicationContext(), UserProfileActivity.class);
-            homeIntent.putExtra("userID", userID);
-        } else if (type.equals("post")) {
-            String postID = dataMap.get("postID");
-            homeIntent = new Intent(getApplicationContext(), PostActivity.class);
-            homeIntent.putExtra("postID", postID);
+        if (type != null) {
+            if (type.equals("user")) {
+                homeIntent = new Intent(getApplicationContext(), UserProfileActivity.class);
+                String userID = dataMap.get("userID");
+                homeIntent.putExtra("user_id", userID);
+                homeIntent.putExtra("allPosts", HomeActivity.savedPostsArrayList);
+            } else if (type.equals("post")) {
+                homeIntent = new Intent(getApplicationContext(), PostActivity.class);
+                String postID = dataMap.get("postID");
+                homeIntent.putExtra("post_id", postID);
+            }
         }
 
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -114,6 +123,9 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
             case "New follower":
                 icon_res = R.drawable.user;
                 break;
+
+            default:
+                icon_res = R.drawable.app_logo;
 
         }
 

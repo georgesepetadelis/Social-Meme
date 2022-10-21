@@ -1,6 +1,9 @@
 package com.george.socialmeme.Models;
 
-public class PostModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class PostModel implements Parcelable {
     private String name, imgUrl, likes, id, profileImgUrl, authorID, postType, commentsCount, audioName, postTitle, postContentText;
 
     public PostModel(String name, String imgUrl, String postType, String commentsCount, String audioName, String postTitle, String postContentText) {
@@ -16,6 +19,32 @@ public class PostModel {
     public PostModel() {
 
     }
+
+    protected PostModel(Parcel in) {
+        name = in.readString();
+        imgUrl = in.readString();
+        likes = in.readString();
+        id = in.readString();
+        profileImgUrl = in.readString();
+        authorID = in.readString();
+        postType = in.readString();
+        commentsCount = in.readString();
+        audioName = in.readString();
+        postTitle = in.readString();
+        postContentText = in.readString();
+    }
+
+    public static final Creator<PostModel> CREATOR = new Creator<PostModel>() {
+        @Override
+        public PostModel createFromParcel(Parcel in) {
+            return new PostModel(in);
+        }
+
+        @Override
+        public PostModel[] newArray(int size) {
+            return new PostModel[size];
+        }
+    };
 
     public String getPostTitle() {
         return postTitle;
@@ -103,5 +132,25 @@ public class PostModel {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(imgUrl);
+        dest.writeString(likes);
+        dest.writeString(id);
+        dest.writeString(profileImgUrl);
+        dest.writeString(authorID);
+        dest.writeString(postType);
+        dest.writeString(commentsCount);
+        dest.writeString(audioName);
+        dest.writeString(postTitle);
+        dest.writeString(postContentText);
     }
 }

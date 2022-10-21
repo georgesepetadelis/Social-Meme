@@ -108,19 +108,34 @@ public class SplashScreenActivity extends AppCompatActivity {
                             startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                         } else {
+
+                            if (user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
+                                startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                                CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                            }
+
                             initializeNightModeSharedPref();
                             HomeActivity.showLoadingScreen = true;
-                            startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                            Intent intent = new Intent(SplashScreenActivity.this, HomeActivity.class);
+
+                            if (getIntent().getExtras() != null) {
+                                Bundle extras = getIntent().getExtras();
+                                intent.putExtra("user_id", extras.getString("userID"));
+                                intent.putExtra("post_id", extras.getString("postID"));
+                            }
+
+                            startActivity(intent);
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                             finish();
+
+                            HomeActivity.openNotification = true;
+
                         }
                     }
 
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
-                        //Toast.makeText(SplashScreenActivity.this, "Failed to load Ads", Toast.LENGTH_SHORT).show();
-                        //Toast.makeText(SplashScreenActivity.this, loadAdError.getMessage(), Toast.LENGTH_SHORT).show();
 
                         if (user == null) {
                             startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
@@ -134,7 +149,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                             initializeNightModeSharedPref();
                             HomeActivity.showLoadingScreen = true;
-                            startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                            Intent intent = new Intent(SplashScreenActivity.this, HomeActivity.class);
+
+                            if (getIntent().getExtras() != null) {
+                                Bundle extras = getIntent().getExtras();
+                                intent.putExtra("user_id", extras.getString("userID"));
+                                intent.putExtra("post_id", extras.getString("postID"));
+                            }
+
+                            startActivity(intent);
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                             finish();
                         }

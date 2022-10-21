@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -101,6 +100,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_visit");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " visited your profile");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("user_id").setValue(user.getUid());
                                 break;
                             }
                         }
@@ -120,6 +120,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("user_id").setValue(user.getUid());
                                 break;
                             }
                         }
@@ -139,6 +140,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("profile_screenshot");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("user_id").setValue(user.getUid());
                                 break;
                             }
                         }
@@ -156,6 +158,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("unfollow");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("user_id").setValue(user.getUid());
                                 break;
                             }
                         }
@@ -317,24 +320,6 @@ public class UserProfileActivity extends AppCompatActivity {
         userID = extras.getString("user_id");
         username = extras.getString("username");
 
-        Type type = new TypeToken<List<PostModel>>() {}.getType();
-
-        ArrayList<PostModel> allPosts = new Gson().fromJson(getIntent().getStringExtra("allPosts"), type);
-
-        progressDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
-        progressDialog.getProgressHelper().setBarColor(R.color.main);
-        progressDialog.setTitleText("Loading user profile...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        listener = new ScreenshotListener() {
-            @Override
-            public void onScreenshotDetected(String path) {
-                Toast.makeText(UserProfileActivity.this, "screenshot", Toast.LENGTH_SHORT).show();
-            }
-        };
-        listener.startListening();
-
         ImageButton backBtn = findViewById(R.id.imageButton2);
         ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
@@ -358,9 +343,17 @@ public class UserProfileActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        Type type = new TypeToken<List<PostModel>>() {
+        }.getType();
+        ArrayList<PostModel> allPosts = new Gson().fromJson(getIntent().getStringExtra("allPosts"), type);
+
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
+
+        if (allPosts == null) {
+            allPosts = new ArrayList<>();
+        }
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
         recyclerView.setAdapter(recyclerAdapter);
@@ -370,6 +363,20 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        progressDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
+        progressDialog.getProgressHelper().setBarColor(R.color.main);
+        progressDialog.setTitleText("Loading user profile...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        listener = new ScreenshotListener() {
+            @Override
+            public void onScreenshotDetected(String path) {
+                Toast.makeText(UserProfileActivity.this, "screenshot", Toast.LENGTH_SHORT).show();
+            }
+        };
+        listener.startListening();
 
         loadRecommendedUsers();
         backBtn.setOnClickListener(v -> onBackPressed());
@@ -384,6 +391,8 @@ public class UserProfileActivity extends AppCompatActivity {
             copyUsernameToClipboard();
             return false;
         });
+
+        username_tv.setOnClickListener(v -> copyUsernameToClipboard());
 
         showAllPostsButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfileActivity.this, AllUserPostsActivity.class);

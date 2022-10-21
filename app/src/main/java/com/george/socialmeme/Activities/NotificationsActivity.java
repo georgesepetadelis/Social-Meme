@@ -116,8 +116,9 @@ public class NotificationsActivity extends AppCompatActivity {
 
                         if (!notificationSnap.child("type").exists()) {
                             continue;
-                        }else {
+                        } else {
                             NotificationModel notificationModel = new NotificationModel();
+                            notificationModel.setId(notificationSnap.getKey());
                             notificationModel.setTitle(notificationSnap.child("title").getValue(String.class));
                             notificationModel.setMessage(notificationSnap.child("message").getValue(String.class));
                             notificationModel.setType(notificationSnap.child("type").getValue(String.class));

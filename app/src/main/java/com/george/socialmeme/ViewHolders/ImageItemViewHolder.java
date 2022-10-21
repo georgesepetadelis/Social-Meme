@@ -204,6 +204,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("new_follower");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("post_id").setValue(postID);
                             }
                             if (notificationType.equals("like")) {
                                 notification_title[0] = "New like";
@@ -212,6 +213,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("like");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("post_id").setValue(postID);
                             }
                             if (notificationType.equals("meme_saved")) {
                                 notification_title[0] = "Meme saved";
@@ -220,6 +222,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("post_save");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(user.getDisplayName() + " has saved your post");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("post_id").setValue(postID);
                             } else if (notificationType.equals("comment_added")) {
                                 notification_title[0] = "New comment";
                                 notification_message[0] = user.getDisplayName() + ": " + commentText;
@@ -227,6 +230,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("comment_added");
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
                                 usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("post_id").setValue(postID);
                             }
 
                             break;
@@ -487,10 +491,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                 likesRef.child(postID).child(user.getUid()).setValue("true");
                 updateLikesToDB(postID, true);
 
-                sendNotificationToPostAuthor("like", "");
-
                 if (!user.getUid().equals(postAuthorID)) {
-                    //sendNotificationToPostAuthor("like", "");
+                    sendNotificationToPostAuthor("like", "");
                 }
 
             }

@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
 
+import com.george.socialmeme.Activities.PostActivity;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -11,7 +12,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +19,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -35,7 +34,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,8 +57,6 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
@@ -305,9 +301,17 @@ public class HomeFragment extends Fragment {
 
     }
 
+    public interface FirebaseCallback {
+        void onComplete();
+    }
+
+    Activity activity;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+
+        activity = getActivity();
 
         if (!HomeActivity.watched_ad) {
 
@@ -389,7 +393,7 @@ public class HomeFragment extends Fragment {
 
         submitUserSearchButton.setOnClickListener(view -> {
 
-            String usernameInput = usernameForSearch.getText().toString().trim();
+            String usernameInput = usernameForSearch.getText().toString().trim().toLowerCase();
             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
             // Prevent user from dismissing the
@@ -402,7 +406,7 @@ public class HomeFragment extends Fragment {
                 submitUserSearchButton.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
 
-                if (usernameInput.equals(user.getDisplayName())) {
+                if (usernameInput.equals(user.getDisplayName().toLowerCase())) {
                     dialog.dismiss();
                     HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
                 } else {
@@ -413,15 +417,17 @@ public class HomeFragment extends Fragment {
                             boolean userFound = false;
 
                             for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                if (Objects.equals(userSnapshot.child("name").getValue(String.class), usernameInput)) {
-                                    userFound = true;
-                                    Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                                    intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
-                                    intent.putExtra("username", usernameInput);
-                                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
-                                    getActivity().startActivity(intent);
-                                    CustomIntent.customType(getActivity(), "left-to-right");
-                                    break;
+                                if (userSnapshot.child("name").getValue(String.class) != null) {
+                                    if (Objects.equals(userSnapshot.child("name").getValue(String.class).toLowerCase(), usernameInput)) {
+                                        userFound = true;
+                                        Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                                        intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
+                                        intent.putExtra("username", usernameInput);
+                                        intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
+                                        getActivity().startActivity(intent);
+                                        CustomIntent.customType(getActivity(), "left-to-right");
+                                        break;
+                                    }
                                 }
                             }
 
@@ -595,6 +601,29 @@ public class HomeFragment extends Fragment {
         dialog.getWindow().setGravity(android.view.Gravity.BOTTOM);
 
     }
+
+    FirebaseCallback callback = () -> {
+
+        if (HomeActivity.openNotification) {
+
+            if (isAdded()) {
+                if (HomeActivity.notiPostId != null && HomeActivity.notiUserId == null) {
+                    Intent intent = new Intent(activity, PostActivity.class);
+                    intent.putExtra("post_id", HomeActivity.notiPostId);
+                    startActivity(intent);
+                    CustomIntent.customType(getActivity(), "left-to-right");
+                } else if (HomeActivity.notiPostId == null && HomeActivity.notiUserId != null) {
+                    Intent intent = new Intent(activity, UserProfileActivity.class);
+                    intent.putExtra("user_id", HomeActivity.notiUserId);
+                    intent.putExtra("username", HomeActivity.notiUsername);
+                    intent.putExtra("allPosts", new Gson().toJson(postModelArrayList));
+                    startActivity(intent);
+                    CustomIntent.customType(getActivity(), "left-to-right");
+                }
+            }
+
+        }
+    };
 
     void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
 
@@ -854,6 +883,8 @@ public class HomeFragment extends Fragment {
 
                         progressBar.setVisibility(View.GONE);
 
+                        callback.onComplete();
+
                     }
 
                     @Override
@@ -1002,6 +1033,7 @@ public class HomeFragment extends Fragment {
         });
 
         searchUserBtn.setOnClickListener(view1 -> showSearchUserDialog());
+
 
         return view;
     }

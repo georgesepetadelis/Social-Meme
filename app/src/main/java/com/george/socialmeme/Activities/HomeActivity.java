@@ -37,6 +37,8 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 import java.util.ArrayList;
 
+import maes.tech.intentanim.CustomIntent;
+
 public class HomeActivity extends AppCompatActivity {
 
     public static boolean singedInAnonymously = false;
@@ -50,6 +52,9 @@ public class HomeActivity extends AppCompatActivity {
     public static ExtendedFloatingActionButton filtersBtn;
 
     public static boolean openNotification;
+    public static String notiUserId;
+    public static String notiPostId;
+    public static String notiUsername;
 
     @Override
     protected void onPause() {
@@ -61,6 +66,11 @@ public class HomeActivity extends AppCompatActivity {
     boolean isNightModeEnabled() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
         return sharedPref.getBoolean("dark_mode", false);
+    }
+
+    boolean newFeaturesViewed() {
+        SharedPreferences sharedPref = getSharedPreferences("v2.2.5", MODE_PRIVATE);
+        return sharedPref.getBoolean("v2.2.5", false);
     }
 
     void enableNightMode() {
@@ -82,6 +92,35 @@ public class HomeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        if (!newFeaturesViewed()) {
+            SharedPreferences sharedPref = getSharedPreferences("v2.2.5", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("v2.2.5", true);
+            editor.apply();
+            startActivity(new Intent(HomeActivity.this, NewsActivity.class));
+            CustomIntent.customType(HomeActivity.this, "fadein-to-fadeout");
+        }
+
+        Bundle extras = getIntent().getExtras();
+
+        if (extras != null) {
+
+            openNotification = true;
+
+            if (extras.getString("user_id") != null) {
+                notiUserId = extras.getString("user_id");
+            }
+
+            if (extras.getString("post_id") != null) {
+                notiPostId = extras.getString("post_id");
+            }
+
+            if (extras.getString("username") != null) {
+                notiUsername = extras.getString("username");
+            }
+
+        }
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -141,6 +180,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         bottomNavBar.setOnItemSelectedListener(id -> {
+
             Fragment selectedFragment = new HomeFragment();
 
             switch (id) {
