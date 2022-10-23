@@ -418,7 +418,7 @@ public class HomeFragment extends Fragment {
 
                             for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                                 if (userSnapshot.child("name").getValue(String.class) != null) {
-                                    if (Objects.equals(userSnapshot.child("name").getValue(String.class).toLowerCase(), usernameInput)) {
+                                    if (Objects.equals(userSnapshot.child("name").getValue(String.class).trim().toLowerCase(), usernameInput)) {
                                         userFound = true;
                                         Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                                         intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
@@ -720,7 +720,11 @@ public class HomeFragment extends Fragment {
                                     // Show post in recycler adapter only if the user is not blocked
                                     if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                             .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
-                                        HomeActivity.noSuffledPostsList.add(postModel);
+
+                                        if (HomeActivity.noSuffledPostsList != null) {
+                                            HomeActivity.noSuffledPostsList.add(postModel);
+                                        }
+
                                         postModelArrayList.add(postModel);
 
                                     }
@@ -792,7 +796,7 @@ public class HomeFragment extends Fragment {
                                     @Override
                                     public void onAdLoaded() {
                                         super.onAdLoaded();
-                                        Log.i("AD success", "LOADING AD SUCCESS");
+
                                         new Handler().postDelayed(() -> {
 
                                             filtersBtn.setVisibility(View.INVISIBLE);
@@ -835,8 +839,8 @@ public class HomeFragment extends Fragment {
 
                                     @Override
                                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                                        Log.i("AD FAILED", "LOADING AD FAILED");
                                         super.onAdFailedToLoad(loadAdError);
+
                                         new Handler().postDelayed(() -> {
 
                                             filtersBtn.setVisibility(View.INVISIBLE);

@@ -118,7 +118,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 PostModel goldPostModel = new PostModel();
                 goldPostModel.setPostType(snapshot.child("posts").child(goldPostID).child("postType").getValue(String.class));
                 goldPostModel.setId(goldPostID);
-                goldPostModel.setImgUrl(snapshot.child("posts").child(goldPostID).child("authorProfilePictureURL").getValue(String.class));
+                goldPostModel.setProfileImgUrl(snapshot.child("posts").child(goldPostID).child("authorProfilePictureURL").getValue(String.class));
                 goldPostModel.setLikes(snapshot.child("posts").child(goldPostID).child("likes").getValue(String.class));
                 goldPostModel.setName(snapshot.child("posts").child(goldPostID).child("name").getValue(String.class));
                 goldPostModel.setImgUrl(snapshot.child("posts").child(goldPostID).child("imgUrl").getValue(String.class));
@@ -140,7 +140,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 PostModel silverPostModel = new PostModel();
                 silverPostModel.setPostType(snapshot.child("posts").child(silverPostID).child("postType").getValue(String.class));
                 silverPostModel.setId(silverPostID);
-                silverPostModel.setImgUrl(snapshot.child("posts").child(silverPostID).child("authorProfilePictureURL").getValue(String.class));
+                silverPostModel.setProfileImgUrl(snapshot.child("posts").child(silverPostID).child("authorProfilePictureURL").getValue(String.class));
                 silverPostModel.setLikes(snapshot.child("posts").child(silverPostID).child("likes").getValue(String.class));
                 silverPostModel.setName(snapshot.child("posts").child(silverPostID).child("name").getValue(String.class));
                 silverPostModel.setImgUrl(snapshot.child("posts").child(silverPostID).child("imgUrl").getValue(String.class));
@@ -162,7 +162,7 @@ public class PostsOfTheMonthActivity extends AppCompatActivity {
                 PostModel bronzePostModel = new PostModel();
                 bronzePostModel.setPostType(snapshot.child("posts").child(bronzePostID).child("postType").getValue(String.class));
                 bronzePostModel.setId(bronzePostID);
-                bronzePostModel.setImgUrl(snapshot.child("posts").child(bronzePostID).child("authorProfilePictureURL").getValue(String.class));
+                bronzePostModel.setProfileImgUrl(snapshot.child("posts").child(bronzePostID).child("authorProfilePictureURL").getValue(String.class));
                 bronzePostModel.setLikes(snapshot.child("posts").child(bronzePostID).child("likes").getValue(String.class));
                 bronzePostModel.setName(snapshot.child("posts").child(bronzePostID).child("name").getValue(String.class));
                 bronzePostModel.setImgUrl(snapshot.child("posts").child(bronzePostID).child("imgUrl").getValue(String.class));

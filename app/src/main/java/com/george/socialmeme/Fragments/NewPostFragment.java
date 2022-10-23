@@ -89,7 +89,7 @@ public class NewPostFragment extends Fragment {
             });
 
 
-    private void sendNewPostNotificationToFollowers() {
+    private void sendNewPostNotificationToFollowers(String postID) {
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -104,6 +104,7 @@ public class NewPostFragment extends Fragment {
                             String firestoreNotificationID = usersRef.push().getKey();
                             Map<String, Object> notification = new HashMap<>();
                             notification.put("token", userToken);
+                            notification.put("postID", postID);
                             notification.put("title", user.getDisplayName() + " just uploaded a new meme");
                             notification.put("message", "See the latest post from " + user.getDisplayName());
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -203,11 +204,14 @@ public class NewPostFragment extends Fragment {
 
                     if (user.getPhotoUrl() == null) {
                         postModel.setProfileImgUrl("none");
-                    }else {
+                    } else {
                         postModel.setProfileImgUrl(user.getPhotoUrl().toString());
                     }
 
-                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                    if (HomeActivity.savedPostsArrayList.size() != 0) {
+                        HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                    }
+
                     HomeActivity.savedPostsArrayList.add(postModel);
 
                     // Add post's of the month view as RecyclerView item
@@ -217,7 +221,7 @@ public class NewPostFragment extends Fragment {
                     HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
                     Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
-                    sendNewPostNotificationToFollowers();
+                    sendNewPostNotificationToFollowers(postId);
                     HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
                     loadingDialog.hide();
                 }
@@ -282,7 +286,10 @@ public class NewPostFragment extends Fragment {
                                     postModel.setProfileImgUrl(user.getPhotoUrl().toString());
                                 }
 
-                                HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                                if (HomeActivity.savedPostsArrayList.size() != 0) {
+                                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                                }
+
                                 HomeActivity.savedPostsArrayList.add(postModel);
 
                                 // Add post's of the month view as RecyclerView item
@@ -292,7 +299,7 @@ public class NewPostFragment extends Fragment {
                                 HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
                                 Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                                sendNewPostNotificationToFollowers();
+                                sendNewPostNotificationToFollowers(postId);
                                 HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
                             })).addOnProgressListener(snapshot -> {
@@ -347,11 +354,14 @@ public class NewPostFragment extends Fragment {
 
                     if (user.getPhotoUrl() == null) {
                         postModel.setProfileImgUrl("none");
-                    }else {
+                    } else {
                         postModel.setProfileImgUrl(user.getPhotoUrl().toString());
                     }
 
-                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                    if (HomeActivity.savedPostsArrayList.size() != 0) {
+                        HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                    }
+
                     HomeActivity.savedPostsArrayList.add(postModel);
 
                     // Add post's of the month view as RecyclerView item
@@ -361,7 +371,7 @@ public class NewPostFragment extends Fragment {
                     HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
                     Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                    sendNewPostNotificationToFollowers();
+                    sendNewPostNotificationToFollowers(postId);
                     HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
                 })).addOnProgressListener(snapshot -> loadingDialog.show())

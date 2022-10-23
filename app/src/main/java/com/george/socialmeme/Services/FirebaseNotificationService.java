@@ -101,7 +101,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         // prevent notification replacement from another notification
         int notificationID = ThreadLocalRandom.current().nextInt(2, 1000);
 
-        int icon_res = R.drawable.ic_comment;
+        int icon_res = R.drawable.app_logo;
 
         switch (notificationTitle) {
 
