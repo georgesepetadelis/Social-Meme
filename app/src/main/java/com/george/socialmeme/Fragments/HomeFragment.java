@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
 
 import com.george.socialmeme.Activities.PostActivity;
+import com.george.socialmeme.Activities.SearchUserActivity;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -94,7 +95,7 @@ public class HomeFragment extends Fragment {
     LoadingDialog progressDialog;
     ProgressBar progressBar;
     RecyclerView recyclerView;
-    ImageButton notificationsBtn;
+    ImageButton notificationsBtn, searchUserBtn;
     View openNotificationsView;
 
     RewardedAd mRewardedAd;
@@ -679,7 +680,7 @@ public class HomeFragment extends Fragment {
 
                         for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
-                            if (postSnapshot.child("name").getValue(String.class) != null) {
+                            if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
 
                                 PostModel postModel = new PostModel();
                                 postModel.setId(postSnapshot.child("id").getValue(String.class));
@@ -747,6 +748,27 @@ public class HomeFragment extends Fragment {
                         postsOfTheMonthView.setPostType("postsOfTheMonth");
                         randomArrayList.add(postsOfTheMonthView);
                         recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+
+                        if (isAdded()) {
+                            SharedPreferences askForSearchSharedPref = activity.getSharedPreferences("new_search", MODE_PRIVATE);
+                            SharedPreferences.Editor askForSearchSharedPrefEditor = askForSearchSharedPref.edit();
+                            boolean askForSearch = askForSearchSharedPref.getBoolean("new_search", false);
+
+                            if (!askForSearch) {
+
+                                new GuideView.Builder(getContext())
+                                        .setTitle("Check Social meme new search menu")
+                                        .setContentText("Now you can find your friends easier")
+                                        .setTargetView(searchUserBtn)
+                                        .setDismissType(DismissType.targetView)
+                                        .setGravity(Gravity.center)
+                                        .build().show();
+
+                                askForSearchSharedPrefEditor.putBoolean("new_search", true);
+                                askForSearchSharedPrefEditor.apply();
+                            }
+                        }
+
                         appShowCase();
 
                         if (HomeActivity.showLoadingScreen) {
@@ -929,7 +951,7 @@ public class HomeFragment extends Fragment {
 
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
-        ImageButton searchUserBtn = view.findViewById(R.id.searchPersonButton);
+        searchUserBtn = view.findViewById(R.id.searchPersonButton);
 
         randomArrayList = new ArrayList<PostModel>();
 
@@ -1036,11 +1058,13 @@ public class HomeFragment extends Fragment {
             CustomIntent.customType(getContext(), "left-to-right");
         });
 
-        searchUserBtn.setOnClickListener(view1 -> showSearchUserDialog());
-
+        searchUserBtn.setOnClickListener(view1 -> {
+            //showSearchUserDialog() // OLD SEARCH MENU
+            startActivity(new Intent(getActivity(), SearchUserActivity.class));
+            CustomIntent.customType(getContext(), "left-to-right");
+        });
 
         return view;
     }
-
 
 }

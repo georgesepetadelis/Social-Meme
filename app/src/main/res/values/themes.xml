@@ -21,7 +21,7 @@
     <!-- Night application theme. -->
     <style name="AppTheme.Base.Night" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="actionBarTheme">@color/actionBarColorDark</item>
-        <item name="colorPrimary">@color/colorPrimaryNight</item>
+        <item name="colorPrimary">@color/main</item>
         <item name="textFillColor">@color/white</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkNight</item>
         <item name="titleTextColor">@color/titleTextColor</item>

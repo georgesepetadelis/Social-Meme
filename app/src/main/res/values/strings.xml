@@ -3,6 +3,12 @@
     <string name="privacy_policy">Data collection:\n\nSocial Meme does not collect any additional data except the data that the user their self gives to the application, such as username, email, profile picture etc.
     \n\n
     </string>
+    <string name="badges">
+        Now you can earn badges based on your total earned likes on your profile:\n
+        1st Badge: <b>Total 20K likes</b>\n
+        2nd Badge: <b>Total 35K likes</b>\n
+        3rd Badge: <b>Total 50K likes</b>
+    </string>
     <string name="rewards_text">Every month the authors of the 3 most liked posts\n on Social Meme will receive the following Trophies as reward.\n
         The 1st most liked post: <b>Gold Trophy</b>\n
         The 2nd most liked post: <b>Silver Trophy</b>\n

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
@@ -35,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import maes.tech.intentanim.CustomIntent;
@@ -56,6 +58,18 @@ public class HomeActivity extends AppCompatActivity {
     public static String notiPostId;
     public static String notiUsername;
 
+    public static String prettyCount(Number number) {
+        char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
+        long numValue = number.longValue();
+        int value = (int) Math.floor(Math.log10(numValue));
+        int base = value / 3;
+        if (value >= 3 && base < suffix.length) {
+            return new DecimalFormat("#0.0").format(numValue / Math.pow(10, base * 3)) + suffix[base];
+        } else {
+            return new DecimalFormat("#,##0").format(numValue);
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -69,8 +83,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     boolean newFeaturesViewed() {
-        SharedPreferences sharedPref = getSharedPreferences("v2.2.5", MODE_PRIVATE);
-        return sharedPref.getBoolean("v2.2.5", false);
+        SharedPreferences sharedPref = getSharedPreferences("v2.2.7", MODE_PRIVATE);
+        return sharedPref.getBoolean("v2.2.7", false);
     }
 
     void enableNightMode() {
@@ -94,9 +108,9 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         if (!newFeaturesViewed()) {
-            SharedPreferences sharedPref = getSharedPreferences("v2.2.5", Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getSharedPreferences("v2.2.7", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean("v2.2.5", true);
+            editor.putBoolean("v2.2.7", true);
             editor.apply();
             startActivity(new Intent(HomeActivity.this, NewsActivity.class));
             CustomIntent.customType(HomeActivity.this, "fadein-to-fadeout");

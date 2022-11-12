@@ -12,10 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.developer.kalert.KAlertDialog;
-import com.george.socialmeme.Adapters.FollowerInfoRecyclerAdapter;
+import com.george.socialmeme.Adapters.UserRecyclerAdapter;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
-import com.github.loadingview.LoadingDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -75,7 +74,7 @@ public class FollowerInfoActivity extends AppCompatActivity {
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
         final ArrayList<UserModel> usersArrayList = new ArrayList<>();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(FollowerInfoActivity.this);
-        final RecyclerView.Adapter recyclerAdapter = new FollowerInfoRecyclerAdapter(FollowerInfoActivity.this, usersArrayList);
+        final RecyclerView.Adapter recyclerAdapter = new UserRecyclerAdapter(null,FollowerInfoActivity.this, usersArrayList);
 
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
@@ -87,7 +86,6 @@ public class FollowerInfoActivity extends AppCompatActivity {
         progressDialog.getProgressHelper().setBarColor(R.color.main);
         progressDialog.setTitleText("Loading users...");
         progressDialog.setCancelable(false);
-        progressDialog.show();
         progressDialog.show();
 
         usersRef.addValueEventListener(new ValueEventListener() {

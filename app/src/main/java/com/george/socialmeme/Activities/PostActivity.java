@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -34,8 +35,16 @@ public class PostActivity extends AppCompatActivity {
         CustomIntent.customType(PostActivity.this, "right-to-left");
     }
 
+    boolean isNightModeEnabled() {
+        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
+        return sharedPref.getBoolean("dark_mode", false);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (isNightModeEnabled()) {
+            setTheme(R.style.AppTheme_Base_Night);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
@@ -128,7 +137,7 @@ public class PostActivity extends AppCompatActivity {
             });
 
         } else {
-            Toast.makeText(this, "extras is null", Toast.LENGTH_SHORT).show();
+            onBackPressed();
         }
 
 

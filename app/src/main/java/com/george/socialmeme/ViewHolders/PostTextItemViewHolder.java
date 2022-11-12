@@ -380,9 +380,21 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         });
 
         reportPostView.setOnClickListener(view -> {
-            DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reports");
+            DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
             FirebaseAuth auth = FirebaseAuth.getInstance();
             reportsRef.child(auth.getCurrentUser().getUid()).setValue(postID).addOnCompleteListener(task -> {
+                like_btn.setVisibility(View.GONE);
+                like_counter_tv.setVisibility(View.GONE);
+                openCommentsView.setEnabled(false);
+                openCommentsView.setEnabled(false);
+                username.setText("REPORTED POST");
+                postTitle.setText("REPORTED POST");
+                postContentText.setText("REPORTED POST");
+                profilePicture.setImageResource(R.drawable.user);
+                openProfileView.setEnabled(false);
+                postOptionsButton.setVisibility(View.GONE);
+                reportsRef.child(postID);
+                FirebaseDatabase.getInstance().getReference("posts").child(postID).child("reported").setValue("true");
                 Toast.makeText(context, "Report received, thank you!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             });

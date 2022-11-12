@@ -131,7 +131,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
         if (!HomeActivity.singedInAnonymously && !usernameTV.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             followBtnView.setVisibility(View.GONE);
         }
 
@@ -462,10 +462,21 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         });
 
         reportPostView.setOnClickListener(view -> {
-            DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reports");
+            DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
             FirebaseAuth auth = FirebaseAuth.getInstance();
             reportsRef.child(auth.getCurrentUser().getUid()).setValue(postID).addOnCompleteListener(task -> {
+                likeBtn.setVisibility(View.GONE);
+                likesCounter.setVisibility(View.GONE);
+                openCommentsView.setEnabled(false);
+                openCommentsView.setEnabled(false);
+                usernameTV.setText("REPORTED POST");
+                playBtn.setEnabled(false);
+                profilePicture.setImageResource(R.drawable.user);
+                openUserProfileView.setEnabled(false);
+                postOptionsBtn.setVisibility(View.GONE);
                 Toast.makeText(context, "Report received, thank you!", Toast.LENGTH_SHORT).show();
+                reportsRef.child(postID);
+                FirebaseDatabase.getInstance().getReference("posts").child(postID).child("reported").setValue("true");
                 dialog.dismiss();
             });
         });

@@ -353,6 +353,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             ImageItemViewHolder imageViewHolder = (ImageItemViewHolder) holder;
             imageViewHolder.setContext(context);
 
+            if (activity != null) {
+                imageViewHolder.setActivity(this.activity);
+            }
+
             if (HomeActivity.singedInAnonymously) {
                 imageViewHolder.commentsCount.setVisibility(View.GONE);
                 imageViewHolder.show_comments_btn.setVisibility(View.GONE);
@@ -434,6 +438,12 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return postList.size();
+    }
+
+    public void removeAt(int position) {
+        postList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, postList.size());
     }
 
 }

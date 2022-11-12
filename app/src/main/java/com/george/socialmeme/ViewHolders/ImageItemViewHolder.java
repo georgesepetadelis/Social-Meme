@@ -2,6 +2,7 @@ package com.george.socialmeme.ViewHolders;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
@@ -34,6 +35,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -71,6 +73,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
+    public Activity activity;
     public Context context;
     public CardView container;
     public String postID, postImageURL, postAuthorID;
@@ -89,6 +92,10 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
 
     public void setContext(Context context) {
         this.context = context;
@@ -141,10 +148,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                     .playOn(like_counter_tv);
         }
 
-    }
-
-    public interface FirebaseCallback {
-        void onCallback(String callback_userID, String callback_username);
     }
 
     private void deletePost() {
@@ -331,9 +334,23 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         });
 
         reportPostView.setOnClickListener(view -> {
-            DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reports");
+            DatabaseReference reportsRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
             FirebaseAuth auth = FirebaseAuth.getInstance();
             reportsRef.child(auth.getCurrentUser().getUid()).setValue(postID).addOnCompleteListener(task -> {
+                like_btn.setVisibility(View.GONE);
+                like_btn.setVisibility(View.GONE);
+                like_counter_tv.setVisibility(View.GONE);
+                openCommentsView.setEnabled(false);
+                show_comments_btn.setVisibility(View.GONE);
+                commentsCount.setVisibility(View.GONE);
+                username.setText("REPORTED POST");
+                shareBtn.setVisibility(View.GONE);
+                postImg.setVisibility(View.GONE);
+                profileImage.setImageResource(R.drawable.user);
+                openUserProfileView.setEnabled(false);
+                showPostOptionsButton.setVisibility(View.GONE);
+                reportsRef.child(postID);
+                FirebaseDatabase.getInstance().getReference("posts").child(postID).child("reported").setValue("true");
                 Toast.makeText(context, "Report received, thank you!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             });
@@ -409,6 +426,11 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         followBtn = itemView.findViewById(R.id.textView81);
         followBtnView = itemView.findViewById(R.id.follow_btn_view);
         openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
+
+        if (activity != null) {
+            Zoomy.Builder builder = new Zoomy.Builder(activity).target(postImg);
+            builder.register();
+        }
 
         showPostOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         openCommentsView.setOnClickListener(view -> showCommentsDialog());

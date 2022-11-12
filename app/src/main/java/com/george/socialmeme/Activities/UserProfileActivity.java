@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -320,6 +321,11 @@ public class UserProfileActivity extends AppCompatActivity {
         userID = extras.getString("user_id");
         username = extras.getString("username");
 
+        ImageView badge1 = findViewById(R.id.imageView14);
+        ImageView badge2 = findViewById(R.id.imageView15);
+        ImageView badge3 = findViewById(R.id.imageView24);
+
+        ImageButton badges = findViewById(R.id.imageButton22);
         ImageButton backBtn = findViewById(R.id.imageButton2);
         ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
         CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
@@ -363,6 +369,13 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        badges.setOnClickListener(v -> new android.app.AlertDialog.Builder(UserProfileActivity.this)
+                .setTitle("How to earn badges!")
+                .setMessage(R.string.badges)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    dialog.dismiss();
+                }).show());
 
         progressDialog = new KAlertDialog(UserProfileActivity.this, KAlertDialog.PROGRESS_TYPE);
         progressDialog.getProgressHelper().setBarColor(R.color.main);
@@ -454,7 +467,25 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
 
-                totalLikesCounter.setText(String.valueOf(totalLikes));
+                if (totalLikes >= 20000) {
+                    badge1.setAlpha(1F);
+                } else {
+                    badge1.setAlpha(.3F);
+                }
+
+                if (totalLikes >= 35000) {
+                    badge2.setAlpha(1F);
+                } else {
+                    badge2.setAlpha(.3F);
+                }
+
+                if (totalLikes >= 50000) {
+                    badge3.setAlpha(1F);
+                } else {
+                    badge3.setAlpha(.3F);
+                }
+
+                totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));
 
             } else {
                 Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
@@ -820,7 +851,7 @@ public class UserProfileActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 new AlertDialog.Builder(UserProfileActivity.this)
                         .setTitle("User Reported")
-                        .setMessage(username + " has been reported. Thanks for keeping Social Meme community safe")
+                        .setMessage(username + " has been reported for potential violating content. You can also block this user if you don't want to see any post from them. Thanks for keeping Social Meme community safe!")
                         .setPositiveButton("Okay", (dialogInterface, i) -> dialogInterface.dismiss())
                         .show();
             } else {

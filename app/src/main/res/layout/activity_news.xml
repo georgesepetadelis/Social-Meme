@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/background"
     tools:context=".Activities.NewsActivity">
 
     <ImageView
@@ -14,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_notification" />
+        app:srcCompat="@drawable/badge" />
 
     <TextView
         android:id="@+id/textView35"
@@ -38,6 +39,7 @@
         android:text="Now you can..."
         android:textSize="27sp"
         android:textStyle="bold"
+        android:textColor="?attr/titleTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView35" />
@@ -48,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:padding="12dp"
-        android:text="1. Click a notification on your phone or inside the app (from the notifications menu) and see more info about it"
+        android:text="1. Earn badges based on your total likes on your profile (more info in My Profile tab)"
         android:textColor="@color/main"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -64,7 +66,7 @@
         android:layout_marginTop="24dp"
         android:padding="12dp"
 
-        android:text="2. Click on a comment and see the profile of the memer that commented"
+        android:text="2. Search a user faster than ever with the new search screen added in this version"
         android:textColor="@color/main"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -92,7 +94,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="-5dp"
-        android:text="v2.2.5"
+        android:text="v2.2.8"
+        android:textColor="?attr/titleTextColor"
         android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="@+id/textView35"
         app:layout_constraintStart_toStartOf="@+id/textView35"

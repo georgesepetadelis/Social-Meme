@@ -4,10 +4,12 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -27,6 +29,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -248,12 +251,17 @@ public class MyProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
+        ImageView badge1 = view.findViewById(R.id.imageView14);
+        ImageView badge2 = view.findViewById(R.id.imageView15);
+        ImageView badge3 = view.findViewById(R.id.imageView24);
+
         profilePicture = view.findViewById(R.id.my_profile_image);
         TextView username = view.findViewById(R.id.username_my_profile);
         ImageButton settings = view.findViewById(R.id.settings_btn);
         View showFollowersView = view.findViewById(R.id.showFollowersView_Profile);
         View showFollowingUsersView = view.findViewById(R.id.showFollowingView_Profile);
         ImageButton postsOfTheMonthInfo = view.findViewById(R.id.imageButton9);
+        ImageButton badges = view.findViewById(R.id.imageButton22);
         Button allPostsBtn = view.findViewById(R.id.button5);
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -271,6 +279,13 @@ public class MyProfileFragment extends Fragment {
         goldTrophiesCount = view.findViewById(R.id.gold_trophies_count);
         silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
         bronzeTrophiesCount = view.findViewById(R.id.bronze_trophies_count);
+
+        badges.setOnClickListener(v -> new AlertDialog.Builder(getContext())
+                .setTitle("How to earn badges!")
+                .setMessage(R.string.badges)
+                .setPositiveButton("OK", (dialog, which) -> {
+                  dialog.dismiss();
+                }).show());
 
         username.setOnClickListener(v -> copyUsernameToClipboard(user.getDisplayName()));
 
@@ -406,7 +421,25 @@ public class MyProfileFragment extends Fragment {
                 }
             }
 
-            totalLikesCounter.setText(String.valueOf(totalLikes));
+            if (totalLikes >= 20000) {
+                badge1.setAlpha(1F);
+            } else {
+                badge1.setAlpha(.3F);
+            }
+
+            if (totalLikes >= 35000) {
+                badge2.setAlpha(1F);
+            } else {
+                badge2.setAlpha(.3F);
+            }
+
+            if (totalLikes >= 50000) {
+                badge3.setAlpha(1F);
+            } else {
+                badge3.setAlpha(.3F);
+            }
+
+            totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));
 
             if (HomeActivity.savedUserData != null) {
 
@@ -421,7 +454,7 @@ public class MyProfileFragment extends Fragment {
                 followersCounter.setText("0");
 
 
-                totalLikesCounter.setText(String.valueOf(totalLikes));
+                totalLikesCounter.setText(HomeActivity.prettyCount(totalLikes));
                 followingCounter.setText(followingCounter_saved);
                 followersCounter.setText(followersCounter_saved);
                 goldTrophiesCount.setText(goldTrophies_saved);
