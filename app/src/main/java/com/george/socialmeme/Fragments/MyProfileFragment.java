@@ -270,7 +270,10 @@ public class MyProfileFragment extends Fragment {
 
         AdView mAdView = view.findViewById(R.id.adView5);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
+        if (HomeActivity.show_banners) {
+            mAdView.loadAd(adRequest);
+        }
 
         followersCounter = view.findViewById(R.id.followers_my_profile);
         followingCounter = view.findViewById(R.id.following_my_profile);

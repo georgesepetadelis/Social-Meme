@@ -7,10 +7,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Outline;
+import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -92,8 +96,39 @@ public class SplashScreenActivity extends AppCompatActivity {
                 // Load ad banner and wait until ad is loaded
                 AdView mAdView = findViewById(R.id.splash_Ad);
                 AdRequest adRequest = new AdRequest.Builder().build();
-                mAdView.loadAd(adRequest);
 
+                // WE ARE NOT LOADING THIS AD
+                // mAdView.loadAd(adRequest);
+
+                if (user == null) {
+                    startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                } else {
+
+                    if (user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
+                        startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                        CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                    }
+
+                    initializeNightModeSharedPref();
+                    HomeActivity.showLoadingScreen = true;
+                    Intent intent = new Intent(SplashScreenActivity.this, HomeActivity.class);
+
+                    if (getIntent().getExtras() != null) {
+                        Bundle extras = getIntent().getExtras();
+                        intent.putExtra("user_id", extras.getString("userID"));
+                        intent.putExtra("post_id", extras.getString("postID"));
+                    }
+
+                    startActivity(intent);
+                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                    finish();
+
+                    HomeActivity.openNotification = true;
+
+                }
+
+                /*
                 mAdView.setAdListener(new AdListener() {
 
                     @Override
@@ -104,33 +139,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onAdLoaded() {
                         super.onAdLoaded();
-                        if (user == null) {
-                            startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
-                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                        } else {
 
-                            if (user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
-                                startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
-                                CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                            }
-
-                            initializeNightModeSharedPref();
-                            HomeActivity.showLoadingScreen = true;
-                            Intent intent = new Intent(SplashScreenActivity.this, HomeActivity.class);
-
-                            if (getIntent().getExtras() != null) {
-                                Bundle extras = getIntent().getExtras();
-                                intent.putExtra("user_id", extras.getString("userID"));
-                                intent.putExtra("post_id", extras.getString("postID"));
-                            }
-
-                            startActivity(intent);
-                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                            finish();
-
-                            HomeActivity.openNotification = true;
-
-                        }
                     }
 
                     @Override
@@ -163,7 +172,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         }
                     }
 
-                });
+                });*/
             }else {
                 startActivity(new Intent(SplashScreenActivity.this, NoInternetConnectionActivity.class));
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");

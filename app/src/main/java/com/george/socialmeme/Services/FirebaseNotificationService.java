@@ -134,9 +134,9 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationBody)
-                .setSmallIcon(R.drawable.app_logo)
+                .setSmallIcon(R.drawable.sm_notifications)
                 .setLargeIcon(icon)
-                .setAutoCancel(false);
+                .setAutoCancel(true);
         notification.setContentIntent(pendingIntent);
         NotificationManagerCompat.from(this).notify(notificationID, notification.build());
 

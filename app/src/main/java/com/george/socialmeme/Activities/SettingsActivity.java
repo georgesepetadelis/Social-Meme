@@ -83,7 +83,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         AdView mAdView = findViewById(R.id.adView3);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
+        if (HomeActivity.show_banners) {
+            mAdView.loadAd(adRequest);
+        }
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();

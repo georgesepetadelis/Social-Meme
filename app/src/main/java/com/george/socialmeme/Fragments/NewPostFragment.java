@@ -391,7 +391,10 @@ public class NewPostFragment extends Fragment {
 
         AdView mAdView = view.findViewById(R.id.adView2);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
+        if (HomeActivity.show_banners) {
+            mAdView.loadAd(adRequest);
+        }
 
         loadingDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
         loadingDialog.getProgressHelper().setBarColor(R.color.main);

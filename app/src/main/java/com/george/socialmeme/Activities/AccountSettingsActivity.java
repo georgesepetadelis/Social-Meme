@@ -90,6 +90,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
 
             } else {
+                progressDialog.hide();
                 Toast.makeText(AccountSettingsActivity.this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
             }
 

@@ -347,7 +347,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
         AdView mAdView = findViewById(R.id.adView4);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
+        if (HomeActivity.show_banners) {
+            mAdView.loadAd(adRequest);
+        }
 
         Type type = new TypeToken<List<PostModel>>() {
         }.getType();

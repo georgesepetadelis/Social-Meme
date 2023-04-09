@@ -541,7 +541,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
         AdView mAdView = dialogView.findViewById(R.id.adView6);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        if (HomeActivity.show_banners) mAdView.loadAd(adRequest);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setReverseLayout(true);

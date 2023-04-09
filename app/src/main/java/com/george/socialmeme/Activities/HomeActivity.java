@@ -47,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean showLoadingScreen;
     public static boolean appStarted;
     public static boolean watched_ad;
+    public static boolean show_banners;
     public static ChipNavigationBar bottomNavBar;
     public static ArrayList<PostModel> savedPostsArrayList, noSuffledPostsList;
     public static ArrayList<UserModel> savedUserProfiles = null;
@@ -95,6 +96,63 @@ public class HomeActivity extends AppCompatActivity {
         Toast.makeText(this, "Night mode enabled", Toast.LENGTH_SHORT).show();
     }
 
+    public interface FirebaseCallback {
+        void onCallback(boolean show);
+    }
+
+    FirebaseCallback firebaseCallback = show -> {
+        this.show_banners = show;
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        bottomNavBar.setOnItemSelectedListener(id -> {
+
+            Fragment selectedFragment = new HomeFragment();
+
+            switch (id) {
+                case R.id.home_fragment:
+                    selectedFragment = new HomeFragment();
+                    filtersBtn.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.new_post_fragment:
+                    selectedFragment = new NewPostFragment();
+                    filtersBtn.setVisibility(View.INVISIBLE);
+                    break;
+                case R.id.my_profile_fragment:
+                    selectedFragment = new MyProfileFragment();
+                    filtersBtn.setVisibility(View.INVISIBLE);
+                    break;
+            }
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
+
+        });
+
+        // Load default fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+        bottomNavBar.setItemSelected(R.id.home_fragment, true);
+
+        if (!singedInAnonymously && user != null) {
+            user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
+                    .setTitle("Error")
+                    .setMessage(e.getMessage())
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", (dialog, which) -> {
+                        finish();
+                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    }).show());
+        }
+
+        bottomNavBar.setVisibility(View.VISIBLE);
+        filtersBtn.setVisibility(View.VISIBLE);
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -107,6 +165,22 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Decide if we show AD banners based on DB variable
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("show_banners").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean showAdBanner = (Boolean) snapshot.getValue(Boolean.class);
+                firebaseCallback.onCallback(showAdBanner);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*
         if (!newFeaturesViewed()) {
             SharedPreferences sharedPref = getSharedPreferences("v2.2.7", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -114,7 +188,7 @@ public class HomeActivity extends AppCompatActivity {
             editor.apply();
             startActivity(new Intent(HomeActivity.this, NewsActivity.class));
             CustomIntent.customType(HomeActivity.this, "fadein-to-fadeout");
-        }
+        }*/
 
         Bundle extras = getIntent().getExtras();
 
@@ -136,9 +210,6 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
@@ -148,6 +219,10 @@ public class HomeActivity extends AppCompatActivity {
         savedPostsArrayList = new ArrayList<>();
         savedUserProfiles = new ArrayList<>();
         noSuffledPostsList = new ArrayList<>();
+
+        // Hide navBar and filterBtn while loading
+        bottomNavBar.setVisibility(View.INVISIBLE);
+        filtersBtn.setVisibility(View.INVISIBLE);
 
         // Detect if system night mode is enabled
         // to auto enable in-app night mode
@@ -193,46 +268,5 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        bottomNavBar.setOnItemSelectedListener(id -> {
-
-            Fragment selectedFragment = new HomeFragment();
-
-            switch (id) {
-                case R.id.home_fragment:
-                    selectedFragment = new HomeFragment();
-                    filtersBtn.setVisibility(View.VISIBLE);
-                    break;
-                case R.id.new_post_fragment:
-                    selectedFragment = new NewPostFragment();
-                    filtersBtn.setVisibility(View.INVISIBLE);
-                    break;
-                case R.id.my_profile_fragment:
-                    selectedFragment = new MyProfileFragment();
-                    filtersBtn.setVisibility(View.INVISIBLE);
-                    break;
-            }
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                    .replace(R.id.fragment_container, selectedFragment)
-                    .commit();
-
-        });
-
-        // Load default fragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
-        bottomNavBar.setItemSelected(R.id.home_fragment, true);
-
-        if (!singedInAnonymously && user != null) {
-            user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
-                    .setTitle("Error")
-                    .setMessage(e.getMessage())
-                    .setCancelable(false)
-                    .setPositiveButton("Ok", (dialog, which) -> {
-                        finish();
-                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
-                    }).show());
-        }
     }
 }
