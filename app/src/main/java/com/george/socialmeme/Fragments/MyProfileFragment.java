@@ -145,6 +145,8 @@ public class MyProfileFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot snap : snapshot.getChildren()) {
+                            if (snap.child("name").getValue(String.class) != null &&
+                                    snap.child("id").getValue(String.class) != null)
                             if (snap.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                 postsRef.child(snap.child("id").getValue(String.class)).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
                             }
