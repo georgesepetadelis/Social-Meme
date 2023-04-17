@@ -142,246 +142,249 @@ public class NewPostFragment extends Fragment {
         String postId = postsRef.push().getKey();
         AtomicBoolean uploadCancelled = new AtomicBoolean(false);
 
-        if (type.equals("text")) {
+        if (type != null && postId != null) {
+            if (type.equals("text")) {
 
-            AlertDialog dialog;
+                AlertDialog dialog;
 
-            // Set dialog theme
-            if (isNightModeEnabled()) {
-                dialog = new AlertDialog.Builder(getContext()).create();
-                Window window = dialog.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(Color.BLACK);
-            } else {
-                dialog = new AlertDialog.Builder(getContext()).create();
-                Window window = dialog.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(Color.WHITE);
+                // Set dialog theme
+                if (isNightModeEnabled()) {
+                    dialog = new AlertDialog.Builder(getContext()).create();
+                    Window window = dialog.getWindow();
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.setStatusBarColor(Color.BLACK);
+                } else {
+                    dialog = new AlertDialog.Builder(getContext()).create();
+                    Window window = dialog.getWindow();
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.setStatusBarColor(Color.WHITE);
+                }
+
+                LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View dialogView = layoutInflater.inflate(R.layout.upload_text_dialog, null);
+
+                EditText jokeTitleEditText = dialogView.findViewById(R.id.joke_title);
+                EditText jokeContentEditText = dialogView.findViewById(R.id.joke_content);
+                Button uploadJokeButton = dialogView.findViewById(R.id.upload_joke_btn);
+                ImageButton dismissDialogButton = dialogView.findViewById(R.id.dismissDialogBtn);
+
+                uploadJokeButton.setOnClickListener(view -> {
+
+                    loadingDialog.show();
+
+                    if (jokeTitleEditText.getText().toString().isEmpty() || jokeContentEditText.getText().toString().isEmpty()) {
+                        SmartDialogBox.showErrorDialog(getActivity(), "Title or joke content cannot be empty", "OK");
+                        loadingDialog.hide();
+                    } else {
+                        dialog.dismiss();
+                        UploadPostModel model = new UploadPostModel();
+                        postsRef.child(postId).setValue(model);
+                        postsRef.child(postId).child("name").setValue(user.getDisplayName());
+                        postsRef.child(postId).child("likes").setValue("0");
+                        postsRef.child(postId).child("id").setValue(postId);
+                        postsRef.child(postId).child("postType").setValue(type);
+                        postsRef.child(postId).child("joke_title").setValue(jokeTitleEditText.getText().toString());
+                        postsRef.child(postId).child("joke_content").setValue(jokeContentEditText.getText().toString());
+
+                        if (user.getPhotoUrl() != null) {
+                            postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                        } else {
+                            postsRef.child(postId).child("authorProfilePictureURL").setValue("none")
+                                    .addOnCompleteListener(task -> loadingDialog.hide());
+                        }
+
+                        PostModel postModel = new PostModel();
+                        postModel.setId(postId);
+                        postModel.setAuthorID(user.getUid());
+                        postModel.setName(user.getDisplayName());
+                        postModel.setPostTitle(jokeTitleEditText.getText().toString());
+                        postModel.setPostContentText(jokeContentEditText.getText().toString());
+                        postModel.setLikes("0");
+                        postModel.setCommentsCount("0");
+                        postModel.setPostType(type);
+
+                        if (user.getPhotoUrl() == null) {
+                            postModel.setProfileImgUrl("none");
+                        } else {
+                            postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                        }
+
+                        if (HomeActivity.savedPostsArrayList.size() != 0) {
+                            HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                        }
+
+                        HomeActivity.savedPostsArrayList.add(postModel);
+
+                        // Add post's of the month view as RecyclerView item
+                        // to avoid using ScrollView
+                        PostModel postsOfTheMonthView = new PostModel();
+                        postsOfTheMonthView.setPostType("postsOfTheMonth");
+                        HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+
+                        Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
+                        sendNewPostNotificationToFollowers(postId);
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+                        loadingDialog.hide();
+                    }
+                });
+
+                dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
+
+                dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.setView(dialogView);
+                dialog.show();
+
             }
 
-            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View dialogView = layoutInflater.inflate(R.layout.upload_text_dialog, null);
+            if (type.equals("audio")) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
+                        .setTitle("Give a name to your audio")
+                        .setCancelable(false);
+                final EditText audioNameET = new EditText(getActivity());
+                audioNameET.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+                audioNameET.setHint("Write a name");
+                dialog.setView(audioNameET);
 
-            EditText jokeTitleEditText = dialogView.findViewById(R.id.joke_title);
-            EditText jokeContentEditText = dialogView.findViewById(R.id.joke_content);
-            Button uploadJokeButton = dialogView.findViewById(R.id.upload_joke_btn);
-            ImageButton dismissDialogButton = dialogView.findViewById(R.id.dismissDialogBtn);
+                dialog.setPositiveButton("Ok", (dialogInterface, i) -> {
+                    if (!audioNameET.getText().toString().isEmpty()) {
 
-            uploadJokeButton.setOnClickListener(view -> {
+                        StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
+                        fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
+                                .addOnSuccessListener(uri1 -> {
+                                    loadingDialog.hide();
 
-                loadingDialog.show();
+                                    UploadPostModel model = new UploadPostModel(uri1.toString());
+                                    postsRef.child(postId).setValue(model);
+                                    postsRef.child(postId).child("name").setValue(user.getDisplayName());
+                                    postsRef.child(postId).child("likes").setValue("0");
+                                    postsRef.child(postId).child("id").setValue(postId);
+                                    postsRef.child(postId).child("postType").setValue(type);
 
-                if (jokeTitleEditText.getText().toString().isEmpty() || jokeContentEditText.getText().toString().isEmpty()) {
-                    SmartDialogBox.showErrorDialog(getActivity(), "Title or joke content cannot be empty", "OK");
-                    loadingDialog.hide();
-                } else {
-                    dialog.dismiss();
-                    UploadPostModel model = new UploadPostModel();
-                    postsRef.child(postId).setValue(model);
-                    postsRef.child(postId).child("name").setValue(user.getDisplayName());
-                    postsRef.child(postId).child("likes").setValue("0");
-                    postsRef.child(postId).child("id").setValue(postId);
-                    postsRef.child(postId).child("postType").setValue(type);
-                    postsRef.child(postId).child("joke_title").setValue(jokeTitleEditText.getText().toString());
-                    postsRef.child(postId).child("joke_content").setValue(jokeContentEditText.getText().toString());
+                                    if (!audioNameET.getText().toString().isEmpty()) {
+                                        postsRef.child(postId).child("audioName").setValue(audioNameET.getText().toString());
+                                    }
 
-                    if (user.getPhotoUrl() != null) {
-                        postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
-                    } else {
-                        postsRef.child(postId).child("authorProfilePictureURL").setValue("none")
-                                .addOnCompleteListener(task -> loadingDialog.hide());
-                    }
+                                    if (user.getPhotoUrl() != null) {
+                                        postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                                    } else {
+                                        postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
+                                    }
 
-                    PostModel postModel = new PostModel();
-                    postModel.setId(postId);
-                    postModel.setAuthorID(user.getUid());
-                    postModel.setName(user.getDisplayName());
-                    postModel.setPostTitle(jokeTitleEditText.getText().toString());
-                    postModel.setPostContentText(jokeContentEditText.getText().toString());
-                    postModel.setLikes("0");
-                    postModel.setCommentsCount("0");
-                    postModel.setPostType(type);
+                                    PostModel postModel = new PostModel();
+                                    postModel.setId(postId);
+                                    postModel.setAuthorID(user.getUid());
+                                    postModel.setName(user.getDisplayName());
+                                    postModel.setAudioName(audioNameET.getText().toString());
+                                    postModel.setLikes("0");
+                                    postModel.setCommentsCount("0");
+                                    postModel.setPostType(type);
+                                    postModel.setImgUrl(uri1.toString());
 
-                    if (user.getPhotoUrl() == null) {
-                        postModel.setProfileImgUrl("none");
-                    } else {
-                        postModel.setProfileImgUrl(user.getPhotoUrl().toString());
-                    }
+                                    if (user.getPhotoUrl() == null) {
+                                        postModel.setProfileImgUrl("none");
+                                    }else {
+                                        postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                                    }
 
-                    if (HomeActivity.savedPostsArrayList.size() != 0) {
-                        HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
-                    }
+                                    if (HomeActivity.savedPostsArrayList.size() != 0) {
+                                        HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                                    }
 
-                    HomeActivity.savedPostsArrayList.add(postModel);
+                                    HomeActivity.savedPostsArrayList.add(postModel);
 
-                    // Add post's of the month view as RecyclerView item
-                    // to avoid using ScrollView
-                    PostModel postsOfTheMonthView = new PostModel();
-                    postsOfTheMonthView.setPostType("postsOfTheMonth");
-                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+                                    // Add post's of the month view as RecyclerView item
+                                    // to avoid using ScrollView
+                                    PostModel postsOfTheMonthView = new PostModel();
+                                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
-                    Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
-                    sendNewPostNotificationToFollowers(postId);
-                    HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
-                    loadingDialog.hide();
-                }
-            });
+                                    Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
+                                    sendNewPostNotificationToFollowers(postId);
+                                    HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
-            dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
-
-            dialog.getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.setView(dialogView);
-            dialog.show();
-
-        }
-
-        if (type.equals("audio")) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
-                    .setTitle("Give a name to your audio")
-                    .setCancelable(false);
-            final EditText audioNameET = new EditText(getActivity());
-            audioNameET.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-            audioNameET.setHint("Write a name");
-            dialog.setView(audioNameET);
-
-            dialog.setPositiveButton("Ok", (dialogInterface, i) -> {
-                if (!audioNameET.getText().toString().isEmpty()) {
-
-                    StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
-                    fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
-                            .addOnSuccessListener(uri1 -> {
-                                loadingDialog.hide();
-
-                                UploadPostModel model = new UploadPostModel(uri1.toString());
-                                postsRef.child(postId).setValue(model);
-                                postsRef.child(postId).child("name").setValue(user.getDisplayName());
-                                postsRef.child(postId).child("likes").setValue("0");
-                                postsRef.child(postId).child("id").setValue(postId);
-                                postsRef.child(postId).child("postType").setValue(type);
-
-                                if (!audioNameET.getText().toString().isEmpty()) {
-                                    postsRef.child(postId).child("audioName").setValue(audioNameET.getText().toString());
-                                }
-
-                                if (user.getPhotoUrl() != null) {
-                                    postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
-                                } else {
-                                    postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
-                                }
-
-                                PostModel postModel = new PostModel();
-                                postModel.setId(postId);
-                                postModel.setAuthorID(user.getUid());
-                                postModel.setName(user.getDisplayName());
-                                postModel.setAudioName(audioNameET.getText().toString());
-                                postModel.setLikes("0");
-                                postModel.setCommentsCount("0");
-                                postModel.setPostType(type);
-                                postModel.setImgUrl(uri1.toString());
-
-                                if (user.getPhotoUrl() == null) {
-                                    postModel.setProfileImgUrl("none");
-                                }else {
-                                    postModel.setProfileImgUrl(user.getPhotoUrl().toString());
-                                }
-
-                                if (HomeActivity.savedPostsArrayList.size() != 0) {
-                                    HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
-                                }
-
-                                HomeActivity.savedPostsArrayList.add(postModel);
-
-                                // Add post's of the month view as RecyclerView item
-                                // to avoid using ScrollView
-                                PostModel postsOfTheMonthView = new PostModel();
-                                postsOfTheMonthView.setPostType("postsOfTheMonth");
-                                HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
-
-                                Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                                sendNewPostNotificationToFollowers(postId);
-                                HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
-
-                            })).addOnProgressListener(snapshot -> {
-                        loadingDialog.show();
-                    }).addOnFailureListener(e -> {
-                                loadingDialog.hide();
-                                Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            });
-
-                } else {
-                    Toast.makeText(getActivity(), "Please provide a name for your sound and try again", Toast.LENGTH_LONG).show();
-                    dialogInterface.dismiss();
-                }
-            }).setNegativeButton("Cancel", (dialogInterface, i) -> {
-                uploadCancelled.set(true);
-                dialogInterface.dismiss();
-            }).show();
-
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(550, FrameLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(50, 6, 30, 6);
-            audioNameET.setLayoutParams(params);
-        }
-
-        else {
-
-            if (uri != null) {
-                StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
-                fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
-                    loadingDialog.hide();
-
-                    UploadPostModel model = new UploadPostModel(uri1.toString());
-                    postsRef.child(postId).setValue(model);
-                    postsRef.child(postId).child("name").setValue(user.getDisplayName());
-                    postsRef.child(postId).child("likes").setValue("0");
-                    postsRef.child(postId).child("id").setValue(postId);
-                    postsRef.child(postId).child("postType").setValue(type);
-
-                    if (user.getPhotoUrl() != null) {
-                        postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
-                    } else {
-                        postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
-                    }
-
-                    PostModel postModel = new PostModel();
-                    postModel.setId(postId);
-                    postModel.setAuthorID(user.getUid());
-                    postModel.setName(user.getDisplayName());
-                    postModel.setImgUrl(uri1.toString());
-                    postModel.setLikes("0");
-                    postModel.setCommentsCount("0");
-                    postModel.setPostType(type);
-
-                    if (user.getPhotoUrl() == null) {
-                        postModel.setProfileImgUrl("none");
-                    } else {
-                        postModel.setProfileImgUrl(user.getPhotoUrl().toString());
-                    }
-
-                    if (HomeActivity.savedPostsArrayList.size() != 0) {
-                        HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
-                    }
-
-                    HomeActivity.savedPostsArrayList.add(postModel);
-
-                    // Add post's of the month view as RecyclerView item
-                    // to avoid using ScrollView
-                    PostModel postsOfTheMonthView = new PostModel();
-                    postsOfTheMonthView.setPostType("postsOfTheMonth");
-                    HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
-
-                    Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                    sendNewPostNotificationToFollowers(postId);
-                    HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
-
-                })).addOnProgressListener(snapshot -> loadingDialog.show())
-                        .addOnFailureListener(e -> {
+                                })).addOnProgressListener(snapshot -> {
+                            loadingDialog.show();
+                        }).addOnFailureListener(e -> {
                             loadingDialog.hide();
                             Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         });
+
+                    } else {
+                        Toast.makeText(getActivity(), "Please provide a name for your sound and try again", Toast.LENGTH_LONG).show();
+                        dialogInterface.dismiss();
+                    }
+                }).setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    uploadCancelled.set(true);
+                    dialogInterface.dismiss();
+                }).show();
+
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(550, FrameLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(50, 6, 30, 6);
+                audioNameET.setLayoutParams(params);
             }
 
+            else {
+
+                if (uri != null) {
+                    StorageReference fileRef = storageReference.child(postId + "." + getFileExtension(uri));
+                    fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
+                        loadingDialog.hide();
+
+                        UploadPostModel model = new UploadPostModel(uri1.toString());
+                        postsRef.child(postId).setValue(model);
+                        postsRef.child(postId).child("name").setValue(user.getDisplayName());
+                        postsRef.child(postId).child("likes").setValue("0");
+                        postsRef.child(postId).child("id").setValue(postId);
+                        postsRef.child(postId).child("postType").setValue(type);
+
+                        if (user.getPhotoUrl() != null) {
+                            postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
+                        } else {
+                            postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
+                        }
+
+                        PostModel postModel = new PostModel();
+                        postModel.setId(postId);
+                        postModel.setAuthorID(user.getUid());
+                        postModel.setName(user.getDisplayName());
+                        postModel.setImgUrl(uri1.toString());
+                        postModel.setLikes("0");
+                        postModel.setCommentsCount("0");
+                        postModel.setPostType(type);
+
+                        if (user.getPhotoUrl() == null) {
+                            postModel.setProfileImgUrl("none");
+                        } else {
+                            postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                        }
+
+                        if (HomeActivity.savedPostsArrayList.size() != 0) {
+                            HomeActivity.savedPostsArrayList.remove(HomeActivity.savedPostsArrayList.size() - 1);
+                        }
+
+                        HomeActivity.savedPostsArrayList.add(postModel);
+
+                        // Add post's of the month view as RecyclerView item
+                        // to avoid using ScrollView
+                        PostModel postsOfTheMonthView = new PostModel();
+                        postsOfTheMonthView.setPostType("postsOfTheMonth");
+                        HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+
+                        Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
+                        sendNewPostNotificationToFollowers(postId);
+                        HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+
+                    })).addOnProgressListener(snapshot -> loadingDialog.show())
+                            .addOnFailureListener(e -> {
+                                loadingDialog.hide();
+                                Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
+                }
+
+            }
         }
+
     }
 
     @Override
