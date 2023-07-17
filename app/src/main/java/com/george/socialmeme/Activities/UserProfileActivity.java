@@ -492,6 +492,9 @@ public class UserProfileActivity extends AppCompatActivity {
 
             } else {
                 Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
+                // App failed to load posts -- Restarting app
+                Intent intent = new Intent(UserProfileActivity.this, SplashScreenActivity.class);
+                startActivity(intent);
             }
         }
 

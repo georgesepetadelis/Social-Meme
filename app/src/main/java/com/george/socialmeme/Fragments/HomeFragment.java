@@ -327,7 +327,7 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    Toast.makeText(context, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -374,97 +374,6 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
-    }
-
-    void showSearchUserDialog() {
-
-        Dialog dialog = new Dialog(getActivity());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.search_user_top_sheet);
-
-        ImageButton dismissDialogButton = dialog.findViewById(R.id.dismiss_top_dialog_btn);
-        dismissDialogButton.setOnClickListener(view -> dialog.dismiss());
-
-        EditText usernameForSearch = dialog.findViewById(R.id.user_search_et);
-        ImageButton submitUserSearchButton = dialog.findViewById(R.id.submit_user_search);
-        ProgressBar progressBar = dialog.findViewById(R.id.progress_bar_top_sheet);
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        submitUserSearchButton.setOnClickListener(view -> {
-
-            String usernameInput = usernameForSearch.getText().toString().trim().toLowerCase();
-            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-            // Prevent user from dismissing the
-            // dialog while app is searching for the user
-            // to avoid any errors
-            dialog.setCancelable(false);
-
-            if (!usernameInput.isEmpty()) {
-
-                submitUserSearchButton.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-
-                if (usernameInput.equals(user.getDisplayName().toLowerCase())) {
-                    dialog.dismiss();
-                    HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
-                } else {
-                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                            boolean userFound = false;
-
-                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                if (userSnapshot.child("name").getValue(String.class) != null) {
-                                    if (Objects.equals(userSnapshot.child("name").getValue(String.class).trim().toLowerCase(), usernameInput)) {
-                                        userFound = true;
-                                        Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                                        intent.putExtra("user_id", userSnapshot.child("id").getValue().toString());
-                                        intent.putExtra("username", usernameInput);
-                                        intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
-                                        getActivity().startActivity(intent);
-                                        CustomIntent.customType(getActivity(), "left-to-right");
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (!userFound) {
-                                SmartDialogBox.showSearchDialog(getActivity(), "We cannot find a user with this username", "OK");
-                            }
-
-                            progressBar.setVisibility(View.GONE);
-                            submitUserSearchButton.setVisibility(View.VISIBLE);
-                            dialog.setCancelable(true);
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            dialog.setCancelable(true);
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-            } else {
-                dialog.setCancelable(true);
-                progressBar.setVisibility(View.GONE);
-                SmartDialogBox.showInfoDialog(getActivity(), "Username cannot be empty", "OK");
-            }
-
-        });
-
-        dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.TopSheetDialogAnimation;
-        dialog.getWindow().setGravity(android.view.Gravity.TOP);
-
     }
 
     void showFiltersDialog() {
@@ -626,7 +535,7 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
+    public void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
 
         AdView mAdView = fragmentView.findViewById(R.id.loading_ad);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -681,6 +590,10 @@ public class HomeFragment extends Fragment {
                         for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
                             if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
+
+                                if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                    HomeActivity.userHasPosts = true;
+                                }
 
                                 PostModel postModel = new PostModel();
                                 postModel.setId(postSnapshot.child("id").getValue(String.class));
@@ -753,20 +666,6 @@ public class HomeFragment extends Fragment {
                             SharedPreferences askForSearchSharedPref = activity.getSharedPreferences("new_search", MODE_PRIVATE);
                             SharedPreferences.Editor askForSearchSharedPrefEditor = askForSearchSharedPref.edit();
                             boolean askForSearch = askForSearchSharedPref.getBoolean("new_search", false);
-
-                            if (!askForSearch) {
-
-                                new GuideView.Builder(getContext())
-                                        .setTitle("Check Social meme new search menu")
-                                        .setContentText("Now you can find your friends easier")
-                                        .setTargetView(searchUserBtn)
-                                        .setDismissType(DismissType.targetView)
-                                        .setGravity(Gravity.center)
-                                        .build().show();
-
-                                askForSearchSharedPrefEditor.putBoolean("new_search", true);
-                                askForSearchSharedPrefEditor.apply();
-                            }
                         }
 
                         appShowCase();
@@ -1008,7 +907,6 @@ public class HomeFragment extends Fragment {
         });
 
         searchUserBtn.setOnClickListener(view1 -> {
-            //showSearchUserDialog() // OLD SEARCH MENU
             startActivity(new Intent(getActivity(), SearchUserActivity.class));
             CustomIntent.customType(getContext(), "left-to-right");
         });

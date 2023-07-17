@@ -16,6 +16,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -496,6 +498,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
         like_btn.setOnClickListener(v -> {
 
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE));
             // Animate like button when clicked
             YoYo.with(Techniques.Shake)
                     .duration(500)

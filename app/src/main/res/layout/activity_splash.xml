@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sm_splash_bg"
+    android:background="@color/black"
     app:layoutDescription="@xml/activity_splash_scene2"
     tools:context=".Activities.SplashScreenActivity">
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
         android:text="By George Sepetadelis"
-        android:textColor="@color/white"
+        android:textColor="#A8FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -25,16 +25,12 @@
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-black"
+        android:fontFamily="@font/monst"
         android:text="SOCIAL MEME"
-        android:textSize="58sp"
+        android:textSize="45sp"
         android:textAlignment="center"
-        android:textColor="#0088FF"
-        android:textStyle="bold|italic"
-        android:shadowColor="#FFFFFF"
-        android:shadowDx="7"
-        android:shadowDy="7"
-        android:shadowRadius="5"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,6 +45,7 @@
         app:adUnitId="ca-app-pub-9627755439548346/2971039157"
         app:layout_constraintBottom_toTopOf="@+id/textView14"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

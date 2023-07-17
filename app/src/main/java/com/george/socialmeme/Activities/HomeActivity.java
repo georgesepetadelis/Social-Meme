@@ -59,6 +59,8 @@ public class HomeActivity extends AppCompatActivity {
     public static String notiPostId;
     public static String notiUsername;
 
+    public static boolean userHasPosts = false;
+
     public static String prettyCount(Number number) {
         char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
         long numValue = number.longValue();
@@ -249,17 +251,20 @@ public class HomeActivity extends AppCompatActivity {
                     .setNegativeButton("No, thanks", (dialogInterface, i) -> {
                         askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
                         askForNightModeSharedPrefEditor.apply();
+                        dialogInterface.dismiss();
+                        /*
                         AlertDialog reminderDialog = new AlertDialog.Builder(HomeActivity.this)
                                 .setTitle("Nigh mode")
                                 .setIcon(R.drawable.moon)
                                 .setMessage("Remember that you can always enable night mode in Social Meme settings")
                                 .setNegativeButton("Ok", (dialogInterface1, i1) -> dialogInterface1.dismiss())
-                                .create();
+                                .create()
+
 
                         reminderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         reminderDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
                         reminderDialog.show();
-
+                        */
                     }).create();
 
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

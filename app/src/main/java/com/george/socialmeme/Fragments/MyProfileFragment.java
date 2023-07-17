@@ -484,6 +484,7 @@ public class MyProfileFragment extends Fragment {
                     userModel.setSilverTrophiesCounter(silverTrophiesCount.getText().toString());
                     userModel.setBronzeTrophiesCounter(bronzeTrophiesCount.getText().toString());
                     HomeActivity.savedUserData = userModel;
+
                 });
             }
 

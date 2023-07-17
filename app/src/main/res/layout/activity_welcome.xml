@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:elevation="9dp"
-        android:fontFamily="casual"
+
         android:text="Welcome to"
         android:textColor="#D2FFFFFF"
         android:textSize="42sp"
@@ -55,7 +55,7 @@
             android:paddingStart="18dp"
             android:paddingEnd="18dp"
             android:elevation="9dp"
-            android:text="Laugh as much as you want for free"
+            android:text="Unleash your humor, connect through laughter!"
             android:textColor="#D3FFFFFF"
             android:textSize="23sp"
             android:textStyle="italic"

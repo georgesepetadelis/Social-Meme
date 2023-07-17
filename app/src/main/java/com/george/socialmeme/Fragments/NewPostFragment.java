@@ -88,6 +88,47 @@ public class NewPostFragment extends Fragment {
                 }
             });
 
+    private void notifyEveryoneAboutFirstPost(String postID) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    if (snap.child("name").getValue(String.class) != null
+                            && snap.child("id").getValue(String.class) != null) {
+
+                        String id = snap.child("id").getValue(String.class);
+                        String name = snap.child("name").getValue(String.class);
+
+                        if (snap.child("fcm_token").exists() &&  !name.equals(user.getDisplayName())) {
+
+                            String token = snap.child("fcm_token").getValue(String.class);
+
+                            String firestoreNotificationID = usersRef.push().getKey();
+                            Map<String, Object> notification = new HashMap<>();
+                            notification.put("token", token);
+                            notification.put("postID", postID);
+                            notification.put("title", user.getDisplayName() + " uploaded their first meme");
+                            notification.put("message", "See the first meme from " + user.getDisplayName());
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                            firestore.collection("notifications")
+                                    .document(firestoreNotificationID).set(notification);
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
 
     private void sendNewPostNotificationToFollowers(String postID) {
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -106,7 +147,7 @@ public class NewPostFragment extends Fragment {
                             notification.put("token", userToken);
                             notification.put("postID", postID);
                             notification.put("title", user.getDisplayName() + " just uploaded a new meme");
-                            notification.put("message", "See the latest post from " + user.getDisplayName());
+                            notification.put("message", "See the latest meme from " + user.getDisplayName());
                             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                             firestore.collection("notifications")
                                     .document(firestoreNotificationID).set(notification);
@@ -221,10 +262,16 @@ public class NewPostFragment extends Fragment {
                         postsOfTheMonthView.setPostType("postsOfTheMonth");
                         HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
+                        if (!HomeActivity.userHasPosts) {
+                            HomeActivity.userHasPosts = true;
+                            notifyEveryoneAboutFirstPost(postId);
+                        }
+
                         Toast.makeText(getActivity(), "Joke uploaded!", Toast.LENGTH_SHORT).show();
                         sendNewPostNotificationToFollowers(postId);
                         HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
                         loadingDialog.hide();
+
                     }
                 });
 
@@ -299,6 +346,11 @@ public class NewPostFragment extends Fragment {
                                     postsOfTheMonthView.setPostType("postsOfTheMonth");
                                     HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
+                                    if (!HomeActivity.userHasPosts) {
+                                        HomeActivity.userHasPosts = true;
+                                        notifyEveryoneAboutFirstPost(postId);
+                                    }
+
                                     Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
                                     sendNewPostNotificationToFollowers(postId);
                                     HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
@@ -370,6 +422,11 @@ public class NewPostFragment extends Fragment {
                         PostModel postsOfTheMonthView = new PostModel();
                         postsOfTheMonthView.setPostType("postsOfTheMonth");
                         HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+
+                        if (!HomeActivity.userHasPosts) {
+                            HomeActivity.userHasPosts = true;
+                            notifyEveryoneAboutFirstPost(postId);
+                        }
 
                         Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
                         sendNewPostNotificationToFollowers(postId);
