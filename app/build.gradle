@@ -1,0 +1,139 @@
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.firebase.crashlytics'
+}
+
+android {
+    compileSdk 31
+
+
+    defaultConfig {
+        applicationId "com.george.socialmeme"
+        minSdk 26
+        targetSdk 31
+        versionCode 38
+        versionName "v2.3.2"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        main {
+            res {
+                srcDirs 'src/main/res', 'src/main/res/Activities', 'src/main/res/ActivitiesLayouts'
+            }
+        }
+    }
+    lint {
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+
+    // Gif View dependency
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
+
+    // View animation dependency
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    // Welcome screen dependency
+    implementation 'com.github.AppIntro:AppIntro:6.1.0'
+
+    // Activity animation dependency
+    implementation 'com.github.hajiyevelnur92:intentanimation:1.0'
+
+    // Circle imageView dependency
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // Progress dialog dependency
+    implementation 'com.samigehi:loadingview:1.1'
+
+    // Glide dependencies
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation 'com.google.firebase:firebase-installations:17.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'com.google.android.gms:play-services-ads-lite:20.6.0'
+    implementation 'androidx.core:core:1.7.0'
+    implementation 'com.google.firebase:firebase-inappmessaging-display:20.1.2'
+    implementation 'com.google.firebase:firebase-messaging:23.0.2'
+    implementation 'com.google.firebase:firebase-firestore:24.0.2'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.9'
+    implementation 'com.google.firebase:firebase-analytics:20.1.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    // Firebase dependencies
+    implementation 'com.google.firebase:firebase-messaging-directboot:23.0.2'
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+    implementation 'com.google.firebase:firebase-auth:21.0.2'
+    implementation 'com.google.firebase:firebase-database:20.0.4'
+    implementation 'com.google.firebase:firebase-storage:20.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'com.firebaseui:firebase-ui-database:4.3.2'
+
+    // Android dependencies
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'com.google.android.gms:play-services-ads:20.6.0'
+
+    // Image loader
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    // Video player
+    implementation 'com.github.HamidrezaAmz:MagicalExoPlayer:2.0.7'
+
+    // Custom navigation bar
+    implementation 'com.github.ismaeldivita:chip-navigation-bar:1.4.0'
+
+    // ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.17.1'
+
+    // Blur view
+    implementation 'io.alterac.blurkit:blurkit:1.1.0'
+
+    // Audio player
+    implementation 'com.github.HugoMatilla:AudioPlayerView:v1.0.1'
+
+    // Custom alert
+    implementation 'com.github.jeanclaudesoft:SmartDialog:1.0'
+    implementation "com.airbnb.android:lottie:5.0.3"
+
+    // Custom alert dialog
+    implementation 'com.github.TutorialsAndroid:KAlertDialog:14.0.19'
+
+    // Screenshot detector
+    implementation 'com.esc861.screenshotlistener:screenshotlistener:1.0.3'
+
+    // Showcase
+    implementation 'com.github.mreram:showcaseview:1.4.0'
+
+    implementation 'com.google.code.gson:gson:2.2.4'
+
+    // Zoom image library
+    implementation 'io.github.imablanco:zoomy:1.0.0'
+
+    //implementation 'com.facebook.android:facebook-android-sdk:8.9'
+    implementation 'com.facebook.android:facebook-android-sdk:4.33.0'
+
+}

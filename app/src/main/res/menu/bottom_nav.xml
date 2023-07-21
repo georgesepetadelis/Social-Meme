@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home_fragment"
+        android:title="Home"
+        app:cnb_iconColor="#0040FF"
+        app:cnb_backgroundColor="@color/white"
+        android:icon="@drawable/home_modern" />
+
+    <item
+        android:id="@+id/new_post_fragment"
+        app:cnb_iconColor="#0040FF"
+        app:cnb_backgroundColor="@color/white"
+        android:icon="@drawable/add_modern"
+        android:title="New post" />
+
+    <item
+        android:id="@+id/my_profile_fragment"
+        app:cnb_iconColor="#0040FF"
+        app:cnb_backgroundColor="@color/white"
+        android:icon="@drawable/profile_modern"
+        android:title="My Profile" />
+</menu>
