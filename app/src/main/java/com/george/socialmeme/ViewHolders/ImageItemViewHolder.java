@@ -317,7 +317,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
             Intent intent = new Intent("com.instagram.share.ADD_TO_STORY");
             intent.setType("image/*");
-            //intent.putExtra(Intent.EXTRA_STREAM, bg_uri);
             intent.setPackage("com.instagram.android");
             String sourceApplication = "650794227085896";
             intent.putExtra("source_application", sourceApplication);
@@ -397,6 +396,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             } else {
                 Toast.makeText(context, "Instagram is not installed!", Toast.LENGTH_SHORT).show();
             }
+            dialog.dismiss();
         });
 
         copyImageLink.setOnClickListener(v -> {
@@ -404,6 +404,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             ClipData clip = ClipData.newPlainText("post_url", postImageURL);
             clipboard.setPrimaryClip(clip);
             Toast.makeText(context, "Image URL copied to clipboard", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
         });
 
         dialog.show();

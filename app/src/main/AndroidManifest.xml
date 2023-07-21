@@ -28,12 +28,16 @@
         android:icon="@drawable/sm_logo_new"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/sm_notifications"
+        android:roundIcon="@drawable/sm_logo_new"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme"
         tools:ignore="DataExtractionRules"
         tools:replace="android:allowBackup"
         tools:targetApi="s">
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/sm_notifications" />
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 

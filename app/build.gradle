@@ -13,8 +13,8 @@ android {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 31
-        versionCode 38
-        versionName "v2.3.2"
+        versionCode 39
+        versionName "v2.3.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

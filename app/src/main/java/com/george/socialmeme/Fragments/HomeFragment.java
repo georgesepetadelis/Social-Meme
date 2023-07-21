@@ -533,6 +533,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
+
     };
 
     public void getAllPostsFromDB(boolean refreshDataFromDB, View fragmentView, SwipeRefreshLayout swipeRefreshLayout) {
@@ -910,6 +911,21 @@ public class HomeFragment extends Fragment {
             startActivity(new Intent(getActivity(), SearchUserActivity.class));
             CustomIntent.customType(getContext(), "left-to-right");
         });
+
+        SharedPreferences sharedPref = activity.getSharedPreferences("stories", Context.MODE_PRIVATE);
+        boolean showed = sharedPref.getBoolean("stories", false);
+
+        if (!showed) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Share your memes to stories")
+                    .setIcon(R.drawable.ic_instagram)
+                    .setCancelable(false)
+                    .setMessage("Now you can share meme images to instagram stories and share your memes outside the world of Social meme by clicking the share button on any image!")
+                    .setPositiveButton("OH, That's cool!", (dialogInterface, i) -> {
+                        sharedPref.edit().putBoolean("stories", true).apply();
+                        dialogInterface.dismiss();
+                    }).show();
+        }
 
         return view;
     }

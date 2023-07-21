@@ -116,7 +116,7 @@ public class SettingsActivity extends AppCompatActivity {
         SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
         nightModeSwitch.setChecked(isNightModeEnabled());
 
-        website_tv.setOnClickListener(view -> openURL("https://georgethedev.ga"));
+        website_tv.setOnClickListener(view -> openURL("https://mypersonalwebsite-60614.web.app/"));
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
         instagram.setOnClickListener(view -> openURL("https://www.instagram.com/sepetadelhsss/"));
         github.setOnClickListener(view -> openURL("https://github.com/georgesepetadelis/Social-Meme"));
