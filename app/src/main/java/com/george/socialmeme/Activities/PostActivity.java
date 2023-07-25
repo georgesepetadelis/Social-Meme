@@ -64,7 +64,7 @@ public class PostActivity extends AppCompatActivity {
 
         backBtn.setOnClickListener(v -> onBackPressed());
 
-        if (extras != null) {
+        if (extras != null && extras.getString("post_id") != null) {
             postID = extras.getString("post_id");
 
             DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
@@ -72,7 +72,7 @@ public class PostActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                        if (postSnapshot.child("id").getValue(String.class).equals(postID)) {
+                        if (postSnapshot.child("id").getValue(String.class) != null && postSnapshot.child("id").getValue(String.class).equals(postID)) {
 
                             if (postSnapshot.child("name").getValue(String.class) != null) {
 

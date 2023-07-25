@@ -212,7 +212,7 @@ public class HomeActivity extends AppCompatActivity {
             });
 
             // Load default fragment
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commitAllowingStateLoss();
             bottomNavBar.setItemSelected(R.id.home_fragment, true);
         }
 
@@ -278,6 +278,9 @@ public class HomeActivity extends AppCompatActivity {
             theme.applyStyle(R.style.AppTheme_Base_Night, true);
         }
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
         // Decide if we show AD banners based on DB variable
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("show_banners").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -292,9 +295,6 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
 
         /*
         if (!newFeaturesViewed()) {

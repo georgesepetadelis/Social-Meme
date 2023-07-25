@@ -681,7 +681,11 @@ public class UserProfileActivity extends AppCompatActivity {
                 userModel.setTotalLikes(userModel.getTotalLikes());
                 userModel.setUserFollowingLoggedInUser(followingCurrentUser);
                 userModel.setFollowingCurrentUser(followingCurrentUser);
-                HomeActivity.savedUserProfiles.add(userModel);
+
+                if (HomeActivity.savedUserProfiles != null) {
+                    HomeActivity.savedUserProfiles.add(userModel);
+                }
+
                 sendNotificationToUser("profile_visit");
             };
 
