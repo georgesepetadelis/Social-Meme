@@ -14,7 +14,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -41,6 +47,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Visibility;
 
 import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
@@ -288,19 +295,59 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    private void shareToInstagramStory() {
+    void changePostInfoVisibilityForBitmap(int visible_state) {
+        showPostOptionsButton.setVisibility(visible_state);
+        shareBtn.setVisibility(visible_state);
+    }
+
+    public Bitmap createBitmapFromView(CardView cardView) {
+
+        int width = cardView.getWidth();
+        int height = cardView.getHeight();
+
+        // Create a new bitmap with the same dimensions as the view.
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        cardView.draw(canvas);
+
+        // Draw the rounded corners of the card view.
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.WHITE);
+        RectF rect = new RectF(0, 0, width, height);
+
+        // Create a new bitmap with the rounded corners.
+        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas outputCanvas = new Canvas(output);
+
+        final Rect rect1 = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rect2 = new RectF(rect1);
+        final float roundPx = cardView.getCardElevation();
+
+        paint.setAntiAlias(true);
+        outputCanvas.drawRoundRect(rect2, roundPx, roundPx, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        outputCanvas.drawBitmap(bitmap, rect1, rect1, paint);
+
+        bitmap.setHasAlpha(true);
+        output.setHasAlpha(true);
+
+        return output;
+    }
+
+    private void shareToInstagramStory() throws IOException {
 
         // Download image of post and bg image in order to get the image uri
         // Deleting these images after activity launched
-        postImg.buildDrawingCache();
-        Bitmap bmp = postImg.getDrawingCache();
+        changePostInfoVisibilityForBitmap(View.INVISIBLE);
+        Bitmap bmp = createBitmapFromView(container);
         File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File file = new File(storageLoc, postID + ".jpg");
+        File file = new File(storageLoc, postID + ".png");
 
         try {
 
             FileOutputStream fos = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
             scanFile(context, Uri.fromFile(file));
 
@@ -341,13 +388,14 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             new Handler().postDelayed(() -> {
                 bg_file.delete();
                 file.delete();
+                changePostInfoVisibilityForBitmap(View.VISIBLE);
             }, 6500);
 
 
         }  catch (FileNotFoundException e) {
             Toast.makeText(context, "File not found", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Toast.makeText(context, "Error sharing story", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Error sharing to story", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -392,7 +440,12 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         shareToStory.setOnClickListener(v -> {
             PackageManager pm = context.getPackageManager();
             if (HomeActivity.isInstagramInstalled(pm)) {
-                shareToInstagramStory();
+                try {
+                    shareToInstagramStory();
+                } catch (IOException e) {
+                    Toast.makeText(activity, "error " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    //throw new RuntimeException(e);
+                }
             } else {
                 Toast.makeText(context, "Instagram is not installed!", Toast.LENGTH_SHORT).show();
             }

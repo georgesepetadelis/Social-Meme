@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,11 @@ import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.FormError;
+import com.google.android.ump.UserMessagingPlatform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -65,6 +71,11 @@ public class HomeActivity extends AppCompatActivity {
     public static String notiUsername;
 
     public static boolean userHasPosts = false;
+
+    private ConsentInformation consentInformation;
+    private ConsentForm consentForm;
+
+
 
     public static boolean isInstagramInstalled(PackageManager packageManager) {
         try {
@@ -230,6 +241,34 @@ public class HomeActivity extends AppCompatActivity {
 
     };
 
+    public void loadForm() {
+        // Loads a consent form. Must be called on the main thread.
+        UserMessagingPlatform.loadConsentForm(
+                this,
+                new UserMessagingPlatform.OnConsentFormLoadSuccessListener() {
+                    @Override
+                    public void onConsentFormLoadSuccess(ConsentForm consentForm) {
+                        HomeActivity.this.consentForm = consentForm;
+                        if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                            consentForm.show(
+                                    HomeActivity.this,
+                                    formError -> {
+                                        if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
+                                            // App can start requesting ads.
+                                        }
+
+                                        // Handle dismissal by reloading form.
+                                        loadForm();
+                                    });
+                        }
+                    }
+                },
+                formError -> {
+                    Toast.makeText(this, "Error: " + formError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+        );
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -307,6 +346,30 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences.Editor askForNightModeSharedPrefEditor = askForNightModeSharedPref.edit();
         boolean askForEnableNightMode = askForNightModeSharedPref.getBoolean("asked_night_mode_enable", false);
         int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        ConsentRequestParameters params = new ConsentRequestParameters
+                .Builder()
+                .setTagForUnderAgeOfConsent(false)
+                .build();
+
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+        consentInformation.requestConsentInfoUpdate(
+                this,
+                params,
+                new ConsentInformation.OnConsentInfoUpdateSuccessListener() {
+                    @Override
+                    public void onConsentInfoUpdateSuccess() {
+                        if (consentInformation.isConsentFormAvailable()) {
+                            loadForm();
+                        }
+                    }
+                },
+                new ConsentInformation.OnConsentInfoUpdateFailureListener() {
+                    @Override
+                    public void onConsentInfoUpdateFailure(FormError formError) {
+                        Toast.makeText(HomeActivity.this, "Error: " + formError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && !isNightModeEnabled() && !askForEnableNightMode) {
 
