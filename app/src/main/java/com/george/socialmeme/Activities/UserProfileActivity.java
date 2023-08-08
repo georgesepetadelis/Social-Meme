@@ -29,6 +29,7 @@ import com.developer.kalert.KAlertDialog;
 import com.esc861.screenshotlistener.ScreenshotListener;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Adapters.RecommendedUserRecyclerAdapter;
+import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
@@ -354,14 +355,14 @@ public class UserProfileActivity extends AppCompatActivity {
 
         Type type = new TypeToken<List<PostModel>>() {
         }.getType();
-        ArrayList<PostModel> allPosts = new Gson().fromJson(getIntent().getStringExtra("allPosts"), type);
+        ArrayList<PostModel> allPosts = HomeFragment.postModelArrayList;
 
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
 
         if (allPosts == null) {
-            allPosts = new ArrayList<>();
+            allPosts = HomeFragment.postModelArrayList; //new ArrayList<>();
         }
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
@@ -440,16 +441,19 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         // Load user posts
-        if (HomeActivity.savedPostsArrayList != null) {
-            if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+        if (HomeFragment.postModelArrayList != null) {
+            if (!HomeFragment.postModelArrayList.isEmpty()) {
 
                 Collections.reverse(allPosts);
 
+                ArrayList<String> loadedPostsID = new ArrayList<>();
+
                 int totalLoadedPosts = 0;
-                for (PostModel post : allPosts) {
+                for (PostModel post : HomeFragment.postModelArrayList) {
                     if (totalLoadedPosts < 5) {
                         if (post.getAuthorID() != null) {
-                            if (post.getAuthorID().equals(userID)) {
+                            if (post.getAuthorID().equals(userID) && !loadedPostsID.contains(post.getId())) {
+                                loadedPostsID.add(post.getId());
                                 postModelArrayList.add(post);
                                 totalLoadedPosts += 1;
                             }
@@ -457,13 +461,13 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
 
-                //Collections.reverse(allPosts);
-
-                // Load total likes
+                ArrayList<String> loadedPostsID1 = new ArrayList<>();
+                // Calculate total likes
                 int totalLikes = 0;
-                for (PostModel postModel : allPosts) {
+                for (PostModel postModel : HomeFragment.postModelArrayList) {
                     if (postModel.getAuthorID() != null) {
-                        if (postModel.getAuthorID().equals(userID)) {
+                        if (postModel.getAuthorID().equals(userID) && !loadedPostsID1.contains(postModel.getId())) {
+                            loadedPostsID1.add(postModel.getId());
                             int likesToInt = Integer.parseInt(postModel.getLikes());
                             totalLikes += likesToInt;
                         }
@@ -491,7 +495,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));
 
             } else {
-                Toast.makeText(this, "No available posts", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error loading posts", Toast.LENGTH_SHORT).show();
                 // App failed to load posts -- Restarting app
                 Intent intent = new Intent(UserProfileActivity.this, SplashScreenActivity.class);
                 startActivity(intent);

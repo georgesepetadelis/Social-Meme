@@ -43,7 +43,7 @@ public class CommentItemViewHolder extends RecyclerView.ViewHolder {
                 Intent intent = new Intent(itemView.getContext(), UserProfileActivity.class);
                 intent.putExtra("user_id", userID);
                 intent.putExtra("username", usernameTV.getText().toString());
-                intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
+                //intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                 itemView.getContext().startActivity(intent);
                 CustomIntent.customType(itemView.getContext(), "left-to-right");
             }

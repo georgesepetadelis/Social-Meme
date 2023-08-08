@@ -394,13 +394,14 @@ public class MyProfileFragment extends Fragment {
 
         if (!HomeActivity.appStarted) {
             HomeActivity.appStarted = true;
-            Collections.reverse(HomeActivity.savedPostsArrayList);
+            //Collections.reverse(HomeActivity.savedPostsArrayList);
+            Collections.reverse(HomeFragment.postModelArrayList);
         }
 
         if (!HomeActivity.singedInAnonymously) {
 
-            ArrayList<PostModel> reversedPosts = HomeActivity.savedPostsArrayList;
-            //Collections.reverse(reversedPosts);
+            ArrayList<PostModel> reversedPosts = HomeFragment.postModelArrayList; //HomeActivity.savedPostsArrayList;
+            if (HomeFragment.refreshed) Collections.reverse(reversedPosts);
 
             int postsCount = 0;
                 for (PostModel post : reversedPosts) {
@@ -417,7 +418,7 @@ public class MyProfileFragment extends Fragment {
             Collections.reverse(postModelArrayList);
 
             int totalLikes = 0;
-            for (PostModel post : HomeActivity.savedPostsArrayList) {
+            for (PostModel post : HomeFragment.postModelArrayList) {
                 if (post.getName() != null) {
                     if (post.getName().equals(user.getDisplayName())) {
                         int likesToInt = Integer.parseInt(post.getLikes());

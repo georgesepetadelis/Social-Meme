@@ -90,7 +90,9 @@ public class HomeFragment extends Fragment {
 
     private InterstitialAd mInterstitialAd;
 
-    ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray, randomArrayList;
+    public static ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray, randomArrayList;
+
+    public static boolean refreshed = false;
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
     ProgressBar progressBar;
@@ -526,7 +528,7 @@ public class HomeFragment extends Fragment {
                     Intent intent = new Intent(activity, UserProfileActivity.class);
                     intent.putExtra("user_id", HomeActivity.notiUserId);
                     intent.putExtra("username", HomeActivity.notiUsername);
-                    intent.putExtra("allPosts", new Gson().toJson(postModelArrayList));
+                    //intent.putExtra("allPosts", new Gson().toJson(postModelArrayList));
                     startActivity(intent);
                     CustomIntent.customType(getActivity(), "left-to-right");
                 }
@@ -553,7 +555,9 @@ public class HomeFragment extends Fragment {
             getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
             CustomIntent.customType(getActivity(), "fadein-to-fadeout");
             getActivity().finish();
+            refreshed = true;
         } else {
+
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
                 // Load saved data
                 HomeActivity.noSuffledPostsList = HomeActivity.savedPostsArrayList;
@@ -573,6 +577,7 @@ public class HomeFragment extends Fragment {
 
             } else {
                 // Load data from DB
+                postModelArrayList.clear();
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                 rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -590,9 +595,9 @@ public class HomeFragment extends Fragment {
 
                         for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
-                            if (user != null && user.getDisplayName() != null && postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
+                            if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
 
-                                if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                     HomeActivity.userHasPosts = true;
                                 }
 
@@ -641,7 +646,6 @@ public class HomeFragment extends Fragment {
                                         }
 
                                         postModelArrayList.add(postModel);
-
                                     }
                                 } else {
                                     HomeActivity.noSuffledPostsList.add(postModel);
@@ -875,19 +879,7 @@ public class HomeFragment extends Fragment {
         if (!HomeActivity.singedInAnonymously) {
             int randomNum = ThreadLocalRandom.current().nextInt(0, 15 + 1);
             if (randomNum == 3) {
-                AlertDialog donateDialog = new AlertDialog.Builder(getContext())
-                        .setTitle("Can you buy me a coffee?")
-                        .setMessage(getString(R.string.donate_msg))
-                        .setPositiveButton("Donate", (dialogInterface, i) ->
-                                openDonateURL())
-                        .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .setIcon(R.drawable.ic_coffee)
-                        .create();
-                donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-                donateDialog.show();
-            }
-        } else {
+                /*
             AlertDialog donateDialog = new AlertDialog.Builder(getContext())
                     .setTitle("Can you buy me a coffee?")
                     .setMessage(getString(R.string.donate_msg))
@@ -899,7 +891,21 @@ public class HomeFragment extends Fragment {
                     .create();
             donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-            donateDialog.show();
+            donateDialog.show();*/
+            }
+        } else {/*
+            AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                    .setTitle("Can you buy me a coffee?")
+                    .setMessage(getString(R.string.donate_msg))
+                    .setPositiveButton("Donate", (dialogInterface, i) ->
+                            openDonateURL())
+                    .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .setCancelable(false)
+                    .setIcon(R.drawable.ic_coffee)
+                    .create();
+            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            donateDialog.show();*/
         }
 
         notificationsBtn.setOnClickListener(view12 -> {

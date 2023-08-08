@@ -450,7 +450,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     intent.putExtra("user_id", postAuthorID);
                     intent.putExtra("username", username.getText().toString());
-                    intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
+                    //intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }

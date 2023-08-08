@@ -70,11 +70,12 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                 homeIntent = new Intent(getApplicationContext(), UserProfileActivity.class);
                 String userID = dataMap.get("userID");
                 homeIntent.putExtra("user_id", userID);
-                homeIntent.putExtra("allPosts", HomeActivity.savedPostsArrayList);
+                //homeIntent.putExtra("allPosts", HomeActivity.savedPostsArrayList);
             } else if (type.equals("post")) {
                 homeIntent = new Intent(getApplicationContext(), PostActivity.class);
                 String postID = dataMap.get("postID");
                 homeIntent.putExtra("post_id", postID);
+                PostActivity.postID = postID;
             }
         }
 

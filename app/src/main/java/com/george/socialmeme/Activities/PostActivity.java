@@ -28,11 +28,19 @@ import maes.tech.intentanim.CustomIntent;
 
 public class PostActivity extends AppCompatActivity {
 
+    public static String postID;
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
         CustomIntent.customType(PostActivity.this, "right-to-left");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
     }
 
     boolean isNightModeEnabled() {
@@ -52,7 +60,7 @@ public class PostActivity extends AppCompatActivity {
         ImageButton backBtn = findViewById(R.id.imageButton2);
 
         Bundle extras = getIntent().getExtras();
-        String postID;
+        //String postID;
         ArrayList<PostModel> postList = new ArrayList();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -65,7 +73,7 @@ public class PostActivity extends AppCompatActivity {
         backBtn.setOnClickListener(v -> onBackPressed());
 
         if (extras != null && extras.getString("post_id") != null) {
-            postID = extras.getString("post_id");
+            if (postID == null) postID = extras.getString("post_id");
 
             DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
             postsRef.addListenerForSingleValueEvent(new ValueEventListener() {

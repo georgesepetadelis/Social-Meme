@@ -86,7 +86,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
                 Intent intent = new Intent(UserRecyclerAdapter.context, UserProfileActivity.class);
                 intent.putExtra("user_id", userID);
                 intent.putExtra("username", username.getText().toString());
-                intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
+                //intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                 UserRecyclerAdapter.context.startActivity(intent);
                 CustomIntent.customType(UserRecyclerAdapter.context, "left-to-right");
             });

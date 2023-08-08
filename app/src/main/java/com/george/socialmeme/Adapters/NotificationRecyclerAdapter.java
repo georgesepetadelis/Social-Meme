@@ -124,7 +124,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
                                 Intent intent = new Intent(itemView.getContext(), UserProfileActivity.class);
                                 intent.putExtra("user_id", snapshot.child("user_id").getValue(String.class));
                                 intent.putExtra("username", HomeActivity.notiUsername);
-                                intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
+                                //intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                                 itemView.getContext().startActivity(intent);
                                 CustomIntent.customType(itemView.getContext(), "left-to-right");
 

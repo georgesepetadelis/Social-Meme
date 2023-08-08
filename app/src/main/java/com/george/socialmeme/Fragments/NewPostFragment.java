@@ -275,6 +275,10 @@ public class NewPostFragment extends Fragment {
                         HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
                         loadingDialog.hide();
 
+                        getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
+                        CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+                        getActivity().finish();
+
                     }
                 });
 
@@ -358,6 +362,10 @@ public class NewPostFragment extends Fragment {
                                     sendNewPostNotificationToFollowers(postId);
                                     HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
+                                    getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
+                                    CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+                                    getActivity().finish();
+
                                 })).addOnProgressListener(snapshot -> {
                             loadingDialog.show();
                         }).addOnFailureListener(e -> {
@@ -434,6 +442,10 @@ public class NewPostFragment extends Fragment {
                         Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
                         sendNewPostNotificationToFollowers(postId);
                         HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+
+                        getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
+                        CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+                        getActivity().finish();
 
                     })).addOnProgressListener(snapshot -> loadingDialog.show())
                             .addOnFailureListener(e -> {

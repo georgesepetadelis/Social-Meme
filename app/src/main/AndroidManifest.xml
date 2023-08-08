@@ -25,10 +25,10 @@
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:icon="@drawable/sm_logo_new"
+        android:icon="@drawable/app_logo"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/sm_logo_new"
+        android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme"
         tools:ignore="DataExtractionRules"

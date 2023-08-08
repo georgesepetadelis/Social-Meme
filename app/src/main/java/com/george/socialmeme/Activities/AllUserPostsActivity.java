@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
+import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,10 +61,13 @@ public class AllUserPostsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        for (PostModel post : HomeActivity.savedPostsArrayList) {
+        ArrayList<String> loadedPostsID = new ArrayList<>();
+
+        for (PostModel post : HomeFragment.postModelArrayList) {
             if (post.getAuthorID() != null) {
-                if (post.getAuthorID().equals(userID)) {
+                if (post.getAuthorID().equals(userID) && !loadedPostsID.contains(post.getId())) {
                     postModelArrayList.add(post);
+                    loadedPostsID.add(post.getId());
                 }
             }
         }
@@ -71,7 +75,6 @@ public class AllUserPostsActivity extends AppCompatActivity {
         if (reverseList) {
             Collections.reverse(postModelArrayList);
         }
-
 
     }
 }
