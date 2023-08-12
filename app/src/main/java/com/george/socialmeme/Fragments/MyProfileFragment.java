@@ -297,23 +297,20 @@ public class MyProfileFragment extends Fragment {
         String email = user.getEmail();
         String finalEmail = email;
 
-        verified.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog donateDialog = new AlertDialog.Builder(getContext())
-                        .setTitle("You are verified")
-                        .setMessage("You have a verified badge because your email address is verified")
-                        .setPositiveButton("That's cool!", (dialogInterface, i) ->
-                        {
-                            dialogInterface.dismiss();
-                        })
-                        .setCancelable(false)
-                        .setIcon(R.drawable.verify)
-                        .create();
-                donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-                donateDialog.show();
-            }
+        verified.setOnClickListener(v -> {
+            AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                    .setTitle("You are verified")
+                    .setMessage("You have a verified badge because your email address is verified")
+                    .setPositiveButton("That's cool!", (dialogInterface, i) ->
+                    {
+                        dialogInterface.dismiss();
+                    })
+                    .setCancelable(false)
+                    .setIcon(R.drawable.verify)
+                    .create();
+            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            donateDialog.show();
         });
 
         verify_msg.setOnClickListener(v -> {
@@ -430,7 +427,7 @@ public class MyProfileFragment extends Fragment {
                     .show();
         }
 
-        if (!verifiedFeature()) {
+        if (!verifiedFeature() && user.isEmailVerified()) {
 
             SharedPreferences sharedPref = getActivity().getSharedPreferences("verified", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -536,7 +533,6 @@ public class MyProfileFragment extends Fragment {
 
         if (!HomeActivity.appStarted) {
             HomeActivity.appStarted = true;
-            //Collections.reverse(HomeActivity.savedPostsArrayList);
             Collections.reverse(HomeFragment.postModelArrayList);
         }
 

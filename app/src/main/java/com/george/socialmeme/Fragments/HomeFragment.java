@@ -636,7 +636,7 @@ public class HomeFragment extends Fragment {
                                     postModel.setCommentsCount("0");
                                 }
 
-                                if (!HomeActivity.singedInAnonymously) {
+                                if (!HomeActivity.singedInAnonymously && user.getUid() != null) {
                                     // Show post in recycler adapter only if the user is not blocked
                                     if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                             .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
