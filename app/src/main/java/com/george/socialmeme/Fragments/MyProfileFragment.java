@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -48,6 +50,14 @@ import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -63,6 +73,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -104,6 +115,11 @@ public class MyProfileFragment extends Fragment {
     boolean copyUsernameFeature() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("copy_my_username", MODE_PRIVATE);
         return sharedPref.getBoolean("copy_my_username", false);
+    }
+
+    boolean verifiedFeature() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("verified", MODE_PRIVATE);
+        return sharedPref.getBoolean("verified", false);
     }
 
     private void uploadProfilePictureToFirebase(Uri uri) {
@@ -256,6 +272,11 @@ public class MyProfileFragment extends Fragment {
         ImageView badge1 = view.findViewById(R.id.imageView14);
         ImageView badge2 = view.findViewById(R.id.imageView15);
         ImageView badge3 = view.findViewById(R.id.imageView24);
+        ImageView verified = view.findViewById(R.id.imageView26);
+        TextView verify_msg = view.findViewById(R.id.verified);
+        verified.setVisibility(View.INVISIBLE);
+        ImageView crown = view.findViewById(R.id.crown2);
+        crown.setVisibility(View.GONE);
 
         profilePicture = view.findViewById(R.id.my_profile_image);
         TextView username = view.findViewById(R.id.username_my_profile);
@@ -272,6 +293,104 @@ public class MyProfileFragment extends Fragment {
 
         AdView mAdView = view.findViewById(R.id.adView5);
         AdRequest adRequest = new AdRequest.Builder().build();
+
+        String email = user.getEmail();
+        String finalEmail = email;
+
+        verified.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                        .setTitle("You are verified")
+                        .setMessage("You have a verified badge because your email address is verified")
+                        .setPositiveButton("That's cool!", (dialogInterface, i) ->
+                        {
+                            dialogInterface.dismiss();
+                        })
+                        .setCancelable(false)
+                        .setIcon(R.drawable.verify)
+                        .create();
+                donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                donateDialog.show();
+            }
+        });
+
+        verify_msg.setOnClickListener(v -> {
+            if (user != null && !user.isEmailVerified()) {
+                AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Verify your email")
+                        .setMessage("By verifying your email a blue verify badge will be visible next to your username to other users")
+                        .setPositiveButton("Send email", (dialogInterface, i) ->
+                        {
+                            user.sendEmailVerification();
+                            AlertDialog donateDialog1 = new AlertDialog.Builder(getContext())
+                                    .setTitle("Email Sent!")
+                                    .setMessage("The verification email has been sent to " + finalEmail)
+                                    .setPositiveButton("Okay", (dialogInterface1, i1) ->
+                                    {
+                                        dialogInterface1.dismiss();
+                                    })
+                                    .setCancelable(false)
+                                    .setIcon(R.drawable.verify)
+                                    .create();
+                            donateDialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            donateDialog1.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                            donateDialog1.show();
+                        })
+                        .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .setCancelable(false)
+                        .setIcon(R.drawable.verify)
+                        .create();
+                donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                donateDialog.show();
+            } else {
+                Toast.makeText(getContext(), "You are verified!", Toast.LENGTH_SHORT).show();
+                verified.setVisibility(View.VISIBLE);
+                verify_msg.setVisibility(View.GONE);
+                rootRef.child("users").child(user.getUid()).child("verified").setValue("true");
+            }
+        });
+
+        if (user != null && user.isEmailVerified()) {
+            verified.setVisibility(View.VISIBLE);
+            verify_msg.setVisibility(View.GONE);
+            rootRef.child("users").child(user.getUid()).child("verified").setValue("true");
+        } else {
+            if (user != null) {
+                int randomNum = ThreadLocalRandom.current().nextInt(0, 7 + 1);
+                if (randomNum == 5) {
+                    AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                            .setTitle("Verify your email")
+                            .setMessage("By verifying your email a blue verify badge will be visible next to your username to other users")
+                            .setPositiveButton("Send email", (dialogInterface, i) ->
+                            {
+                                user.sendEmailVerification();
+                                AlertDialog donateDialog1 = new AlertDialog.Builder(getContext())
+                                        .setTitle("Email Sent!")
+                                        .setMessage("The verification email has been sent to " + finalEmail)
+                                        .setPositiveButton("Okay", (dialogInterface1, i1) ->
+                                        {
+                                            dialogInterface1.dismiss();
+                                        })
+                                        .setCancelable(false)
+                                        .setIcon(R.drawable.verify)
+                                        .create();
+                                donateDialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                donateDialog1.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                                donateDialog1.show();
+                            })
+                            .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
+                            .setCancelable(false)
+                            .setIcon(R.drawable.verify)
+                            .create();
+                    donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                    donateDialog.show();
+                }
+            }
+        }
 
         if (HomeActivity.show_banners) {
             mAdView.loadAd(adRequest);
@@ -309,6 +428,29 @@ public class MyProfileFragment extends Fragment {
                     .setGravity(Gravity.center)
                     .build()
                     .show();
+        }
+
+        if (!verifiedFeature()) {
+
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("verified", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("verified", true);
+            editor.apply();
+
+            AlertDialog donateDialog = new AlertDialog.Builder(getContext())
+                    .setTitle("You are verified")
+                    .setMessage("You have a verified badge because your email address is verified")
+                    .setPositiveButton("That's cool!", (dialogInterface, i) ->
+                    {
+                        dialogInterface.dismiss();
+                    })
+                    .setCancelable(false)
+                    .setIcon(R.drawable.verify)
+                    .create();
+            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            donateDialog.show();
+
         }
 
         if (!HomeActivity.singedInAnonymously) username.setText(user.getDisplayName());
@@ -443,6 +585,10 @@ public class MyProfileFragment extends Fragment {
                 badge3.setAlpha(1F);
             } else {
                 badge3.setAlpha(.3F);
+            }
+
+            if (totalLikes >= 100000) {
+                crown.setVisibility(View.VISIBLE);
             }
 
             totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));

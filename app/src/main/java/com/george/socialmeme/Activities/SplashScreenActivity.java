@@ -11,6 +11,7 @@ import android.graphics.Outline;
 import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -92,13 +93,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             FirebaseUser user = auth.getCurrentUser();
 
             if (isInternetConnectionAvailable()) {
-
-                // Load ad banner and wait until ad is loaded
-                AdView mAdView = findViewById(R.id.splash_Ad);
-                AdRequest adRequest = new AdRequest.Builder().build();
-
-                // WE ARE NOT LOADING THIS AD
-                // mAdView.loadAd(adRequest);
 
                 if (user == null) {
                     startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));

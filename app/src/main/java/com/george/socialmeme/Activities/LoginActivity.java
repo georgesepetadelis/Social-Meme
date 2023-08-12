@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -204,6 +206,9 @@ public class LoginActivity extends AppCompatActivity {
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "GoogleSignIn:success");
                 FirebaseUser user = mAuth.getCurrentUser();
+                GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(LoginActivity.this);
+                String email = googleSignInAccount.getEmail();
+                user.updateEmail(email);
                 updateUI(user, null);
             } else {
                 // If sign-in fails, display a message to the user.

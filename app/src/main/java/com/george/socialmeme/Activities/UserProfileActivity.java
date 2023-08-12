@@ -325,6 +325,13 @@ public class UserProfileActivity extends AppCompatActivity {
         ImageView badge1 = findViewById(R.id.imageView14);
         ImageView badge2 = findViewById(R.id.imageView15);
         ImageView badge3 = findViewById(R.id.imageView24);
+        ImageView verify_badge = findViewById(R.id.verifiy_badge);
+        verify_badge.setVisibility(View.GONE);
+        ImageView crown = findViewById(R.id.crown);
+        crown.setVisibility(View.GONE);
+
+        TextView owner_tv = findViewById(R.id.owner);
+        owner_tv.setVisibility(View.GONE);
 
         ImageButton badges = findViewById(R.id.imageButton22);
         ImageButton backBtn = findViewById(R.id.imageButton2);
@@ -352,6 +359,20 @@ public class UserProfileActivity extends AppCompatActivity {
         if (HomeActivity.show_banners) {
             mAdView.loadAd(adRequest);
         }
+
+        usersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("name").getValue(String.class) != null && snapshot.hasChild("verified")) {
+                    verify_badge.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Type type = new TypeToken<List<PostModel>>() {
         }.getType();
@@ -492,6 +513,14 @@ public class UserProfileActivity extends AppCompatActivity {
                     badge3.setAlpha(.3F);
                 }
 
+                if (totalLikes >= 100000) {
+                    crown.setVisibility(View.VISIBLE);
+                }
+
+                if (userID.equals("cFNlK7QLLjZgc7SQDp79PwESxbB2")) {
+                    owner_tv.setVisibility(View.VISIBLE);
+                }
+
                 totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));
 
             } else {
@@ -501,7 +530,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
-
 
         username_tv.setText(username);
 

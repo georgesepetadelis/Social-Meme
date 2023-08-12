@@ -60,6 +60,30 @@
             android:layout_height="wrap_content"
             android:background="?attr/background">
 
+            <ImageView
+                android:id="@+id/verifiy_badge"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView12"
+                app:layout_constraintStart_toEndOf="@+id/textView12"
+                app:layout_constraintTop_toTopOf="@+id/textView12"
+                app:srcCompat="@drawable/verify" />
+
+            <TextView
+                android:id="@+id/owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:textSize="20sp"
+                android:text="SOCIAL MEME OWNER"
+                android:textColor="@color/main"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/textView28"
+                app:layout_constraintStart_toStartOf="@+id/textView28"
+                app:layout_constraintTop_toBottomOf="@+id/textView28" />
+
             <TextView
                 android:id="@+id/textView18"
                 android:layout_width="wrap_content"
@@ -130,7 +154,7 @@
                 android:id="@+id/my_profile_image2"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="42dp"
                 android:src="@drawable/user"
                 app:civ_border_color="#FF000000"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -433,11 +457,24 @@
                 app:layout_constraintStart_toStartOf="@+id/textView48"
                 app:layout_constraintTop_toBottomOf="@+id/textView48" />
 
+            <ImageView
+                android:id="@+id/crown"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="50dp"
+                android:rotation="-19"
+                android:src="@drawable/crown"
+                app:layout_constraintBottom_toTopOf="@+id/my_profile_image2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="130dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="45dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="16dp"
                 android:padding="10dp"
@@ -523,5 +560,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

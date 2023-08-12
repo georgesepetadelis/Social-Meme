@@ -47,6 +47,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/crown2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="50dp"
+                android:rotation="-19"
+                android:src="@drawable/crown"
+                app:layout_constraintBottom_toTopOf="@+id/my_profile_image2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView4"
                 android:layout_width="0dp"
@@ -258,12 +271,11 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/my_profile_image"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:layout_marginTop="62dp"
+                android:layout_width="115dp"
+                android:layout_height="115dp"
+                android:layout_marginTop="72dp"
                 android:background="@drawable/ripple_round_main_background"
                 android:clickable="true"
-                android:padding="8dp"
                 android:src="@drawable/user"
                 app:civ_border_color="#FF000000"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -274,15 +286,15 @@
                 android:id="@+id/username_my_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="username"
+                android:layout_marginTop="4dp"
                 android:background="?selectableItemBackground"
+                android:text="username"
                 android:textColor="?attr/textFillColor"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/my_profile_image" />
+                app:layout_constraintTop_toBottomOf="@+id/verified" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -363,14 +375,16 @@
                 tools:listitem="@layout/image_post_item" />
 
             <ImageView
+                android:id="@+id/imageView27"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
+                android:layout_marginStart="12dp"
                 android:elevation="13dp"
                 android:foregroundTint="@color/white"
                 android:src="@drawable/ic_add"
                 app:layout_constraintBottom_toBottomOf="@+id/my_profile_image"
-                app:layout_constraintEnd_toEndOf="@+id/my_profile_image"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.34"
                 app:layout_constraintStart_toStartOf="@+id/my_profile_image"
                 app:layout_constraintTop_toTopOf="@+id/my_profile_image"
                 app:layout_constraintVertical_bias="1.0" />
@@ -465,6 +479,34 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/recyclerView_my_profile"
                 app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+            <TextView
+                android:id="@+id/verified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="?selectableItemBackground"
+                android:text="Click to verify your email!"
+                android:textStyle="bold"
+                android:textColor="#FFAB00"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/username_my_profile"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/my_profile_image" />
+
+            <ImageView
+                android:id="@+id/imageView26"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/verify"
+                android:focusable="true"
+                android:background="?selectableItemBackground"
+                app:layout_constraintBottom_toBottomOf="@+id/username_my_profile"
+                app:layout_constraintStart_toEndOf="@+id/username_my_profile"
+                app:layout_constraintTop_toTopOf="@+id/username_my_profile" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
