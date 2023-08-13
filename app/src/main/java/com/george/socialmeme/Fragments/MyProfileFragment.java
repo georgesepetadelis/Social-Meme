@@ -541,11 +541,13 @@ public class MyProfileFragment extends Fragment {
             ArrayList<PostModel> reversedPosts = HomeFragment.postModelArrayList; //HomeActivity.savedPostsArrayList;
             if (HomeFragment.refreshed) Collections.reverse(reversedPosts);
 
+            ArrayList<String> loadedPostsID = new ArrayList<>();
             int postsCount = 0;
                 for (PostModel post : reversedPosts) {
                     if (postsCount <= 4) {
                         if (post.getName() != null) {
-                            if (post.getName().equals(user.getDisplayName())) {
+                            if (post.getName().equals(user.getDisplayName()) && !loadedPostsID.contains(post.getId())) {
+                                loadedPostsID.add(post.getId());
                                 postModelArrayList.add(post);
                                 postsCount++;
                             }
@@ -555,10 +557,12 @@ public class MyProfileFragment extends Fragment {
 
             Collections.reverse(postModelArrayList);
 
+            ArrayList<String> loadedPostsID1 = new ArrayList<>();
             int totalLikes = 0;
             for (PostModel post : HomeFragment.postModelArrayList) {
                 if (post.getName() != null) {
-                    if (post.getName().equals(user.getDisplayName())) {
+                    if (post.getName().equals(user.getDisplayName()) && !loadedPostsID1.contains(post.getId())) {
+                        loadedPostsID1.add(post.getId());
                         int likesToInt = Integer.parseInt(post.getLikes());
                         totalLikes += likesToInt;
                     }
@@ -583,7 +587,7 @@ public class MyProfileFragment extends Fragment {
                 badge3.setAlpha(.3F);
             }
 
-            if (totalLikes >= 100000) {
+            if (totalLikes >= 100000 || user.getUid().equals("HMQ6OPjzhuSsdQy848N1L0XNztH3")) {
                 crown.setVisibility(View.VISIBLE);
             }
 

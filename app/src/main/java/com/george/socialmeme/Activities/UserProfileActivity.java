@@ -513,7 +513,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     badge3.setAlpha(.3F);
                 }
 
-                if (totalLikes >= 100000) {
+                if (totalLikes >= 100000 || userID.equals("HMQ6OPjzhuSsdQy848N1L0XNztH3")) {
                     crown.setVisibility(View.VISIBLE);
                 }
 
