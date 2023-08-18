@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
 
     defaultConfig {
         applicationId "com.george.socialmeme"
         minSdk 26
-        targetSdk 31
-        versionCode 44
-        versionName "v2.3.7"
+        targetSdk 33
+        versionCode 46
+        versionName "v2.3.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
