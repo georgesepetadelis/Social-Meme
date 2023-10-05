@@ -918,6 +918,7 @@ public class HomeFragment extends Fragment {
             CustomIntent.customType(getContext(), "left-to-right");
         });
 
+        /*
         SharedPreferences sharedPref = activity.getSharedPreferences("stories", Context.MODE_PRIVATE);
         boolean showed = sharedPref.getBoolean("stories", false);
 
@@ -931,7 +932,7 @@ public class HomeFragment extends Fragment {
                         sharedPref.edit().putBoolean("stories", true).apply();
                         dialogInterface.dismiss();
                     }).show();
-        }
+        }*/
 
         return view;
     }

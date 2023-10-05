@@ -13,8 +13,8 @@ android {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 33
-        versionCode 46
-        versionName "v2.3.8"
+        versionCode 47
+        versionName "v2.3.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,6 +41,9 @@ android {
 }
 
 dependencies {
+
+    implementation 'com.github.mmin18:realtimeblurview:1.2.1'
+
 
     // Gif View dependency
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'

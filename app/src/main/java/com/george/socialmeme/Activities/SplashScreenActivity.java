@@ -37,7 +37,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import org.w3c.dom.Text;
-
 import maes.tech.intentanim.CustomIntent;
 
 @SuppressLint("CustomSplashScreen")
@@ -125,6 +124,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 startActivity(new Intent(SplashScreenActivity.this, NoInternetConnectionActivity.class));
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
             }
-        }, 800);
+        }, 2000);
     }
 }

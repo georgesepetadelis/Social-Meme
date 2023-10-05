@@ -233,7 +233,11 @@ public class LoginActivity extends AppCompatActivity {
                     }else {
                         usersRef.child(user.getUid()).child("id").setValue(user.getUid());
                         usersRef.child(user.getUid()).child("name").setValue(user.getDisplayName());
-                        usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
+                        if (user.getPhotoUrl() != null) {
+                            usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
+                        } else {
+                            usersRef.child(user.getUid()).child("profileImgUrl").setValue("none");
+                        }
 
                     }
 
