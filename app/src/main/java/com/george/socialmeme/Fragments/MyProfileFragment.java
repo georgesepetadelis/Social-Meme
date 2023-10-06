@@ -531,7 +531,7 @@ public class MyProfileFragment extends Fragment {
             someActivityResultLauncher.launch(intent);
         });
 
-        if (!HomeActivity.appStarted) {
+        if (!HomeActivity.appStarted && HomeFragment.postModelArrayList != null) {
             HomeActivity.appStarted = true;
             Collections.reverse(HomeFragment.postModelArrayList);
         }
