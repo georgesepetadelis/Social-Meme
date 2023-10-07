@@ -199,7 +199,7 @@ public class MyProfileFragment extends Fragment {
                     following = (int) snapshot.child("users").child(user.getUid()).child("following").getChildrenCount();
                     followingCounter.setText(String.format("%d", following));
                     userDataForSave.setFollowing(String.format("%d", following));
-                }else {
+                } else {
                     userDataForSave.setFollowing("0");
                 }
 
@@ -294,8 +294,14 @@ public class MyProfileFragment extends Fragment {
         AdView mAdView = view.findViewById(R.id.adView5);
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        String email = user.getEmail();
-        String finalEmail = email;
+        String email = "none";
+        String finalEmail;
+
+        if (!HomeActivity.singedInAnonymously) {
+            email = user.getEmail();
+        }
+
+        finalEmail = email;
 
         verified.setOnClickListener(v -> {
             AlertDialog donateDialog = new AlertDialog.Builder(getContext())
@@ -536,9 +542,9 @@ public class MyProfileFragment extends Fragment {
             Collections.reverse(HomeFragment.postModelArrayList);
         }
 
-        if (!HomeActivity.singedInAnonymously) {
+        if (!HomeActivity.singedInAnonymously && HomeFragment.postModelArrayList != null) {
 
-            ArrayList<PostModel> reversedPosts = HomeFragment.postModelArrayList; //HomeActivity.savedPostsArrayList;
+            ArrayList<PostModel> reversedPosts = HomeFragment.postModelArrayList;
             if (HomeFragment.refreshed) Collections.reverse(reversedPosts);
 
             ArrayList<String> loadedPostsID = new ArrayList<>();

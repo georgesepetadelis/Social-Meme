@@ -528,7 +528,6 @@ public class HomeFragment extends Fragment {
                     Intent intent = new Intent(activity, UserProfileActivity.class);
                     intent.putExtra("user_id", HomeActivity.notiUserId);
                     intent.putExtra("username", HomeActivity.notiUsername);
-                    //intent.putExtra("allPosts", new Gson().toJson(postModelArrayList));
                     startActivity(intent);
                     CustomIntent.customType(getActivity(), "left-to-right");
                 }
@@ -559,19 +558,26 @@ public class HomeFragment extends Fragment {
         } else {
 
             if (!HomeActivity.savedPostsArrayList.isEmpty()) {
+
                 // Load saved data
                 HomeActivity.noSuffledPostsList = HomeActivity.savedPostsArrayList;
                 //Collections.shuffle(HomeActivity.savedPostsArrayList);
                 randomArrayList.addAll(HomeActivity.savedPostsArrayList);
                 notificationsBtn.setEnabled(true);
                 Collections.shuffle(randomArrayList);
+                
+                if (HomeActivity.noSuffledPostsList != null) {
+                    HomeFragment.postModelArrayList.addAll(HomeActivity.noSuffledPostsList);
+                }
 
-                // Add post's of the month view as RecyclerView item
-                // to avoid using ScrollView
-                PostModel postsOfTheMonthView = new PostModel();
-                postsOfTheMonthView.setPostType("postsOfTheMonth");
-                randomArrayList.add(postsOfTheMonthView);
-                recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+                if (postModelArrayList != null && randomArrayList != null) {
+                    // Add post's of the month view as RecyclerView item
+                    // to avoid using ScrollView
+                    PostModel postsOfTheMonthView = new PostModel();
+                    postsOfTheMonthView.setPostType("postsOfTheMonth");
+                    randomArrayList.add(postsOfTheMonthView);
+                    recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+                }
 
                 progressBar.setVisibility(View.GONE);
 

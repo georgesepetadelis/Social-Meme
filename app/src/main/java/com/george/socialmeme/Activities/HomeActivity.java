@@ -51,6 +51,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -342,6 +344,25 @@ public class HomeActivity extends AppCompatActivity {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
+
+        if (!singedInAnonymously) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            FirebaseUser user = auth.getCurrentUser();
+
+            if (user != null && user.getPhotoUrl() != null) {
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference();
+                userRef.child("users").child(user.getUid()).child("photo_url").setValue(user.getPhotoUrl().toString());
+            }
+
+        }
+
+        if (singedInAnonymously) {
+            String loginKey = ref.push().getKey();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            ref.child("anonymous").child(loginKey)
+                    .child("datetime").setValue(now.toString());
+        }
 
         bottomNavBar = findViewById(R.id.bottom_nav);
         filtersBtn = findViewById(R.id.filters_btn);
