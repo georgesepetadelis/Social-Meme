@@ -18,12 +18,21 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build:
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v1
+
+      - name: Create file
+        run: cat /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json | base64
+  
+      - name: Putting data
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $DATA > /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
@@ -32,14 +41,6 @@ jobs:
       # Set Repository Name As Env Variable
       - name: Set repository name as env variable
         run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
-
-      - name: Create file
-        run: cat /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json | base64
-
-      - name: Putting data
-        env:
-          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $DATA > /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json
 
       - name: Set Up JDK
         uses: actions/setup-java@v3
