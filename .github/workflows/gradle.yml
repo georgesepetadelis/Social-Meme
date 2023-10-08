@@ -5,7 +5,7 @@ env:
   main_project_module: app
 
   # The name of the Play Store
-  playstore_name: Frogobox ID
+  playstore_name: Social Meme
 
 on:
   # Triggers the workflow on push or pull request events but only for default and protected branches
@@ -32,7 +32,7 @@ jobs:
       - name: Putting data
         env:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo google services #$DATA > /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json
+        run: $DATA > /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
