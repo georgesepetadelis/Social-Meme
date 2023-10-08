@@ -515,7 +515,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_terms" />
+                    app:srcCompat="@drawable/ic_terms"
+                    tools:ignore="DuplicateIds" />
 
                 <TextView
                     android:id="@+id/textView59"
@@ -527,7 +528,8 @@
                     android:textSize="17sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/imageView12"
-                    app:layout_constraintTop_toTopOf="@+id/imageView12" />
+                    app:layout_constraintTop_toTopOf="@+id/imageView12"
+                    tools:ignore="DuplicateIds" />
 
                 <TextView
                     android:id="@+id/textView57"
@@ -538,7 +540,8 @@
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                     app:layout_constraintStart_toStartOf="@+id/textView59"
-                    app:layout_constraintTop_toBottomOf="@+id/textView59" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView59"
+                    tools:ignore="DuplicateIds" />
 
                 <ImageView
                     android:id="@+id/imageView28"
@@ -548,7 +551,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    app:srcCompat="@drawable/ic_arrow_forward"
+                    tools:ignore="DuplicateIds" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
