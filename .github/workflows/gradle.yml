@@ -27,12 +27,12 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Create file
-        run: cat /home/runner/work/<Social-Meme>/<Social-Meme>/app/google-services.json | base64
+        run: cat /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json | base64
   
       - name: Putting data
         env:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $DATA > /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json
+        run: echo google services #$DATA > /home/runner/work/<Project-Name>/<Project-Name>/app/google-services.json
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
