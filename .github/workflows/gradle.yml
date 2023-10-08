@@ -37,7 +37,7 @@ jobs:
       - name: Putting data
         env:
          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: $DATA > /home/runner/work/<Social-Meme>/<Social-Meme>/app/google-services.json
+        run: $DATA > ./app/google-services.json
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
