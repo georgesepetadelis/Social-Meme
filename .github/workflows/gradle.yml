@@ -30,9 +30,7 @@ jobs:
         run: cat /home/runner/work/<Social-Meme>/<Social-Meme>/app/google-services.json | base64
   
       - name: Putting data
-        env:
-          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: $DATA > /home/runner/work/<Social-Meme>/<Social-Meme>/app/google-services.json
+        run: echo "$DATA" > /home/runner/work/${{ env.main_project_module }}/${{ env.main_project_module }}/app/google-services.json
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
