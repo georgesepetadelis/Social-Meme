@@ -31,7 +31,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
     List<UserModel> usersArrayList;
 
     public UserRecyclerAdapter(FirebaseRecyclerOptions<UserModel> options, Context context, List<UserModel> usersArrayList) {
-        this.context = context;
+        UserRecyclerAdapter.context = context;
         this.usersArrayList = usersArrayList;
     }
 

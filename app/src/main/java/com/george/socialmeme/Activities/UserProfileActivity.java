@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
@@ -67,6 +68,17 @@ public class UserProfileActivity extends AppCompatActivity {
     public int following = 0;
     public KAlertDialog progressDialog;
     ScreenshotListener listener;
+
+    ImageView badge1, badge2, badge3, verify_badge, crown;
+    TextView owner_tv, username_tv, followersCounter, followingCounter, totalLikesCounter, goldTrophiesCount, silverTrophiesCount, bronzeTrophiesCount, userFollowsCurrentUserTextView;
+    ImageButton badges, backBtn, postsOfTheMonthInfo;
+    CircleImageView profilePicture;
+    Button followBtn, showAllPostsButton;
+    View showFollowersView, showFollowingUsersView;
+    ArrayList<PostModel> postModelArrayList;
+    PostRecyclerAdapter recyclerAdapter;
+    RecyclerView recyclerView;
+    LinearLayoutManager layoutManager;
 
     void sendNotificationToUser(String notificationType) {
 
@@ -277,6 +289,260 @@ public class UserProfileActivity extends AppCompatActivity {
         Toast.makeText(UserProfileActivity.this, "Username copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
+    void refreshUserInfoAndPosts(SwipeRefreshLayout refreshLayout) {
+
+        if (userID != null) {
+
+            if (postModelArrayList != null) {
+                postModelArrayList.clear();
+                recyclerAdapter.notifyDataSetChanged();
+            } else {
+                postModelArrayList = new ArrayList<>();
+            }
+
+            refreshLayout.setRefreshing(true);
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser user = mAuth.getCurrentUser();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference();
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    if (snapshot.child("users").child(userID).child("name").getValue(String.class) != null) {
+
+                        if (snapshot.child("name").getValue(String.class) != null && snapshot.hasChild("verified")) {
+                            verify_badge.setVisibility(View.VISIBLE);
+                        }
+
+                        String profilePictureURL = "none";
+                        String username_from_db = snapshot.child("users").child(userID).child("name").getValue(String.class);
+                        username_tv.setText(username_from_db);
+
+                        boolean followingCurrentUser = false;
+                        boolean userFollowsLoggedInUser = false;
+
+                        // Check if logged-in user has
+                        // blocked current user to show an alert
+                        if (snapshot.child("users").child(user.getUid()).child("blockedUsers").child(userID).exists()) {
+
+                            new AlertDialog.Builder(UserProfileActivity.this)
+                                    .setTitle("Blocked user")
+                                    .setMessage("You have blocked this user. You want to unblock this user?")
+                                    .setPositiveButton("Yes", (dialogInterface, i) ->
+                                            usersRef.child(user.getUid())
+                                                    .child("blockedUsers").child(userID)
+                                                    .removeValue().addOnCompleteListener(task -> {
+                                                        if (task.isSuccessful()) {
+                                                            dialogInterface.dismiss();
+                                                            Toast.makeText(UserProfileActivity.this, "User unblocked", Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            Toast.makeText(UserProfileActivity.this, "Can't unblock user", Toast.LENGTH_SHORT).show();
+                                                            onBackPressed();
+                                                        }
+                                                    })).setNegativeButton("No", (dialogInterface, i) -> {
+                                        dialogInterface.dismiss();
+                                        onBackPressed();
+                                    }).setCancelable(false).show();
+
+                        }
+
+                        // Show report/block options only
+                        // if this profile is not the current
+                        // logged-in user profile
+                        if (!userID.equals(user.getUid())) {
+                            Toolbar toolbar = findViewById(R.id.user_profile_toolbar);
+                            toolbar.setTitle("");
+                            setSupportActionBar(toolbar);
+                        }
+
+                        if (snapshot.child("users").child(userID).child("name").getValue(String.class).equals(user.getDisplayName())) {
+                            followBtn.setVisibility(View.GONE);
+                            userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                        }
+
+                        if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {
+                            profilePictureURL = snapshot.child("users").child(userID).child("profileImgUrl").getValue(String.class);
+                        }
+
+                        if (!profilePictureURL.equals("none")) {
+                            Glide.with(getApplicationContext()).load(profilePictureURL).into(profilePicture);
+                        }
+
+                        if (!snapshot.child("users").child(userID).child("following").child(user.getUid()).exists()) {
+                            userFollowsCurrentUserTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            userFollowsCurrentUserTextView.setVisibility(View.GONE);
+                            userFollowsLoggedInUser = true;
+                        }
+
+                        // check logged in user follows this user
+                        if (snapshot.child("users").child(user.getUid()).child("following").exists()) {
+                            if (snapshot.child("users").child(user.getUid()).child("following").child(userID).exists()) {
+                                currentUserFollowsThisUser = true;
+                                followingCurrentUser = true;
+                                followBtn.setText("Unfollow");
+                            } else {
+                                followingCurrentUser = false;
+                                currentUserFollowsThisUser = false;
+                            }
+                        }
+
+                        // set followers and following counter values
+                        if (snapshot.child("users").child(userID).child("following").exists()) {
+                            following = (int) snapshot.child("users").child(userID).child("following").getChildrenCount();
+                            followingCounter.setText(String.format("%d", following));
+                        }
+
+                        if (snapshot.child("users").child(userID).child("followers").exists()) {
+                            followers = (int) snapshot.child("users").child(userID).child("followers").getChildrenCount();
+                            followersCounter.setText(String.format("%d", followers));
+                        }
+
+                        // Load user trophies
+                        if (snapshot.child("users").child(userID).child("trophies").exists()) {
+                            String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
+                            String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
+                            String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
+
+                            goldTrophiesCount.setText(goldTrophies);
+                            silverTrophiesCount.setText(silverTrophies);
+                            bronzeTrophiesCount.setText(bronzeTrophies);
+                        }
+
+                        //recyclerAdapter.notifyDataSetChanged();
+                        
+                    } else {
+                        Toast.makeText(UserProfileActivity.this, "Uname is null " + userID, Toast.LENGTH_SHORT).show();
+                    }
+                    
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(UserProfileActivity.this, "Error while refreshing user data", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // Load user posts from db
+
+            DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference();
+            postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    postModelArrayList.clear();
+                    recyclerAdapter.notifyDataSetChanged();
+
+
+                    for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+
+                        if (postSnapshot.child("name").getValue(String.class) != null && postSnapshot.child("name").getValue(String.class).equals(username) && !postSnapshot.child("reported").exists()) {
+
+                            if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                HomeActivity.userHasPosts = true;
+                            }
+
+                            PostModel postModel = new PostModel();
+                            postModel.setId(postSnapshot.child("id").getValue(String.class));
+
+                            if (postSnapshot.child("imgUrl").getValue(String.class) == null) {
+                                postModel.setImgUrl("none");
+                            } else {
+                                postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                            }
+
+                            postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                            postModel.setName(postSnapshot.child("name").getValue(String.class));
+                            postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                            postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                            for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                                if (Objects.equals(user.child("name").getValue(String.class), postSnapshot.child("name").getValue(String.class))) {
+                                    postModel.setAuthorID(user.child("id").getValue(String.class));
+                                }
+                            }
+
+                            if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                                postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                                postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                            }
+
+                            if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
+                                postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
+                            }
+
+                            if (postSnapshot.child("comments").exists()) {
+                                postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                            } else {
+                                postModel.setCommentsCount("0");
+                            }
+
+                            if (!HomeActivity.singedInAnonymously && user.getUid() != null) {
+                                // Show post in recycler adapter only if the user is not blocked
+                                if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
+                                    postModelArrayList.add(postModel);
+                                    HomeFragment.postModelArrayList.add(postModel);
+                                }
+                            } else {
+                                postModelArrayList.add(postModel);
+                                HomeFragment.postModelArrayList.add(postModel);
+                            }
+                            //recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
+                            //recyclerAdapter.notifyDataSetChanged();
+
+                            //Toast.makeText(UserProfileActivity.this, "adapter updated", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    refreshLayout.setRefreshing(false);
+                    //recyclerAdapter.notifyDataSetChanged();
+                    postsLoadedCallback.onComplete();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(UserProfileActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } else {
+            Toast.makeText(this, "Error finding this user", Toast.LENGTH_SHORT).show();
+            onBackPressed();
+        }
+
+    }
+    
+    PostsLoadedCallback postsLoadedCallback = new PostsLoadedCallback() {
+        @Override
+        public void onComplete() {
+            Toast.makeText(UserProfileActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            progressDialog.hide();
+
+            recyclerView.setAdapter(null);
+            recyclerAdapter.notifyDataSetChanged();
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(recyclerAdapter);
+
+            Collections.reverse(postModelArrayList);
+
+            ArrayList<PostModel> allUserPosts = new ArrayList<>();
+            int totalPosts = 0;
+
+            for (PostModel post : postModelArrayList) {
+                if (totalPosts < 5) {
+                    totalPosts++;
+                    allUserPosts.add(post);
+                }
+            }
+
+            recyclerAdapter = new PostRecyclerAdapter(allUserPosts, UserProfileActivity.this, UserProfileActivity.this);
+            recyclerAdapter.notifyDataSetChanged();
+        }
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.user_profile_options_menu, menu);
@@ -320,36 +586,36 @@ public class UserProfileActivity extends AppCompatActivity {
         userID = extras.getString("user_id");
         username = extras.getString("username");
 
-        ImageView badge1 = findViewById(R.id.imageView14);
-        ImageView badge2 = findViewById(R.id.imageView15);
-        ImageView badge3 = findViewById(R.id.imageView24);
-        ImageView verify_badge = findViewById(R.id.verifiy_badge);
+        badge1 = findViewById(R.id.imageView14);
+        badge2 = findViewById(R.id.imageView15);
+        badge3 = findViewById(R.id.imageView24);
+        verify_badge = findViewById(R.id.verifiy_badge);
         verify_badge.setVisibility(View.GONE);
-        ImageView crown = findViewById(R.id.crown);
+        crown = findViewById(R.id.crown);
         crown.setVisibility(View.GONE);
 
-        TextView owner_tv = findViewById(R.id.owner);
+        owner_tv = findViewById(R.id.owner);
         owner_tv.setVisibility(View.GONE);
 
-        ImageButton badges = findViewById(R.id.imageButton22);
-        ImageButton backBtn = findViewById(R.id.imageButton2);
-        ImageButton postsOfTheMonthInfo = findViewById(R.id.imageButton9);
-        CircleImageView profilePicture = findViewById(R.id.my_profile_image2);
-        TextView username_tv = findViewById(R.id.textView12);
-        Button followBtn = findViewById(R.id.follow_btn);
-        Button showAllPostsButton = findViewById(R.id.showAllUserPosts);
+        badges = findViewById(R.id.imageButton22);
+        backBtn = findViewById(R.id.imageButton2);
+        postsOfTheMonthInfo = findViewById(R.id.imageButton9);
+        profilePicture = findViewById(R.id.my_profile_image2);
+        username_tv = findViewById(R.id.textView12);
+        followBtn = findViewById(R.id.follow_btn);
+        showAllPostsButton = findViewById(R.id.showAllUserPosts);
 
-        TextView followersCounter = findViewById(R.id.followers_my_profile3);
-        TextView followingCounter = findViewById(R.id.following_my_profile3);
-        TextView totalLikesCounter = findViewById(R.id.textView74);
+        followersCounter = findViewById(R.id.followers_my_profile3);
+        followingCounter = findViewById(R.id.following_my_profile3);
+        totalLikesCounter = findViewById(R.id.textView74);
 
-        TextView goldTrophiesCount = findViewById(R.id.gold_trophies_count);
-        TextView silverTrophiesCount = findViewById(R.id.silver_trophies_count);
-        TextView bronzeTrophiesCount = findViewById(R.id.bronze_trophies_count);
+        goldTrophiesCount = findViewById(R.id.gold_trophies_count);
+        silverTrophiesCount = findViewById(R.id.silver_trophies_count);
+        bronzeTrophiesCount = findViewById(R.id.bronze_trophies_count);
 
-        TextView userFollowsCurrentUserTextView = findViewById(R.id.textView28);
-        View showFollowersView = findViewById(R.id.view11);
-        View showFollowingUsersView = findViewById(R.id.view12);
+        userFollowsCurrentUserTextView = findViewById(R.id.textView28);
+        showFollowersView = findViewById(R.id.view11);
+        showFollowingUsersView = findViewById(R.id.view12);
 
         AdView mAdView = findViewById(R.id.adView4);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -372,19 +638,17 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-        Type type = new TypeToken<List<PostModel>>() {
-        }.getType();
         ArrayList<PostModel> allPosts = HomeFragment.postModelArrayList;
 
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
-        RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
+        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
+        layoutManager = new LinearLayoutManager(UserProfileActivity.this);
 
         if (allPosts == null) {
             allPosts = HomeFragment.postModelArrayList;
         }
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
+        recyclerView = findViewById(R.id.recyclerView_user_profile);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
@@ -392,6 +656,9 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        SwipeRefreshLayout refreshLayout = findViewById(R.id.user_profile_refresh);
+        refreshLayout.setOnRefreshListener(() -> refreshUserInfoAndPosts(refreshLayout));
 
         badges.setOnClickListener(v -> new android.app.AlertDialog.Builder(UserProfileActivity.this)
                 .setTitle("How to earn badges!")
@@ -409,12 +676,13 @@ public class UserProfileActivity extends AppCompatActivity {
         listener = new ScreenshotListener() {
             @Override
             public void onScreenshotDetected(String path) {
-                Toast.makeText(UserProfileActivity.this, "screenshot", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserProfileActivity.this, "Screenshot saved in " + path, Toast.LENGTH_SHORT).show();
             }
         };
         listener.startListening();
 
         loadRecommendedUsers();
+        refreshUserInfoAndPosts(refreshLayout);
         backBtn.setOnClickListener(v -> onBackPressed());
 
         postsOfTheMonthInfo.setOnClickListener(view -> {
@@ -519,7 +787,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     owner_tv.setVisibility(View.VISIBLE);
                 }
 
-                totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));
+                totalLikesCounter.setText(HomeActivity.prettyCount(totalLikes));
 
             } else {
                 Toast.makeText(this, "Error loading posts", Toast.LENGTH_SHORT).show();
@@ -921,6 +1189,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
     public interface FirebaseCallback {
         void onComplete(String profilePictureURL, boolean userFollowsLoggedInUser, boolean followingCurrentUser);
+    }
+
+    public interface PostsLoadedCallback {
+        void onComplete();
     }
 
 }

@@ -597,7 +597,7 @@ public class MyProfileFragment extends Fragment {
                 crown.setVisibility(View.VISIBLE);
             }
 
-            totalLikesCounter.setText(HomeActivity.prettyCount((Number) totalLikes));
+            totalLikesCounter.setText(HomeActivity.prettyCount(totalLikes));
 
             if (HomeActivity.savedUserData != null) {
 

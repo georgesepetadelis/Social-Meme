@@ -189,7 +189,7 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (getSupportFragmentManager() != null) {
-            this.show_banners = show;
+            show_banners = show;
 
             bottomNavBar.setOnItemSelectedListener(id -> {
 
@@ -301,7 +301,7 @@ public class HomeActivity extends AppCompatActivity {
         ref.child("show_banners").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean showAdBanner = (Boolean) snapshot.getValue(Boolean.class);
+                Boolean showAdBanner = snapshot.getValue(Boolean.class);
                 firebaseCallback.onCallback(showAdBanner);
             }
 

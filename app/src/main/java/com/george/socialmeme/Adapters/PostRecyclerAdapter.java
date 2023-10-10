@@ -440,6 +440,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
     }
 
+    public void update() {
+        //notifyDataSetChanged();
+        notifyAll();
+    }
 
     @Override
     public int getItemCount() {
