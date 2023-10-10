@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +42,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -383,7 +381,7 @@ public class UserProfileActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(UserProfileActivity.this);
 
         if (allPosts == null) {
-            allPosts = HomeFragment.postModelArrayList; //new ArrayList<>();
+            allPosts = HomeFragment.postModelArrayList;
         }
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView_user_profile);
@@ -671,7 +669,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         // Load user trophies
                         if (snapshot.child("users").child(userID).child("trophies").exists()) {
-
                             String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
                             String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
                             String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
@@ -679,13 +676,11 @@ public class UserProfileActivity extends AppCompatActivity {
                             goldTrophiesCount.setText(goldTrophies);
                             silverTrophiesCount.setText(silverTrophies);
                             bronzeTrophiesCount.setText(bronzeTrophies);
-
                         }
 
                         recyclerAdapter.notifyDataSetChanged();
                         progressDialog.hide();
-                        //firebaseCallback.onComplete(profilePictureURL, userFollowsLoggedInUser, followingCurrentUser);
-
+                        sendNotificationToUser("profile_visit");
                     }
 
                     @Override
@@ -694,7 +689,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
             }
-
 
         } else {
 
