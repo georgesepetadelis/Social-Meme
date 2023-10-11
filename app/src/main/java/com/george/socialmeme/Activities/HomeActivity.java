@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.george.socialmeme.Fragments.NewPostFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
+import com.george.socialmeme.Services.UpdateService;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.ump.ConsentForm;
@@ -81,8 +83,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private ConsentInformation consentInformation;
     private ConsentForm consentForm;
-
-
 
     public static boolean isInstagramInstalled(PackageManager packageManager) {
         try {
@@ -248,30 +248,49 @@ public class HomeActivity extends AppCompatActivity {
 
     };
 
+    public static void showUpdateDialog() {
+        if (filtersBtn.getContext() != null) {
+
+            // Display update dialog from update service
+            new android.app.AlertDialog.Builder(filtersBtn.getContext())
+                    .setTitle("A new update just released!")
+                    .setCancelable(false)
+                    .setMessage("For security reasons having the latest version is required to use Social Meme")
+                    .setPositiveButton("Update", (dialogInterface, i) -> {
+                        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        filtersBtn.getContext().startActivity(intent);
+                    }).show();
+            Toast.makeText(filtersBtn.getContext(), "New update available", Toast.LENGTH_SHORT).show();
+
+            // Kill update service after displaying update dialog
+            Intent updateServiceIntent = new Intent(filtersBtn.getContext(), UpdateService.class);
+            filtersBtn.getContext().stopService(updateServiceIntent);
+
+        }
+    }
+
     public void loadForm() {
         // Loads a consent form. Must be called on the main thread.
         UserMessagingPlatform.loadConsentForm(
                 this,
-                new UserMessagingPlatform.OnConsentFormLoadSuccessListener() {
-                    @Override
-                    public void onConsentFormLoadSuccess(ConsentForm consentForm) {
-                        HomeActivity.this.consentForm = consentForm;
-                        if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
-                            consentForm.show(
-                                    HomeActivity.this,
-                                    formError -> {
-                                        if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
-                                            // App can start requesting ads.
-                                        }
+                consentForm -> {
+                    HomeActivity.this.consentForm = consentForm;
+                    if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                        consentForm.show(
+                                HomeActivity.this,
+                                formError -> {
+                                    if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
+                                        // App can start requesting ads.
+                                    }
 
-                                        // Handle dismissal by reloading form.
-                                        loadForm();
-                                    });
-                        }
+                                    // Handle dismissal by reloading form.
+                                    loadForm();
+                                });
                     }
                 },
                 formError -> {
-                    Toast.makeText(this, "Error: " + formError.getMessage(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "Error(ad form): " + formError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
         );
     }
@@ -307,7 +326,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomeActivity.this, "Error(): " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -344,6 +363,10 @@ public class HomeActivity extends AppCompatActivity {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLUE);
+
+        // Start update service
+        Intent updateServiceIntent = new Intent(this, UpdateService.class);
+        startService(updateServiceIntent);
 
         if (!singedInAnonymously) {
             FirebaseAuth auth = FirebaseAuth.getInstance();

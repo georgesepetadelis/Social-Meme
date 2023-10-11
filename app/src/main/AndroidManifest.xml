@@ -137,6 +137,11 @@
         </activity>
 
         <service
+            android:name=".Services.UpdateService"
+            android:directBootAware="true"
+            android:exported="true" />
+
+        <service
             android:name=".Services.FirebaseNotificationService"
             android:directBootAware="true"
             android:exported="true"
