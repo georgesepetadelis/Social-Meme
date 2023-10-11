@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/my_profile_refresh"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,533 +8,554 @@
     android:background="?attr/background"
     tools:context=".Fragments.MyProfileFragment">
 
-    <View
-        android:id="@+id/view6"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:background="#0099ff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center_horizontal"
-        android:text="My Profile"
-        android:textColor="@color/white"
-        android:textSize="43sp"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginTop="10dp" />
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view6">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <View
+            android:id="@+id/view6"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:background="#0099ff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center_horizontal"
+            android:text="My Profile"
+            android:textColor="@color/white"
+            android:textSize="43sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginTop="10dp" />
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6">
 
-            <ImageView
-                android:id="@+id/crown2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="50dp"
-                android:rotation="-19"
-                android:src="@drawable/crown"
-                app:layout_constraintBottom_toTopOf="@+id/my_profile_image2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView4"
-                android:layout_width="0dp"
-                android:layout_height="130dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:padding="10dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/following_my_profile">
+                <ImageView
+                    android:id="@+id/crown2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="50dp"
+                    android:rotation="-19"
+                    android:src="@drawable/crown"
+                    app:layout_constraintBottom_toTopOf="@+id/my_profile_image2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView4"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:padding="10dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/following_my_profile">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="?attr/cardBackgroundColor"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:id="@+id/imageView14"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageView15"
+                            app:layout_constraintEnd_toStartOf="@+id/imageView15"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/imageView15"
+                            app:srcCompat="@drawable/badge2" />
+
+                        <ImageView
+                            android:id="@+id/imageView15"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="24dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/imageView24"
+                            app:layout_constraintHorizontal_bias="1.0"
+                            app:layout_constraintStart_toEndOf="@+id/imageView14"
+                            app:layout_constraintTop_toBottomOf="@+id/textView51"
+                            app:srcCompat="@drawable/badge1" />
+
+                        <ImageView
+                            android:id="@+id/imageView24"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageView15"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imageView15"
+                            app:layout_constraintTop_toTopOf="@+id/imageView15"
+                            app:srcCompat="@drawable/badge" />
+
+                        <TextView
+                            android:id="@+id/textView51"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="16dp"
+                            android:text="Badges"
+                            android:textColor="?attr/textFillColor"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toTopOf="@+id/imageView15"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0" />
+
+                        <ImageButton
+                            android:id="@+id/imageButton22"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ripple_round_card_bg"
+                            android:padding="5dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_info" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/constraintLayout5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="@null"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="8dp"
+                    app:layout_constraintBottom_toTopOf="@+id/textView17"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView4">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/cardBackgroundColor"
+                        android:padding="5dp">
+
+                        <ImageButton
+                            android:id="@+id/imageButton9"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="5sp"
+                            android:background="@drawable/ripple_round_card_bg"
+                            android:padding="5dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_info" />
+
+                        <TextView
+                            android:id="@+id/bronze_trophies_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:text="0"
+                            android:textColor="?attr/titleTextColor"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/imageView21"
+                            app:layout_constraintStart_toStartOf="@+id/imageView21"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView21" />
+
+                        <TextView
+                            android:id="@+id/silver_trophies_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:text="0"
+                            android:textColor="?attr/titleTextColor"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/imageView20"
+                            app:layout_constraintStart_toStartOf="@+id/imageView20"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView20" />
+
+                        <TextView
+                            android:id="@+id/gold_trophies_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:text="0"
+                            android:textColor="?attr/titleTextColor"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/imageView13"
+                            app:layout_constraintStart_toStartOf="@+id/imageView13"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView13" />
+
+                        <ImageView
+                            android:id="@+id/imageView13"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="12dp"
+                            app:layout_constraintEnd_toStartOf="@+id/imageView20"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView66"
+                            app:srcCompat="@drawable/gold_cup" />
+
+                        <ImageView
+                            android:id="@+id/imageView20"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginStart="24dp"
+                            android:layout_marginEnd="24dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageView13"
+                            app:layout_constraintEnd_toStartOf="@+id/imageView21"
+                            app:layout_constraintStart_toEndOf="@+id/imageView13"
+                            app:layout_constraintTop_toTopOf="@+id/imageView13"
+                            app:srcCompat="@drawable/silver_cup" />
+
+                        <ImageView
+                            android:id="@+id/imageView21"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageView20"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imageView20"
+                            app:layout_constraintTop_toTopOf="@+id/imageView20"
+                            app:srcCompat="@drawable/bronze_cup" />
+
+                        <TextView
+                            android:id="@+id/textView66"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Trophies"
+                            android:textColor="?attr/textFillColor"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/my_profile_image"
+                    android:layout_width="115dp"
+                    android:layout_height="115dp"
+                    android:layout_marginTop="72dp"
+                    android:background="@drawable/ripple_round_main_background"
+                    android:clickable="true"
+                    android:src="@drawable/user"
+                    app:civ_border_color="#FF000000"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/username_my_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="?selectableItemBackground"
+                    android:text="username"
+                    android:textColor="?attr/textFillColor"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/verified" />
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Followers"
+                    android:textColor="?attr/textFillColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/showFollowingView_Profile"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/username_my_profile" />
+
+                <TextView
+                    android:id="@+id/followers_my_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="0"
+                    android:textColor="?attr/titleTextColor"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/textView13"
+                    app:layout_constraintStart_toStartOf="@+id/textView13"
+                    app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Following"
+                    android:textColor="?attr/textFillColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/username_my_profile"
+                    app:layout_constraintStart_toStartOf="@+id/username_my_profile"
+                    app:layout_constraintTop_toBottomOf="@+id/username_my_profile" />
+
+                <TextView
+                    android:id="@+id/following_my_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="0"
+                    android:textColor="?attr/titleTextColor"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/textView15"
+                    app:layout_constraintStart_toStartOf="@+id/textView15"
+                    app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Memes"
+                    android:textColor="?attr/textFillColor"
+                    android:textSize="40sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_my_profile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="?attr/cardBackgroundColor"
-                    android:padding="8dp">
+                    android:layout_marginBottom="190dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/adView5"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/image_post_item" />
 
-                    <ImageView
-                        android:id="@+id/imageView14"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView15"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView15"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/imageView15"
-                        app:srcCompat="@drawable/badge2" />
+                <ImageView
+                    android:id="@+id/imageView27"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="12dp"
+                    android:elevation="13dp"
+                    android:foregroundTint="@color/white"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintBottom_toBottomOf="@+id/my_profile_image"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.34"
+                    app:layout_constraintStart_toStartOf="@+id/my_profile_image"
+                    app:layout_constraintTop_toTopOf="@+id/my_profile_image"
+                    app:layout_constraintVertical_bias="1.0" />
 
-                    <ImageView
-                        android:id="@+id/imageView15"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView24"
-                        app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintStart_toEndOf="@+id/imageView14"
-                        app:layout_constraintTop_toBottomOf="@+id/textView51"
-                        app:srcCompat="@drawable/badge1" />
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
+                    android:indeterminateDuration="500"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recyclerView_my_profile"
+                    app:layout_constraintVertical_bias="0.0" />
 
-                    <ImageView
-                        android:id="@+id/imageView24"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView15"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/imageView15"
-                        app:layout_constraintTop_toTopOf="@+id/imageView15"
-                        app:srcCompat="@drawable/badge" />
+                <View
+                    android:id="@+id/showFollowersView_Profile"
+                    android:layout_width="80dp"
+                    android:layout_height="60dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
+                    app:layout_constraintEnd_toEndOf="@+id/textView13"
+                    app:layout_constraintStart_toStartOf="@+id/textView13"
+                    app:layout_constraintTop_toTopOf="@+id/textView13" />
 
-                    <TextView
-                        android:id="@+id/textView51"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="Badges"
-                        android:textColor="?attr/textFillColor"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/imageView15"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0" />
+                <View
+                    android:id="@+id/showFollowingView_Profile"
+                    android:layout_width="80dp"
+                    android:layout_height="60dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
+                    app:layout_constraintEnd_toEndOf="@+id/textView15"
+                    app:layout_constraintStart_toStartOf="@+id/textView15"
+                    app:layout_constraintTop_toTopOf="@+id/textView13" />
 
-                    <ImageButton
-                        android:id="@+id/imageButton22"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_round_card_bg"
-                        android:padding="5dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_info" />
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:adSize="BANNER"
+                    app:adUnitId="ca-app-pub-9627755439548346/9659272134"
+                    app:layout_constraintBottom_toTopOf="@+id/recyclerView_my_profile"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/textView75"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total likes"
+                    android:textColor="?attr/textFillColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView15"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView15"
+                    app:layout_constraintTop_toTopOf="@+id/textView15" />
 
-            </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/textView76"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="0"
+                    android:textColor="?attr/titleTextColor"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/textView75"
+                    app:layout_constraintStart_toStartOf="@+id/textView75"
+                    app:layout_constraintTop_toBottomOf="@+id/textView75" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/constraintLayout5"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:background="@null"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/textView17"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView4">
+                <Button
+                    android:id="@+id/button5"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/et_round_blue"
+                    android:text="See all posts"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/recyclerView_my_profile"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/recyclerView_my_profile"
+                    app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?attr/cardBackgroundColor"
-                    android:padding="5dp">
+                <TextView
+                    android:id="@+id/verified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="?selectableItemBackground"
+                    android:text="Click to verify your email!"
+                    android:textColor="#FFAB00"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/username_my_profile"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/my_profile_image" />
 
-                    <ImageButton
-                        android:id="@+id/imageButton9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5sp"
-                        android:background="@drawable/ripple_round_card_bg"
-                        android:padding="5dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_info" />
+                <ImageView
+                    android:id="@+id/imageView26"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?selectableItemBackground"
+                    android:focusable="true"
+                    android:src="@drawable/verify"
+                    app:layout_constraintBottom_toBottomOf="@+id/username_my_profile"
+                    app:layout_constraintStart_toEndOf="@+id/username_my_profile"
+                    app:layout_constraintTop_toTopOf="@+id/username_my_profile" />
 
-                    <TextView
-                        android:id="@+id/bronze_trophies_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:text="0"
-                        android:textColor="?attr/titleTextColor"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/imageView21"
-                        app:layout_constraintStart_toStartOf="@+id/imageView21"
-                        app:layout_constraintTop_toBottomOf="@+id/imageView21" />
+                <TextView
+                    android:id="@+id/my_total_memes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="5dp"
+                    android:text="0 total memes"
+                    android:textSize="23sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView17"
+                    app:layout_constraintStart_toEndOf="@+id/textView17"
+                    app:layout_constraintTop_toTopOf="@+id/textView17" />
 
-                    <TextView
-                        android:id="@+id/silver_trophies_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:text="0"
-                        android:textColor="?attr/titleTextColor"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/imageView20"
-                        app:layout_constraintStart_toStartOf="@+id/imageView20"
-                        app:layout_constraintTop_toBottomOf="@+id/imageView20" />
-
-                    <TextView
-                        android:id="@+id/gold_trophies_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:text="0"
-                        android:textColor="?attr/titleTextColor"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/imageView13"
-                        app:layout_constraintStart_toStartOf="@+id/imageView13"
-                        app:layout_constraintTop_toBottomOf="@+id/imageView13" />
-
-                    <ImageView
-                        android:id="@+id/imageView13"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_marginTop="12dp"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView20"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView66"
-                        app:srcCompat="@drawable/gold_cup" />
-
-                    <ImageView
-                        android:id="@+id/imageView20"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginEnd="24dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView13"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView21"
-                        app:layout_constraintStart_toEndOf="@+id/imageView13"
-                        app:layout_constraintTop_toTopOf="@+id/imageView13"
-                        app:srcCompat="@drawable/silver_cup" />
-
-                    <ImageView
-                        android:id="@+id/imageView21"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView20"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/imageView20"
-                        app:layout_constraintTop_toTopOf="@+id/imageView20"
-                        app:srcCompat="@drawable/bronze_cup" />
-
-                    <TextView
-                        android:id="@+id/textView66"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Trophies"
-                        android:textColor="?attr/textFillColor"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-            </androidx.cardview.widget.CardView>
+        </androidx.core.widget.NestedScrollView>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/my_profile_image"
-                android:layout_width="115dp"
-                android:layout_height="115dp"
-                android:layout_marginTop="72dp"
-                android:background="@drawable/ripple_round_main_background"
-                android:clickable="true"
-                android:src="@drawable/user"
-                app:civ_border_color="#FF000000"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:id="@+id/settings_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/ripple_round_header"
+            android:clickable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_settings"
+            app:layout_constraintBottom_toBottomOf="@+id/view6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView10"
+            app:layout_constraintTop_toTopOf="@+id/view6" />
 
-            <TextView
-                android:id="@+id/username_my_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="?selectableItemBackground"
-                android:text="username"
-                android:textColor="?attr/textFillColor"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/verified" />
+        <View
+            android:id="@+id/view8"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_wave_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6" />
 
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Followers"
-                android:textColor="?attr/textFillColor"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/showFollowingView_Profile"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/username_my_profile" />
-
-            <TextView
-                android:id="@+id/followers_my_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="0"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="?attr/titleTextColor"
-                app:layout_constraintEnd_toEndOf="@+id/textView13"
-                app:layout_constraintStart_toStartOf="@+id/textView13"
-                app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-            <TextView
-                android:id="@+id/textView15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Following"
-                android:textColor="?attr/textFillColor"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/username_my_profile"
-                app:layout_constraintStart_toStartOf="@+id/username_my_profile"
-                app:layout_constraintTop_toBottomOf="@+id/username_my_profile" />
-
-            <TextView
-                android:id="@+id/following_my_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="0"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="?attr/titleTextColor"
-                app:layout_constraintEnd_toEndOf="@+id/textView15"
-                app:layout_constraintStart_toStartOf="@+id/textView15"
-                app:layout_constraintTop_toBottomOf="@+id/textView15" />
-
-            <TextView
-                android:id="@+id/textView17"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:text="Memes"
-                android:textColor="?attr/textFillColor"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_my_profile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="190dp"
-                android:nestedScrollingEnabled="false"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:itemCount="1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/adView5"
-                tools:listitem="@layout/image_post_item" />
-
-            <ImageView
-                android:id="@+id/imageView27"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="12dp"
-                android:elevation="13dp"
-                android:foregroundTint="@color/white"
-                android:src="@drawable/ic_add"
-                app:layout_constraintBottom_toBottomOf="@+id/my_profile_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.34"
-                app:layout_constraintStart_toStartOf="@+id/my_profile_image"
-                app:layout_constraintTop_toTopOf="@+id/my_profile_image"
-                app:layout_constraintVertical_bias="1.0" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:indeterminate="true"
-                android:indeterminateDrawable="@drawable/progress_bar_style_gradient"
-                android:indeterminateDuration="500"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerView_my_profile"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <View
-                android:id="@+id/showFollowersView_Profile"
-                android:layout_width="80dp"
-                android:layout_height="60dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?selectableItemBackgroundBorderless"
-                app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
-                app:layout_constraintEnd_toEndOf="@+id/textView13"
-                app:layout_constraintStart_toStartOf="@+id/textView13"
-                app:layout_constraintTop_toTopOf="@+id/textView13" />
-
-            <View
-                android:id="@+id/showFollowingView_Profile"
-                android:layout_width="80dp"
-                android:layout_height="60dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?selectableItemBackgroundBorderless"
-                app:layout_constraintBottom_toBottomOf="@+id/followers_my_profile"
-                app:layout_constraintEnd_toEndOf="@+id/textView15"
-                app:layout_constraintStart_toStartOf="@+id/textView15"
-                app:layout_constraintTop_toTopOf="@+id/textView13" />
-
-            <com.google.android.gms.ads.AdView
-                android:id="@+id/adView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:adSize="BANNER"
-                app:adUnitId="ca-app-pub-9627755439548346/9659272134"
-                app:layout_constraintBottom_toTopOf="@+id/recyclerView_my_profile"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView17" />
-
-            <TextView
-                android:id="@+id/textView75"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total likes"
-                android:textColor="?attr/textFillColor"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/textView15"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView15"
-                app:layout_constraintTop_toTopOf="@+id/textView15" />
-
-            <TextView
-                android:id="@+id/textView76"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="0"
-                android:textColor="?attr/titleTextColor"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/textView75"
-                app:layout_constraintStart_toStartOf="@+id/textView75"
-                app:layout_constraintTop_toBottomOf="@+id/textView75" />
-
-            <Button
-                android:id="@+id/button5"
-                android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:background="@drawable/et_round_blue"
-                android:text="See all posts"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/recyclerView_my_profile"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/recyclerView_my_profile"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar" />
-
-            <TextView
-                android:id="@+id/verified"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="?selectableItemBackground"
-                android:text="Click to verify your email!"
-                android:textStyle="bold"
-                android:textColor="#FFAB00"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="@+id/username_my_profile"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/my_profile_image" />
-
-            <ImageView
-                android:id="@+id/imageView26"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/verify"
-                android:focusable="true"
-                android:background="?selectableItemBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/username_my_profile"
-                app:layout_constraintStart_toEndOf="@+id/username_my_profile"
-                app:layout_constraintTop_toTopOf="@+id/username_my_profile" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
-
-    <ImageButton
-        android:id="@+id/settings_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/ripple_round_header"
-        android:padding="8dp"
-        android:clickable="true"
-        android:src="@drawable/ic_settings"
-        app:layout_constraintBottom_toBottomOf="@+id/view6"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView10"
-        app:layout_constraintTop_toTopOf="@+id/view6" />
-
-    <View
-        android:id="@+id/view8"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:background="@drawable/ic_wave_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view6" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

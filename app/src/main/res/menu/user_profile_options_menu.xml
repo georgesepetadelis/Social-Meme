@@ -9,6 +9,10 @@
     <item
         android:id="@+id/report_user_item_menu"
         android:icon="@drawable/ic_report"
-        android:title="Report user for potential violating content" />
+        android:title="Report user" />
+
+    <item
+        android:id="@+id/refresh_user_data"
+        android:title="Refresh user data" />
 
 </menu>

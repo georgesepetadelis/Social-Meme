@@ -1,37 +1,29 @@
 package com.george.socialmeme.Activities;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
-
 import com.developer.kalert.KAlertDialog;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.george.socialmeme.Adapters.UserRecyclerAdapter;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
-import com.george.socialmeme.ViewHolders.CommentItemViewHolder;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +45,11 @@ public class SearchUserActivity extends AppCompatActivity {
     void searchUser(UserRecyclerAdapter adapter, String query, List<UserModel> allUsers) {
 
         List<UserModel> filteredList = new ArrayList<>();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
         for (UserModel user : allUsers) {
-            if (user != null && user.getUsername() != null) {
+            if (user != null && user.getUsername() != null && !user.getUserID().equals(firebaseUser.getUid())) {
                 if (user.getUsername().toLowerCase().contains(query.toLowerCase())) {
                     filteredList.add(user);
                 }

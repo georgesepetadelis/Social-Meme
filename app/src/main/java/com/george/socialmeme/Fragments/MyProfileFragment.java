@@ -9,21 +9,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,28 +27,27 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.Activities.AllUserPostsActivity;
 import com.george.socialmeme.Activities.FollowerInfoActivity;
-import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
-import com.george.socialmeme.Models.UserModel;
-import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
+import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
 import com.george.socialmeme.Activities.SettingsActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
+import com.george.socialmeme.Models.UserModel;
+import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -73,6 +63,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -91,9 +82,15 @@ public class MyProfileFragment extends Fragment {
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     TextView followersCounter, followingCounter, goldTrophiesCount, silverTrophiesCount, bronzeTrophiesCount;
     ProgressBar progressBar;
-
+    ArrayList<PostModel> postModelArrayList;
     private int followers = 0;
+    PostRecyclerAdapter recyclerAdapter;
     private int following = 0;
+    TextView username, totalmemes;
+    ImageView verified;
+    RecyclerView recyclerView;
+    LinearLayoutManager layoutManager;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -262,6 +259,201 @@ public class MyProfileFragment extends Fragment {
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getActivity(), "Username copied to clipboard", Toast.LENGTH_SHORT).show();
     }
+    PostsLoadedCallback postsLoadedCallback = new PostsLoadedCallback() {
+        @Override
+        public void onComplete() {
+
+            progressDialog.hide();
+            recyclerView.setAdapter(null);
+            recyclerAdapter.notifyDataSetChanged();
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(recyclerAdapter);
+
+            Collections.reverse(postModelArrayList);
+
+            ArrayList<PostModel> allUserPosts = new ArrayList<>();
+            int totalPosts = 0;
+
+            for (PostModel post : postModelArrayList) {
+                if (totalPosts < 5) {
+                    totalPosts++;
+                    allUserPosts.add(post);
+                }
+            }
+
+            Collections.reverse(allUserPosts);
+
+            recyclerAdapter = new PostRecyclerAdapter(allUserPosts, getContext(), getActivity());
+            recyclerAdapter.notifyDataSetChanged();
+
+            recyclerView.setAdapter(null);
+            recyclerAdapter.notifyDataSetChanged();
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(recyclerAdapter);
+
+            int totalMemesToInt = postModelArrayList.size();
+            String totalMemesToString = Integer.toString(totalMemesToInt);
+            totalmemes.setText(totalMemesToString + " total memes!");
+
+            Toast.makeText(getContext(), "User data refreshed", Toast.LENGTH_SHORT).show();
+
+        }
+    };
+
+    void refreshUserInfoAndPosts(SwipeRefreshLayout refreshLayout) {
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userID = user.getUid();
+
+        // calling postModelArrayList.clear()
+        // here will crash the main thread
+        // so we re-initialize the variable to empty the list
+        postModelArrayList = new ArrayList<>();
+
+        refreshLayout.setRefreshing(true);
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference();
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if (snapshot.child("users").child(userID).child("name").getValue(String.class) != null) {
+
+                    if (snapshot.child("name").getValue(String.class) != null && snapshot.hasChild("verified")) {
+                        verified.setVisibility(View.VISIBLE);
+                    }
+
+                    String profilePictureURL = "none";
+                    //String username_from_db = snapshot.child("users").child(userID).child("name").getValue(String.class);
+                    username.setText(user.getDisplayName());
+
+                    if (snapshot.child("users").child(userID).child("profileImgUrl").exists()) {
+                        profilePictureURL = snapshot.child("users").child(userID).child("profileImgUrl").getValue(String.class);
+                    }
+
+                    if (!profilePictureURL.equals("none")) {
+                        Glide.with(getContext()).load(profilePictureURL).into(profilePicture);
+                    }
+
+                    // set followers and following counter values
+                    if (snapshot.child("users").child(userID).child("following").exists()) {
+                        following = (int) snapshot.child("users").child(userID).child("following").getChildrenCount();
+                        followingCounter.setText(String.format("%d", following));
+                    }
+
+                    if (snapshot.child("users").child(userID).child("followers").exists()) {
+                        followers = (int) snapshot.child("users").child(userID).child("followers").getChildrenCount();
+                        followersCounter.setText(String.format("%d", followers));
+                    }
+
+                    // Load user trophies
+                    if (snapshot.child("users").child(userID).child("trophies").exists()) {
+                        String goldTrophies = snapshot.child("users").child(userID).child("trophies").child("gold").getValue(String.class);
+                        String silverTrophies = snapshot.child("users").child(userID).child("trophies").child("silver").getValue(String.class);
+                        String bronzeTrophies = snapshot.child("users").child(userID).child("trophies").child("bronze").getValue(String.class);
+
+                        goldTrophiesCount.setText(goldTrophies);
+                        silverTrophiesCount.setText(silverTrophies);
+                        bronzeTrophiesCount.setText(bronzeTrophies);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error while refreshing user data", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Load user posts from db
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference();
+        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                // Empty HomeFragment.postModelArrayList
+                // so we can add our new data fetched from db
+                HomeFragment.postModelArrayList.clear();
+
+                if (postModelArrayList == null) {
+                    postModelArrayList = new ArrayList<>();
+                } else {
+                    postModelArrayList.clear();
+                }
+                recyclerAdapter.notifyDataSetChanged();
+
+                for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
+
+                    if (postSnapshot.child("name").getValue(String.class) != null /*&& postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())*/ && !postSnapshot.child("reported").exists()) {
+
+                        if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                            HomeActivity.userHasPosts = true;
+                        }
+
+                        PostModel postModel = new PostModel();
+                        postModel.setId(postSnapshot.child("id").getValue(String.class));
+
+                        if (postSnapshot.child("imgUrl").getValue(String.class) == null) {
+                            postModel.setImgUrl("none");
+                        } else {
+                            postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
+                        }
+
+                        postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
+                        postModel.setName(postSnapshot.child("name").getValue(String.class));
+                        postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                        postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
+
+                        for (DataSnapshot user : snapshot.child("users").getChildren()) {
+                            if (Objects.equals(user.child("name").getValue(String.class), postSnapshot.child("name").getValue(String.class))) {
+                                postModel.setAuthorID(user.child("id").getValue(String.class));
+                            }
+                        }
+
+                        if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
+                            postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
+                            postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                        }
+
+                        if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
+                            postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
+                        }
+
+                        if (postSnapshot.child("comments").exists()) {
+                            postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
+                        } else {
+                            postModel.setCommentsCount("0");
+                        }
+
+                        if (!HomeActivity.singedInAnonymously) {
+                            if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                postModelArrayList.add(postModel);
+                            }
+                        } else {
+                            postModelArrayList.add(postModel);
+                        }
+                        HomeFragment.postModelArrayList.add(postModel);
+                    }
+
+                }
+
+                Collections.reverse(HomeFragment.postModelArrayList);
+                refreshLayout.setRefreshing(false);
+                //recyclerAdapter.notifyDataSetChanged();
+                postsLoadedCallback.onComplete();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -279,7 +471,7 @@ public class MyProfileFragment extends Fragment {
         crown.setVisibility(View.GONE);
 
         profilePicture = view.findViewById(R.id.my_profile_image);
-        TextView username = view.findViewById(R.id.username_my_profile);
+        username = view.findViewById(R.id.username_my_profile);
         ImageButton settings = view.findViewById(R.id.settings_btn);
         View showFollowersView = view.findViewById(R.id.showFollowersView_Profile);
         View showFollowingUsersView = view.findViewById(R.id.showFollowingView_Profile);
@@ -287,6 +479,7 @@ public class MyProfileFragment extends Fragment {
         ImageButton badges = view.findViewById(R.id.imageButton22);
         Button allPostsBtn = view.findViewById(R.id.button5);
         progressBar = view.findViewById(R.id.progressBar);
+        totalmemes = view.findViewById(R.id.my_total_memes);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -492,10 +685,10 @@ public class MyProfileFragment extends Fragment {
             }
         }
 
-        ArrayList<PostModel> postModelArrayList = new ArrayList<>();
-        final RecyclerView recyclerView = view.findViewById(R.id.recyclerView_my_profile);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        final RecyclerView.Adapter recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
+        postModelArrayList = new ArrayList<>();
+        recyclerView = view.findViewById(R.id.recyclerView_my_profile);
+        layoutManager = new LinearLayoutManager(getContext());
+        recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setHasFixedSize(true);
@@ -507,6 +700,9 @@ public class MyProfileFragment extends Fragment {
         progressDialog.getProgressHelper().setBarColor(R.color.main);
         progressDialog.setTitleText("Updating profile picture...");
         progressDialog.setCancelable(false);
+
+        swipeRefreshLayout = view.findViewById(R.id.my_profile_refresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> refreshUserInfoAndPosts(swipeRefreshLayout));
 
         showFollowersView.setOnClickListener(view1 -> {
             if (!followersCounter.getText().toString().equals("0")) {
@@ -574,6 +770,10 @@ public class MyProfileFragment extends Fragment {
                     }
                 }
             }
+
+            int totalMemesToInt = loadedPostsID1.size();
+            String totalMemesToString = String.valueOf(totalMemesToInt);
+            totalmemes.setText(totalMemesToString + " total memes!");
 
             if (totalLikes >= 20000) {
                 badge1.setAlpha(1F);
@@ -643,7 +843,7 @@ public class MyProfileFragment extends Fragment {
 
             progressBar.setVisibility(View.GONE);
 
-        }else {
+        } else {
             progressBar.setVisibility(View.GONE);
             username.setText("Anonymous User");
             settings.setVisibility(View.GONE);
@@ -652,4 +852,9 @@ public class MyProfileFragment extends Fragment {
 
         return view;
     }
+
+    public interface PostsLoadedCallback {
+        void onComplete();
+    }
 }
+

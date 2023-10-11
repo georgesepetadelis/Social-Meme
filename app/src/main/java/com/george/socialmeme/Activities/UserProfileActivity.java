@@ -43,14 +43,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -68,6 +65,8 @@ public class UserProfileActivity extends AppCompatActivity {
     public int following = 0;
     public KAlertDialog progressDialog;
     ScreenshotListener listener;
+
+    SwipeRefreshLayout refreshLayout;
 
     ImageView badge1, badge2, badge3, verify_badge, crown;
     TextView totalmemes, owner_tv, username_tv, followersCounter, followingCounter, totalLikesCounter, goldTrophiesCount, silverTrophiesCount, bronzeTrophiesCount, userFollowsCurrentUserTextView;
@@ -434,10 +433,13 @@ public class UserProfileActivity extends AppCompatActivity {
                     postModelArrayList.clear();
                     recyclerAdapter.notifyDataSetChanged();
 
+                    // clearing HomeFragment.postModelArrayList
+                    // so we can update it with our new data
+                    HomeFragment.postModelArrayList.clear();
 
                     for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
-                        if (postSnapshot.child("name").getValue(String.class) != null && postSnapshot.child("name").getValue(String.class).equals(username) && !postSnapshot.child("reported").exists()) {
+                        if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
 
                             if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                 HomeActivity.userHasPosts = true;
@@ -478,27 +480,26 @@ public class UserProfileActivity extends AppCompatActivity {
                                 postModel.setCommentsCount("0");
                             }
 
-                            if (!HomeActivity.singedInAnonymously && user.getUid() != null) {
+                            if (!HomeActivity.singedInAnonymously) {
                                 // Show post in recycler adapter only if the user is not blocked
                                 if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
-                                    postModelArrayList.add(postModel);
-                                    HomeFragment.postModelArrayList.add(postModel);
+                                    if (postSnapshot.child("name").getValue(String.class).equals(username)) {
+                                        postModelArrayList.add(postModel);
+                                    }
                                 }
+                                HomeFragment.postModelArrayList.add(postModel);
                             } else {
                                 postModelArrayList.add(postModel);
                                 HomeFragment.postModelArrayList.add(postModel);
                             }
-                            //recyclerAdapter.notifyItemInserted(postModelArrayList.size() - 1);
-                            //recyclerAdapter.notifyDataSetChanged();
 
-                            //Toast.makeText(UserProfileActivity.this, "adapter updated", Toast.LENGTH_SHORT).show();
                         }
 
                     }
 
+                    Collections.reverse(HomeFragment.postModelArrayList);
                     refreshLayout.setRefreshing(false);
-                    //recyclerAdapter.notifyDataSetChanged();
                     postsLoadedCallback.onComplete();
                 }
 
@@ -568,19 +569,15 @@ public class UserProfileActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()) {
-            case R.id.report_user_item_menu:
-                reportUser();
-                break;
-            case R.id.block_user_item_menu:
-                new AlertDialog.Builder(UserProfileActivity.this)
-                        .setTitle("Are you sure?")
-                        .setMessage("Are you sure you want to block " + username + " ?.\nIf you block this user you won't be able to see any memes from this user.")
-                        .setPositiveButton("Yes", (dialogInterface, i) -> blockUser())
-                        .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .show();
-                break;
+            case R.id.report_user_item_menu -> reportUser();
+            case R.id.block_user_item_menu -> new AlertDialog.Builder(UserProfileActivity.this)
+                    .setTitle("Are you sure?")
+                    .setMessage("Are you sure you want to block " + username + " ?.\nIf you block this user you won't be able to see any memes from this user.")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> blockUser())
+                    .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .show();
+            case R.id.refresh_user_data -> refreshUserInfoAndPosts(refreshLayout);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -670,7 +667,7 @@ public class UserProfileActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
-        SwipeRefreshLayout refreshLayout = findViewById(R.id.user_profile_refresh);
+        refreshLayout = findViewById(R.id.user_profile_refresh);
         refreshLayout.setOnRefreshListener(() -> refreshUserInfoAndPosts(refreshLayout));
 
         badges.setOnClickListener(v -> new android.app.AlertDialog.Builder(UserProfileActivity.this)

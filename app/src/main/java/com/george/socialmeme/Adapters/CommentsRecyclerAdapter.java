@@ -60,6 +60,10 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
         viewHolder.commentContent.setText(commentsList.get(position).getCommentText());
         viewHolder.userID = commentsList.get(position).getAuthor();
 
+        if (context != null) {
+            viewHolder.context = this.context;
+        }
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");

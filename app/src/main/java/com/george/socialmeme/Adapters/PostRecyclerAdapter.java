@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.SettingsActivity;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.AudioItemViewHolder;
@@ -131,11 +126,14 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 textItemViewHolder.commentsCount.setVisibility(View.GONE);
                 textItemViewHolder.postOptionsButton.setVisibility(View.GONE);
                 textItemViewHolder.openCommentsView.setVisibility(View.GONE);
-                textItemViewHolder.shareBtn.setVisibility(View.GONE);
-            }else {
+            } else {
                 if (user.getUid().equals(postList.get(position).getAuthorID())) {
                     textItemViewHolder.followBtnView.setVisibility(View.GONE);
                 }
+            }
+
+            if (activity != null) {
+                textItemViewHolder.setActivity(activity);
             }
 
             // check if post is liked or not
@@ -183,13 +181,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                     Glide.with(context).load(profilePictureUrl).into(textItemViewHolder.profilePicture);
                 }
             }
-
-            textItemViewHolder.shareBtn.setOnClickListener(view -> {
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("post_url", postList.get(position).getImgUrl());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(context, "Audio URL copied to clipboard", Toast.LENGTH_SHORT).show();
-            });
 
         }
 
@@ -278,7 +269,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 videoViewHolder.postOptionsButton.setVisibility(View.GONE);
                 videoViewHolder.commentsBtn.setVisibility(View.GONE);
                 videoViewHolder.shareBtn.setVisibility(View.GONE);
-            }else {
+            } else {
                 if (user.getUid().equals(postList.get(position).getAuthorID())) {
                     videoViewHolder.followBtnView.setVisibility(View.GONE);
                 }
@@ -441,7 +432,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     public void update() {
-        //notifyDataSetChanged();
         notifyAll();
     }
 

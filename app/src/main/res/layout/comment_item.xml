@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/comment_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -47,6 +46,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Comment text"
+            android:background="?selectableItemBackground"
+            android:focusable="true"
             android:textColor="?attr/textFillColor"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -67,6 +68,18 @@
             app:layout_constraintStart_toEndOf="@+id/textView65"
             app:layout_constraintTop_toTopOf="@+id/textView65"
             app:srcCompat="@drawable/delete_icon" />
+
+        <View
+            android:id="@+id/comment_open_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="51dp"
+            android:background="?selectableItemBackground"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/textView65"
+            app:layout_constraintEnd_toEndOf="@+id/textView65"
+            app:layout_constraintHorizontal_bias="0.89"
+            app:layout_constraintStart_toStartOf="@+id/circleImageView3"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
