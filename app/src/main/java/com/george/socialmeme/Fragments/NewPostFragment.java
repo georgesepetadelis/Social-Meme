@@ -2,6 +2,7 @@ package com.george.socialmeme.Fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -9,16 +10,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
+import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,13 +29,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.developer.kalert.KAlertDialog;
-import com.george.socialmeme.Models.PostModel;
-import com.george.socialmeme.R;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.RegisterActivity;
+import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UploadPostModel;
+import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,7 +54,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -70,13 +71,14 @@ public class NewPostFragment extends Fragment {
     final private FirebaseUser user = mAuth.getCurrentUser();
     KAlertDialog loadingDialog;
 
+
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
 
                     new AlertDialog.Builder(getContext())
                             .setTitle("Upload new meme")
-                            .setMessage("Are you sure you want to upload this file?\nFile: " + result.getData().getData().getPath())
+                            .setMessage("Are you sure you want to upload this file? " /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -90,6 +92,29 @@ public class NewPostFragment extends Fragment {
 
                 }
             });
+
+    @SuppressLint("Range")
+    public static String getFileName(Context context, Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
 
     private void notifyEveryoneAboutFirstPost(String postID) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
