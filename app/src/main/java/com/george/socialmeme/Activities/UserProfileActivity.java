@@ -70,7 +70,7 @@ public class UserProfileActivity extends AppCompatActivity {
     ScreenshotListener listener;
 
     ImageView badge1, badge2, badge3, verify_badge, crown;
-    TextView owner_tv, username_tv, followersCounter, followingCounter, totalLikesCounter, goldTrophiesCount, silverTrophiesCount, bronzeTrophiesCount, userFollowsCurrentUserTextView;
+    TextView totalmemes, owner_tv, username_tv, followersCounter, followingCounter, totalLikesCounter, goldTrophiesCount, silverTrophiesCount, bronzeTrophiesCount, userFollowsCurrentUserTextView;
     ImageButton badges, backBtn, postsOfTheMonthInfo;
     CircleImageView profilePicture;
     Button followBtn, showAllPostsButton;
@@ -518,9 +518,8 @@ public class UserProfileActivity extends AppCompatActivity {
     PostsLoadedCallback postsLoadedCallback = new PostsLoadedCallback() {
         @Override
         public void onComplete() {
-            Toast.makeText(UserProfileActivity.this, "DONE", Toast.LENGTH_SHORT).show();
-            progressDialog.hide();
 
+            progressDialog.hide();
             recyclerView.setAdapter(null);
             recyclerAdapter.notifyDataSetChanged();
             recyclerView.setLayoutManager(layoutManager);
@@ -540,6 +539,18 @@ public class UserProfileActivity extends AppCompatActivity {
 
             recyclerAdapter = new PostRecyclerAdapter(allUserPosts, UserProfileActivity.this, UserProfileActivity.this);
             recyclerAdapter.notifyDataSetChanged();
+
+            recyclerView.setAdapter(null);
+            recyclerAdapter.notifyDataSetChanged();
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(recyclerAdapter);
+
+            int totalMemesToInt = postModelArrayList.size();
+            String totalMemesToString = Integer.toString(totalMemesToInt);
+            totalmemes.setText(totalMemesToString + " total memes!");
+
+            Toast.makeText(UserProfileActivity.this, "User data refreshed", Toast.LENGTH_SHORT).show();
+
         }
     };
 
@@ -617,6 +628,8 @@ public class UserProfileActivity extends AppCompatActivity {
         showFollowersView = findViewById(R.id.view11);
         showFollowingUsersView = findViewById(R.id.view12);
 
+        totalmemes = findViewById(R.id.total_memes_user);
+
         AdView mAdView = findViewById(R.id.adView4);
         AdRequest adRequest = new AdRequest.Builder().build();
 
@@ -682,7 +695,6 @@ public class UserProfileActivity extends AppCompatActivity {
         listener.startListening();
 
         loadRecommendedUsers();
-        refreshUserInfoAndPosts(refreshLayout);
         backBtn.setOnClickListener(v -> onBackPressed());
 
         postsOfTheMonthInfo.setOnClickListener(view -> {
@@ -760,6 +772,10 @@ public class UserProfileActivity extends AppCompatActivity {
                         }
                     }
                 }
+
+                int totalMemesToInt = loadedPostsID1.size();
+                String totalMemesToString = Integer.toString(totalMemesToInt);
+                totalmemes.setText(totalMemesToString + " total memes!");
 
                 if (totalLikes >= 20000) {
                     badge1.setAlpha(1F);
