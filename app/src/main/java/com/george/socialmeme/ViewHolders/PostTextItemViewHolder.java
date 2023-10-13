@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -196,7 +195,6 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
                     Intent intent = new Intent(context, UserProfileActivity.class);
                     intent.putExtra("user_id", postAuthorID);
                     intent.putExtra("username", username.getText().toString());
-                    //intent.putExtra("allPosts", new Gson().toJson(HomeActivity.savedPostsArrayList));
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }
@@ -206,7 +204,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
         openProfileView.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
-            return false;
+            return true;
         });
 
     }
@@ -485,23 +483,17 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    private void saveVideoToDeviceStorage() {
-
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(videoURL));
-        request.setDescription("Downloading video");
-        request.setTitle("Downloading " + username.getText().toString() + " post");
-
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, postID + ".mp4");
-        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.enqueue(request);
-
-        Toast.makeText(context, "Download started...", Toast.LENGTH_SHORT).show();
-
+    private void saveTextAsImageToDevice() throws IOException {
+        changePostInfoVisibilityForBitmap(View.INVISIBLE);
+        Bitmap bmp = createBitmapFromView(container);
+        File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File file = new File(storageLoc, postID + ".png");
+        FileOutputStream fos = new FileOutputStream(file);
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        fos.close();
+        scanFile(context, Uri.fromFile(file));
+        Toast.makeText(context, "Meme saved to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         sendNotificationToPostAuthor("meme_saved", "");
-
     }
 
     public void showPostOptionsBottomSheet() {
@@ -520,12 +512,12 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
             dialog.findViewById(R.id.delete_post_view).setVisibility(View.GONE);
         }
 
-        // Hide download option
-        // because you can't download text :)
-        dialog.findViewById(R.id.constraintLayout8).setVisibility(View.GONE);
-
         downloadMemeView.setOnClickListener(view -> {
-            saveVideoToDeviceStorage();
+            try {
+                saveTextAsImageToDevice();
+            } catch (IOException e) {
+                Toast.makeText(activity, "Error: Can't save this meme", Toast.LENGTH_SHORT).show();
+            }
             dialog.dismiss();
         });
 

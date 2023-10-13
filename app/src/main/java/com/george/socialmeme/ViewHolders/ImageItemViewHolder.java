@@ -2,6 +2,7 @@ package com.george.socialmeme.ViewHolders;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,14 +23,16 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -47,7 +50,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.Visibility;
 
 import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
@@ -71,7 +73,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,6 +83,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
@@ -93,7 +95,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     public CardView container;
     public String postID, postImageURL, postAuthorID;
     public TextView username, like_counter_tv, commentsCount, followBtn;
-    public ImageView postImg;
+    public ImageView postImg, likeImg;
     public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn;
     public ProgressBar loadingProgressBar;
     public CircleImageView profileImage;
@@ -583,6 +585,9 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         followBtn = itemView.findViewById(R.id.textView81);
         followBtnView = itemView.findViewById(R.id.follow_btn_view);
         openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
+        likeImg = itemView.findViewById(R.id.like_img);
+
+        likeImg.setVisibility(View.GONE);
 
         if (activity != null) {
             Zoomy.Builder builder = new Zoomy.Builder(activity).target(postImg);
@@ -622,7 +627,72 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
         openUserProfileView.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
-            return false;
+            return true;
+        });
+
+        postImg.setOnTouchListener(new View.OnTouchListener() {
+            private final GestureDetector gestureDetector = new GestureDetector(activity, new GestureDetector.SimpleOnGestureListener() {
+
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+
+                    Random rand = new Random();
+                    int randomInt = rand.nextInt(4); // 0-3
+
+                    switch (randomInt) {
+                        case 0:
+                            likeImg.setImageResource(R.drawable.like_image1);
+                            break;
+                        case 1:
+                            likeImg.setImageResource(R.drawable.like_image2);
+                            break;
+                        case 2:
+                            likeImg.setImageResource(R.drawable.like_image3);
+                            break;
+                        case 3:
+                            likeImg.setImageResource(R.drawable.like_image4);
+                    }
+
+                    likeImg.setVisibility(View.VISIBLE);
+
+                    YoYo.with(Techniques.FadeOutUp)
+                            .duration(700)
+                            .repeat(0)
+                            .playOn(likeImg);
+
+                    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK));
+
+                    if (!isPostLiked) {
+                        isPostLiked = true;
+                        like_btn.setImageResource(R.drawable.ic_like_filled);
+                        likesRef.child(postID).child(user.getUid()).setValue("true");
+                        updateLikesToDB(postID, true);
+
+                        if (!user.getUid().equals(postAuthorID)) {
+                            sendNotificationToPostAuthor("like", "");
+                        }
+                    }
+
+                    return super.onDoubleTap(e);
+                }
+
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent event) {
+                    Log.d("onSingleTapConfirmed", "onSingleTap");
+                    return false;
+                }
+            });
+
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
         });
 
         // Check if logged-in user follows post author
@@ -676,7 +746,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                 if (!user.getUid().equals(postAuthorID)) {
                     sendNotificationToPostAuthor("like", "");
                 }
-
             }
 
         });

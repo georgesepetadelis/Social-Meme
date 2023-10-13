@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.VibrationEffect;
@@ -54,7 +53,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 import com.hugomatilla.audioplayerview.AudioPlayerView;
 
 import java.io.IOException;
@@ -219,7 +217,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
 
         openUserProfileView.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
-            return false;
+            return true;
         });
 
         likeBtn.setOnClickListener(v -> {
