@@ -8,32 +8,23 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.PostActivity;
 import com.george.socialmeme.Activities.SplashScreenActivity;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,10 +49,12 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         Map<String, String> dataMap = remoteMessage.getData();
+        remoteMessage.getNotification().getImageUrl();
 
         String notificationTitle = remoteMessage.getNotification().getTitle();
         String notificationBody = remoteMessage.getNotification().getBody();
         String type = dataMap.get("type");
+        String hasUserImage = dataMap.get("hasUserImage");
 
         Intent homeIntent = new Intent(getApplicationContext(), SplashScreenActivity.class);
 
@@ -102,42 +95,27 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         // prevent notification replacement from another notification
         int notificationID = ThreadLocalRandom.current().nextInt(2, 1000);
 
-        int icon_res = R.drawable.app_logo;
-
-        switch (notificationTitle) {
-
-            case "New like":
-                icon_res = R.drawable.ic_like_modern;
-                break;
-
-            case "Meme saved":
-            case "Profile screenshot":
-                icon_res = R.drawable.ic_camera_modern;
-                break;
-
-            case "New comment":
-                icon_res = R.drawable.ic_comment;
-                break;
-
-            case "New profile visitor":
-            case "You lost a follower :(":
-            case "New follower":
-                icon_res = R.drawable.user;
-                break;
-
-            default:
-                icon_res = R.drawable.app_logo;
-
-        }
+        int icon_res = switch (notificationTitle) {
+            case "New like" -> R.drawable.ic_like_modern;
+            case "Meme saved", "Profile screenshot" -> R.drawable.ic_camera_modern;
+            case "New comment" -> R.drawable.ic_comment;
+            case "New profile visitor", "You lost a follower :(", "New follower" -> R.drawable.user;
+            default -> R.drawable.app_logo;
+        };
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(), icon_res);
 
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationBody)
-                .setSmallIcon(R.drawable.sm_notifications)
+                .setChannelId("firebase_fcm")
                 .setLargeIcon(icon)
+                .setSmallIcon(R.drawable.sm_notifications)
+                .setColor(R.color.blue)
                 .setAutoCancel(true);
+
+        Log.i("TEST24", "id is " + remoteMessage.getNotification().getChannelId());
+
         notification.setContentIntent(pendingIntent);
         NotificationManagerCompat.from(this).notify(notificationID, notification.build());
 
