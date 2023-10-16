@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
@@ -54,7 +53,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         String notificationTitle = remoteMessage.getNotification().getTitle();
         String notificationBody = remoteMessage.getNotification().getBody();
         String type = dataMap.get("type");
-        String hasUserImage = dataMap.get("hasUserImage");
+        String url = dataMap.get("url");
 
         Intent homeIntent = new Intent(getApplicationContext(), SplashScreenActivity.class);
 
@@ -73,9 +72,19 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         }
 
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 100, homeIntent,
                 PendingIntent.FLAG_IMMUTABLE);
+
+        if (url != null) {
+            //HomeActivity.openURL(url);
+            homeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            pendingIntent = PendingIntent.getActivity(this, 0,
+                    homeIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), 100, homeIntent,
+                    PendingIntent.FLAG_IMMUTABLE);
+        }
 
         AudioAttributes attributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -111,10 +120,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                 .setChannelId("firebase_fcm")
                 .setLargeIcon(icon)
                 .setSmallIcon(R.drawable.sm_notifications)
-                .setColor(R.color.blue)
                 .setAutoCancel(true);
-
-        Log.i("TEST24", "id is " + remoteMessage.getNotification().getChannelId());
 
         notification.setContentIntent(pendingIntent);
         NotificationManagerCompat.from(this).notify(notificationID, notification.build());

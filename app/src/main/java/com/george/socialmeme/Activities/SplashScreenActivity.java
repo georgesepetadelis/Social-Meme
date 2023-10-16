@@ -1,8 +1,6 @@
 package com.george.socialmeme.Activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +14,6 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,7 +28,7 @@ import maes.tech.intentanim.CustomIntent;
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
 
-    static Activity activity;
+    public boolean startedURL = false;
 
     public boolean isInternetConnectionAvailable() {
         ConnectivityManager cm = (ConnectivityManager) SplashScreenActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -54,6 +51,16 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (startedURL) {
+            Intent intent = new Intent(SplashScreenActivity.this, SplashScreenActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         if (isNightModeEnabled()) {
@@ -72,11 +79,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
-        activity = SplashScreenActivity.this;
-
-        //Intent serviceIntent = new Intent(this, UpdateService.class);
-        //startService(serviceIntent);
 
         // Animate text
         TextView appLogo = findViewById(R.id.textView16);
@@ -109,9 +111,30 @@ public class SplashScreenActivity extends AppCompatActivity {
                         intent.putExtra("post_id", extras.getString("postID"));
                     }
 
-                    startActivity(intent);
-                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                    finish();
+                    if (getIntent().getExtras() != null) {
+                        Bundle extras = getIntent().getExtras();
+                        String notificationURL = extras.getString("url");
+
+                        if (notificationURL != null) {
+                            Uri uri = Uri.parse(notificationURL);
+                            Intent intent1 = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent1);
+                            startedURL = true;
+                        } else {
+                            startActivity(intent);
+                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                            finish();
+                        }
+
+                    } else {
+                        startActivity(intent);
+                        CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                        finish();
+                    }
+
+                    //startActivity(intent);
+                    //CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                    //finish();
 
                     HomeActivity.openNotification = true;
 
