@@ -71,7 +71,33 @@ public class NewPostFragment extends Fragment {
     final private FirebaseUser user = mAuth.getCurrentUser();
     KAlertDialog loadingDialog;
 
+    void uploadIncomingFile() {
+        Uri fileUri = HomeActivity.fileUri;
+        if (fileUri != null) {
+            Cursor returnCursor =
+                    getContext().getContentResolver().query(fileUri, null, null, null, null);
+            int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            returnCursor.moveToFirst();
+            long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
 
+            if (fileSizeToInt <= 60) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Upload new meme")
+                        .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?" /*+ returnCursor.getString(nameIndex)*/)
+                        .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
+                        .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .show();
+            } else {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Whoops!")
+                        .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
+                        .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .show();
+            }
+        } else {
+            Toast.makeText(getContext(), "Null", Toast.LENGTH_SHORT).show();
+        }
+    }
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -209,8 +235,8 @@ public class NewPostFragment extends Fragment {
     }
 
     private String getFileExtension(Uri uri) {
-        if (uri != null) {
-            ContentResolver cr = getActivity().getContentResolver();
+        if (uri != null && isAdded()) {
+            ContentResolver cr = getContext().getContentResolver();
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             return mime.getExtensionFromMimeType(cr.getType(uri));
         } else {
@@ -471,25 +497,28 @@ public class NewPostFragment extends Fragment {
                         HomeActivity.savedPostsArrayList.add(postModel);
 
                         // Add post's of the month view as RecyclerView item
-                        // to avoid using ScrollView
-                        PostModel postsOfTheMonthView = new PostModel();
-                        postsOfTheMonthView.setPostType("postsOfTheMonth");
-                        HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
+                                // to avoid using ScrollView
+                                PostModel postsOfTheMonthView = new PostModel();
+                                postsOfTheMonthView.setPostType("postsOfTheMonth");
+                                HomeActivity.savedPostsArrayList.add(postsOfTheMonthView);
 
-                        if (!HomeActivity.userHasPosts) {
-                            HomeActivity.userHasPosts = true;
-                            notifyEveryoneAboutFirstPost(postId);
-                        }
+                                if (!HomeActivity.userHasPosts) {
+                                    HomeActivity.userHasPosts = true;
+                                    notifyEveryoneAboutFirstPost(postId);
+                                }
 
-                        Toast.makeText(getActivity(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
-                        sendNewPostNotificationToFollowers(postId);
-                        HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
+                                if (isAdded() && getContext() != null) {
+                                    Toast.makeText(getContext(), "Meme uploaded!", Toast.LENGTH_SHORT).show();
+                                }
 
-                        getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
-                        CustomIntent.customType(getActivity(), "fadein-to-fadeout");
-                        getActivity().finish();
+                                sendNewPostNotificationToFollowers(postId);
+                                HomeActivity.bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
-                    })).addOnProgressListener(snapshot -> loadingDialog.show())
+                                getActivity().startActivity(new Intent(getActivity(), HomeActivity.class));
+                                CustomIntent.customType(getActivity(), "fadein-to-fadeout");
+                                getActivity().finish();
+
+                            })).addOnProgressListener(snapshot -> loadingDialog.show())
                             .addOnFailureListener(e -> {
                                 loadingDialog.hide();
                                 Toast.makeText(getActivity(), "Upload fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -522,6 +551,11 @@ public class NewPostFragment extends Fragment {
         View selectVideo = view.findViewById(R.id.select_video_btn);
         View selectAudio = view.findViewById(R.id.select_audio_btn);
         View uploadText = view.findViewById(R.id.upload_text_view);
+
+        if (HomeActivity.UploadNewPost && HomeActivity.fileUri != null) {
+            HomeActivity.UploadNewPost = false;
+            uploadIncomingFile();
+        }
 
         if (HomeActivity.singedInAnonymously) {
             new AlertDialog.Builder(getContext())

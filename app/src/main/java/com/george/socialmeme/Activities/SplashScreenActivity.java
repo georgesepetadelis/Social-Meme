@@ -121,6 +121,23 @@ public class SplashScreenActivity extends AppCompatActivity {
                             startActivity(intent1);
                             startedURL = true;
                         } else {
+
+                            Intent intent2 = getIntent();
+                            String action = intent2.getAction();
+                            String type = intent2.getType();
+
+                            if (Intent.ACTION_SEND.equals(action) && type != null) {
+                                if (type.startsWith("video/")) {
+                                    HomeActivity.IncomingPostType = "video";
+                                    HomeActivity.UploadNewPost = true;
+                                    HomeActivity.fileUri = intent2.getParcelableExtra(Intent.EXTRA_STREAM);
+                                } else if (type.startsWith("image/")) {
+                                    HomeActivity.IncomingPostType = "image";
+                                    HomeActivity.UploadNewPost = true;
+                                    HomeActivity.fileUri = intent2.getParcelableExtra(Intent.EXTRA_STREAM);
+                                }
+                            }
+
                             startActivity(intent);
                             CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                             finish();
@@ -131,10 +148,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                         CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                         finish();
                     }
-
-                    //startActivity(intent);
-                    //CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                    //finish();
 
                     HomeActivity.openNotification = true;
 
