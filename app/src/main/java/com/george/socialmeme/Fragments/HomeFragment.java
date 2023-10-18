@@ -679,7 +679,7 @@ public class HomeFragment extends Fragment {
                                                 HomeActivity.bottomNavBar.setItemSelected(R.id.new_post_fragment, true);
                                             }
                                         }
-                                    }).repeat(0).duration(1500).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+                                    }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
 
                                 }
                             }, 0);
