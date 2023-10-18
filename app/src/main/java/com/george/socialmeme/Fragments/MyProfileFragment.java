@@ -572,12 +572,18 @@ public class MyProfileFragment extends Fragment {
         silverTrophiesCount = view.findViewById(R.id.silver_trophies_count);
         bronzeTrophiesCount = view.findViewById(R.id.bronze_trophies_count);
 
-        badges.setOnClickListener(v -> new AlertDialog.Builder(getContext())
-                .setTitle("How to earn badges!")
-                .setMessage(R.string.badges)
-                .setPositiveButton("OK", (dialog, which) -> {
-                  dialog.dismiss();
-                }).show());
+        badges.setOnClickListener(v -> {
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setTitle("How to earn badges!")
+                    .setMessage(R.string.badges)
+                    .setIcon(R.drawable.badge)
+                    .setPositiveButton("OK", (dialog1, which) -> {
+                        dialog1.dismiss();
+                    }).show();
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            dialog.show();
+        });
 
         username.setOnClickListener(v -> copyUsernameToClipboard(user.getDisplayName()));
 

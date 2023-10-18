@@ -71,33 +71,6 @@ public class NewPostFragment extends Fragment {
     final private FirebaseUser user = mAuth.getCurrentUser();
     KAlertDialog loadingDialog;
 
-    void uploadIncomingFile() {
-        Uri fileUri = HomeActivity.fileUri;
-        if (fileUri != null) {
-            Cursor returnCursor =
-                    getContext().getContentResolver().query(fileUri, null, null, null, null);
-            int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-            returnCursor.moveToFirst();
-            long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
-
-            if (fileSizeToInt <= 60) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Upload new meme")
-                        .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?" /*+ returnCursor.getString(nameIndex)*/)
-                        .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
-                        .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .show();
-            } else {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Whoops!")
-                        .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
-                        .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .show();
-            }
-        } else {
-            Toast.makeText(getContext(), "Null", Toast.LENGTH_SHORT).show();
-        }
-    }
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -111,8 +84,9 @@ public class NewPostFragment extends Fragment {
                     long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
 
                     if (fileSizeToInt <= 60) {
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("Upload new meme")
+                        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                                .setTitle("Upload new meme?")
+                                .setIcon(R.drawable.ic_upload)
                                 .setMessage("Are you sure you want to upload this file?\n" /*+ returnCursor.getString(nameIndex)*/)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
@@ -123,7 +97,10 @@ public class NewPostFragment extends Fragment {
                                     }
                                 })
                                 .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                                .show();
+                                .create();
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                        dialog.show();
                     } else {
                         new AlertDialog.Builder(getContext())
                                 .setTitle("Whoops!")
@@ -135,6 +112,40 @@ public class NewPostFragment extends Fragment {
 
                 }
             });
+
+    void uploadIncomingFile() {
+        Uri fileUri = HomeActivity.fileUri;
+        if (fileUri != null) {
+            Cursor returnCursor =
+                    getContext().getContentResolver().query(fileUri, null, null, null, null);
+            int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            returnCursor.moveToFirst();
+            long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
+
+            AlertDialog dialog;
+            if (fileSizeToInt <= 60) {
+                dialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Upload new meme?")
+                        .setIcon(R.drawable.ic_upload)
+                        .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?" /*+ returnCursor.getString(nameIndex)*/)
+                        .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
+                        .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .create();
+
+            } else {
+                dialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Whoops!")
+                        .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
+                        .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .create();
+            }
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            dialog.show();
+        } else {
+            Toast.makeText(getContext(), "Null", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @SuppressLint("Range")
     public static String getFileName(Context context, Uri uri) {
