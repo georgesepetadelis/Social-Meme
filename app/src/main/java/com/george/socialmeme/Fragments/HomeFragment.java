@@ -674,16 +674,18 @@ public class HomeFragment extends Fragment {
                                         public void onAnimationEnd(Animator animation) {
                                             super.onAnimationEnd(animation);
                                             fragmentView.findViewById(R.id.constraintLayout2).setVisibility(View.GONE);
+                                            if (HomeActivity.UploadNewPost && HomeActivity.fileUri != null && isAdded()) {
+                                                //getFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewPostFragment()).commitAllowingStateLoss();
+                                                HomeActivity.bottomNavBar.setItemSelected(R.id.new_post_fragment, true);
+                                            }
                                         }
-                                    }).repeat(0).duration(1000).playOn(fragmentView.findViewById(R.id.constraintLayout2));
+                                    }).repeat(0).duration(1500).playOn(fragmentView.findViewById(R.id.constraintLayout2));
 
                                 }
                             }, 0);
-
                         }
 
                         progressBar.setVisibility(View.GONE);
-
                         callback.onComplete();
 
                     }

@@ -33,7 +33,6 @@ import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.Services.UpdateService;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
 import com.google.android.ump.UserMessagingPlatform;
@@ -72,11 +71,11 @@ public class HomeActivity extends AppCompatActivity {
     public static String notiUserId;
     public static String notiPostId;
     public static String notiUsername;
-
     public static boolean userHasPosts = false;
-
     private ConsentInformation consentInformation;
-    private ConsentForm consentForm;
+    public static boolean UploadNewPost = false;
+    public static String IncomingPostType;
+    public static Uri fileUri;
 
     public static boolean isInstagramInstalled(PackageManager packageManager) {
         try {
@@ -86,6 +85,7 @@ public class HomeActivity extends AppCompatActivity {
             return false;
         }
     }
+
     public static String prettyCount(Number number) {
         char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
         long numValue = number.longValue();
@@ -213,8 +213,18 @@ public class HomeActivity extends AppCompatActivity {
             });
 
             // Load default fragment
+            /*
+            if (fileUri != null && UploadNewPost) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewPostFragment()).commitAllowingStateLoss();
+                bottomNavBar.setItemSelected(R.id.new_post_fragment, true);
+            } else {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commitAllowingStateLoss();
+                bottomNavBar.setItemSelected(R.id.home_fragment, true);
+            }*/
+
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commitAllowingStateLoss();
             bottomNavBar.setItemSelected(R.id.home_fragment, true);
+
         }
 
         if (!singedInAnonymously && user != null) {
@@ -279,7 +289,6 @@ public class HomeActivity extends AppCompatActivity {
         UserMessagingPlatform.loadConsentForm(
                 this,
                 consentForm -> {
-                    HomeActivity.this.consentForm = consentForm;
                     if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
                         consentForm.show(
                                 HomeActivity.this,
