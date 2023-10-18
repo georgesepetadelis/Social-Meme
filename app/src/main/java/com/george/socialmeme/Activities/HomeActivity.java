@@ -36,7 +36,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
-import com.google.android.ump.FormError;
 import com.google.android.ump.UserMessagingPlatform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -331,7 +330,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(HomeActivity.this, "Error(): " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomeActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -418,20 +417,12 @@ public class HomeActivity extends AppCompatActivity {
         consentInformation.requestConsentInfoUpdate(
                 this,
                 params,
-                new ConsentInformation.OnConsentInfoUpdateSuccessListener() {
-                    @Override
-                    public void onConsentInfoUpdateSuccess() {
-                        if (consentInformation.isConsentFormAvailable()) {
-                            loadForm();
-                        }
+                () -> {
+                    if (consentInformation.isConsentFormAvailable()) {
+                        loadForm();
                     }
                 },
-                new ConsentInformation.OnConsentInfoUpdateFailureListener() {
-                    @Override
-                    public void onConsentInfoUpdateFailure(FormError formError) {
-                        Toast.makeText(HomeActivity.this, "Error: " + formError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                formError -> Toast.makeText(HomeActivity.this, "Error: " + formError.getMessage(), Toast.LENGTH_SHORT).show());
 
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && !isNightModeEnabled() && !askForEnableNightMode) {
 
@@ -452,19 +443,7 @@ public class HomeActivity extends AppCompatActivity {
                         askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
                         askForNightModeSharedPrefEditor.apply();
                         dialogInterface.dismiss();
-                        /*
-                        AlertDialog reminderDialog = new AlertDialog.Builder(HomeActivity.this)
-                                .setTitle("Nigh mode")
-                                .setIcon(R.drawable.moon)
-                                .setMessage("Remember that you can always enable night mode in Social Meme settings")
-                                .setNegativeButton("Ok", (dialogInterface1, i1) -> dialogInterface1.dismiss())
-                                .create()
 
-
-                        reminderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        reminderDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-                        reminderDialog.show();
-                        */
                     }).create();
 
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

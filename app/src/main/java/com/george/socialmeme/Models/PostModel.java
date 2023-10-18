@@ -3,17 +3,22 @@ package com.george.socialmeme.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class PostModel implements Parcelable {
-    private String name, imgUrl, likes, id, profileImgUrl, authorID, postType, commentsCount, audioName, postTitle, postContentText;
+import java.util.HashMap;
 
-    public PostModel(String name, String imgUrl, String postType, String commentsCount, String audioName, String postTitle, String postContentText) {
+public class PostModel implements Parcelable {
+    private String name, imgUrl, likes, id, authorProfilePictureURL, AuthorID, postType, commentsCount, audioName, joke_title, joke_content;
+    private HashMap<String, CommentModel> comments;
+
+    public PostModel(String name, String imgUrl, String postType, String commentsCount,
+                     String audioName, String joke_title, String joke_content, HashMap<String, CommentModel> comments) {
         this.name = name;
         this.imgUrl = imgUrl;
         this.postType = postType;
         this.commentsCount = commentsCount;
         this.audioName = audioName;
-        this.postTitle = postTitle;
-        this.postContentText = postContentText;
+        this.joke_title = joke_title;
+        this.joke_content = joke_content;
+        this.comments = comments;
     }
 
     public PostModel() {
@@ -25,13 +30,22 @@ public class PostModel implements Parcelable {
         imgUrl = in.readString();
         likes = in.readString();
         id = in.readString();
-        profileImgUrl = in.readString();
-        authorID = in.readString();
+        authorProfilePictureURL = in.readString();
+        AuthorID = in.readString();
         postType = in.readString();
         commentsCount = in.readString();
         audioName = in.readString();
-        postTitle = in.readString();
-        postContentText = in.readString();
+        joke_title = in.readString();
+        joke_content = in.readString();
+    }
+
+
+    public HashMap<String, CommentModel> getComments() {
+        return comments;
+    }
+
+    public void setComments(HashMap<String, CommentModel> comments) {
+        this.comments = comments;
     }
 
     public static final Creator<PostModel> CREATOR = new Creator<PostModel>() {
@@ -46,20 +60,20 @@ public class PostModel implements Parcelable {
         }
     };
 
-    public String getPostTitle() {
-        return postTitle;
+    public String getJoke_title() {
+        return joke_title;
     }
 
-    public void setPostTitle(String postTitle) {
-        this.postTitle = postTitle;
+    public void setJoke_title(String joke_title) {
+        this.joke_title = joke_title;
     }
 
-    public String getPostContentText() {
-        return postContentText;
+    public String getJoke_content() {
+        return joke_content;
     }
 
-    public void setPostContentText(String postContentText) {
-        this.postContentText = postContentText;
+    public void setJoke_content(String joke_content) {
+        this.joke_content = joke_content;
     }
 
     public String getAudioName() {
@@ -87,19 +101,19 @@ public class PostModel implements Parcelable {
     }
 
     public String getAuthorID() {
-        return authorID;
+        return AuthorID;
     }
 
     public void setAuthorID(String authorID) {
-        this.authorID = authorID;
+        this.AuthorID = authorID;
     }
 
-    public String getProfileImgUrl() {
-        return profileImgUrl;
+    public String getAuthorProfilePictureURL() {
+        return authorProfilePictureURL;
     }
 
-    public void setProfileImgUrl(String profileImgUrl) {
-        this.profileImgUrl = profileImgUrl;
+    public void setAuthorProfilePictureURL(String authorProfilePictureURL) {
+        this.authorProfilePictureURL = authorProfilePictureURL;
     }
 
     public String getId() {
@@ -145,12 +159,13 @@ public class PostModel implements Parcelable {
         dest.writeString(imgUrl);
         dest.writeString(likes);
         dest.writeString(id);
-        dest.writeString(profileImgUrl);
-        dest.writeString(authorID);
+        dest.writeString(authorProfilePictureURL);
+        dest.writeString(AuthorID);
         dest.writeString(postType);
         dest.writeString(commentsCount);
         dest.writeString(audioName);
-        dest.writeString(postTitle);
-        dest.writeString(postContentText);
+        dest.writeString(joke_title);
+        dest.writeString(joke_content);
+        //dest.writeList(comments);
     }
 }

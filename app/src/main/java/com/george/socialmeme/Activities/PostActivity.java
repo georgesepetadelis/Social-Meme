@@ -1,15 +1,14 @@
 package com.george.socialmeme.Activities;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
@@ -95,7 +94,7 @@ public class PostActivity extends AppCompatActivity {
 
                                 postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
                                 postModel.setName(postSnapshot.child("name").getValue(String.class));
-                                postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
+                                postModel.setAuthorProfilePictureURL(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
                                 postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
 
                                 for (DataSnapshot user : snapshot.child("users").getChildren()) {
@@ -105,8 +104,8 @@ public class PostActivity extends AppCompatActivity {
                                 }
 
                                 if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                                    postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                                    postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
+                                    postModel.setJoke_title(postSnapshot.child("joke_title").getValue(String.class));
+                                    postModel.setJoke_content(postSnapshot.child("joke_content").getValue(String.class));
                                 }
 
                                 if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {

@@ -66,7 +66,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             return 4;
         }
 
-        return 0;
+        return 0; // default: image
     }
 
     public PostRecyclerAdapter(ArrayList<PostModel> postModelArrayList, Context context, Activity activity) {
@@ -121,6 +121,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             // Bind audio view holder
             PostTextItemViewHolder textItemViewHolder = (PostTextItemViewHolder) holder;
             textItemViewHolder.setContext(context);
+            textItemViewHolder.postModel = postList.get(position);
+            textItemViewHolder.comments = postList.get(position).getComments();
 
             if (HomeActivity.singedInAnonymously) {
                 textItemViewHolder.commentsCount.setVisibility(View.GONE);
@@ -171,11 +173,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             textItemViewHolder.commentsCount.setText(postList.get(position).getCommentsCount());
 
             // Load Title and content for the post
-            textItemViewHolder.postTitle.setText(postList.get(position).getPostTitle());
-            textItemViewHolder.postContentText.setText(postList.get(position).getPostContentText());
+            textItemViewHolder.postTitle.setText(postList.get(position).getJoke_title());
+            textItemViewHolder.postContentText.setText(postList.get(position).getJoke_content());
 
             // Load profile picture
-            String profilePictureUrl = postList.get(position).getProfileImgUrl();
+            String profilePictureUrl = postList.get(position).getAuthorProfilePictureURL();
             if (profilePictureUrl != null) {
                 if (!profilePictureUrl.equals("none")) {
                     Glide.with(context).load(profilePictureUrl).into(textItemViewHolder.profilePicture);
@@ -186,16 +188,18 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
         if (postList.get(position).getPostType().equals("audio")) {
 
-            // Bind audio view holder
             AudioItemViewHolder audioViewHolder = (AudioItemViewHolder) holder;
             audioViewHolder.setContext(context);
+
+            audioViewHolder.comments = postList.get(position).getComments();
+            audioViewHolder.postModel = postList.get(position);
 
             if (HomeActivity.singedInAnonymously) {
                 audioViewHolder.commentsCounter.setVisibility(View.GONE);
                 audioViewHolder.postOptionsBtn.setVisibility(View.GONE);
                 audioViewHolder.openCommentsView.setVisibility(View.GONE);
                 audioViewHolder.shareBtn.setVisibility(View.GONE);
-            }else {
+            } else {
                 if (user.getUid().equals(postList.get(position).getAuthorID())) {
                     audioViewHolder.followBtnView.setVisibility(View.GONE);
                 }
@@ -226,7 +230,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
 
                 @Override
                 public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                    Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -242,7 +246,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             audioViewHolder.audioPlayerView.withUrl(postList.get(position).getImgUrl());
 
             // Load profile picture
-            String profilePictureUrl = postList.get(position).getProfileImgUrl();
+            String profilePictureUrl = postList.get(position).getAuthorProfilePictureURL();
             if (profilePictureUrl != null) {
                 if (!profilePictureUrl.equals("none")) {
                     Glide.with(context).load(profilePictureUrl).into(audioViewHolder.profilePicture);
@@ -321,13 +325,15 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             player.addAnalyticsListener(new AnalyticsListener() {
                 @Override
                 public void onPlayerError(@NonNull EventTime eventTime, @NonNull PlaybackException error) {
-                    //Toast.makeText(context, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.i("EXOPLAYER_ERROR", "" + error.getMessage());
                 }
             });
 
+            videoViewHolder.postModel = postList.get(position);
+            videoViewHolder.comments = postList.get(position).getComments();
+
             // Load profile picture
-            String profilePictureUrl = postList.get(position).getProfileImgUrl();
+            String profilePictureUrl = postList.get(position).getAuthorProfilePictureURL();
             if (profilePictureUrl != null) {
                 if (!profilePictureUrl.equals("none")) {
                     Glide.with(context).load(profilePictureUrl).into(videoViewHolder.profilePicture);
@@ -348,6 +354,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             // bind image view holder
             ImageItemViewHolder imageViewHolder = (ImageItemViewHolder) holder;
             imageViewHolder.setContext(context);
+            imageViewHolder.postModel = postList.get(position);
+            imageViewHolder.comments = postList.get(position).getComments();
 
             if (activity != null) {
                 imageViewHolder.setActivity(this.activity);
@@ -412,7 +420,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             imageViewHolder.postImageURL = postList.get(position).getImgUrl();
 
             // Load profile picture
-            String profilePictureUrl = postList.get(position).getProfileImgUrl();
+            String profilePictureUrl = postList.get(position).getAuthorProfilePictureURL();
             if (profilePictureUrl != null) {
                 if (!profilePictureUrl.equals("none")) {
                     Glide.with(context).load(profilePictureUrl).into(imageViewHolder.profileImage);

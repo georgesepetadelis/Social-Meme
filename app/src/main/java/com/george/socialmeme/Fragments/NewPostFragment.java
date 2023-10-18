@@ -76,19 +76,36 @@ public class NewPostFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
 
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("Upload new meme")
-                            .setMessage("Are you sure you want to upload this file? " /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent data = result.getData();
-                                    mediaUri = data.getData();
-                                    uploadPostToFirebase(mediaUri, mediaType);
-                                }
-                            })
-                            .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                            .show();
+                    Uri returnUri = result.getData().getData();
+                    Cursor returnCursor =
+                            getContext().getContentResolver().query(returnUri, null, null, null, null);
+
+                    int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+                    returnCursor.moveToFirst();
+                    long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
+
+                    if (fileSizeToInt <= 60) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Upload new meme")
+                                .setMessage("Are you sure you want to upload this file?\n" /*+ returnCursor.getString(nameIndex)*/)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent data = result.getData();
+                                        mediaUri = data.getData();
+                                        uploadPostToFirebase(mediaUri, mediaType);
+                                    }
+                                })
+                                .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                                .show();
+                    } else {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Whoops!")
+                                .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
+                                .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
+                                .show();
+                    }
+
 
                 }
             });
@@ -266,16 +283,16 @@ public class NewPostFragment extends Fragment {
                         postModel.setId(postId);
                         postModel.setAuthorID(user.getUid());
                         postModel.setName(user.getDisplayName());
-                        postModel.setPostTitle(jokeTitleEditText.getText().toString());
-                        postModel.setPostContentText(jokeContentEditText.getText().toString());
+                        postModel.setJoke_title(jokeTitleEditText.getText().toString());
+                        postModel.setJoke_content(jokeContentEditText.getText().toString());
                         postModel.setLikes("0");
                         postModel.setCommentsCount("0");
                         postModel.setPostType(type);
 
                         if (user.getPhotoUrl() == null) {
-                            postModel.setProfileImgUrl("none");
+                            postModel.setAuthorProfilePictureURL("none");
                         } else {
-                            postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                            postModel.setAuthorProfilePictureURL(user.getPhotoUrl().toString());
                         }
 
                         if (HomeActivity.savedPostsArrayList.size() != 0) {
@@ -361,9 +378,9 @@ public class NewPostFragment extends Fragment {
                                     postModel.setImgUrl(uri1.toString());
 
                                     if (user.getPhotoUrl() == null) {
-                                        postModel.setProfileImgUrl("none");
+                                        postModel.setAuthorProfilePictureURL("none");
                                     }else {
-                                        postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                                        postModel.setAuthorProfilePictureURL(user.getPhotoUrl().toString());
                                     }
 
                                     if (HomeActivity.savedPostsArrayList.size() != 0) {
@@ -442,9 +459,9 @@ public class NewPostFragment extends Fragment {
                         postModel.setPostType(type);
 
                         if (user.getPhotoUrl() == null) {
-                            postModel.setProfileImgUrl("none");
+                            postModel.setAuthorProfilePictureURL("none");
                         } else {
-                            postModel.setProfileImgUrl(user.getPhotoUrl().toString());
+                            postModel.setAuthorProfilePictureURL(user.getPhotoUrl().toString());
                         }
 
                         if (HomeActivity.savedPostsArrayList.size() != 0) {

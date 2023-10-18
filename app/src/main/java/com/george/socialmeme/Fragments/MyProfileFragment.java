@@ -63,7 +63,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -394,36 +393,9 @@ public class MyProfileFragment extends Fragment {
                             HomeActivity.userHasPosts = true;
                         }
 
-                        PostModel postModel = new PostModel();
-                        postModel.setId(postSnapshot.child("id").getValue(String.class));
+                        PostModel postModel = postSnapshot.getValue(PostModel.class);
 
-                        if (postSnapshot.child("imgUrl").getValue(String.class) == null) {
-                            postModel.setImgUrl("none");
-                        } else {
-                            postModel.setImgUrl(postSnapshot.child("imgUrl").getValue(String.class));
-                        }
-
-                        postModel.setLikes(postSnapshot.child("likes").getValue(String.class));
-                        postModel.setName(postSnapshot.child("name").getValue(String.class));
-                        postModel.setProfileImgUrl(postSnapshot.child("authorProfilePictureURL").getValue(String.class));
-                        postModel.setPostType(postSnapshot.child("postType").getValue(String.class));
-
-                        for (DataSnapshot user : snapshot.child("users").getChildren()) {
-                            if (Objects.equals(user.child("name").getValue(String.class), postSnapshot.child("name").getValue(String.class))) {
-                                postModel.setAuthorID(user.child("id").getValue(String.class));
-                            }
-                        }
-
-                        if (postSnapshot.child("postType").getValue(String.class).equals("text")) {
-                            postModel.setPostTitle(postSnapshot.child("joke_title").getValue(String.class));
-                            postModel.setPostContentText(postSnapshot.child("joke_content").getValue(String.class));
-                        }
-
-                        if (postSnapshot.child("postType").getValue(String.class).equals("audio")) {
-                            postModel.setAudioName(postSnapshot.child("audioName").getValue(String.class));
-                        }
-
-                        if (postSnapshot.child("comments").exists()) {
+                        if (postModel.getComments() != null) {
                             postModel.setCommentsCount(String.valueOf(postSnapshot.child("comments").getChildrenCount()));
                         } else {
                             postModel.setCommentsCount("0");
