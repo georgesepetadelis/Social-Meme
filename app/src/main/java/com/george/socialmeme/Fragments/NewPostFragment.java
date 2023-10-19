@@ -116,14 +116,41 @@ public class NewPostFragment extends Fragment {
     void uploadIncomingFile() {
         Uri fileUri = HomeActivity.fileUri;
         if (fileUri != null) {
-            Cursor returnCursor =
-                    getContext().getContentResolver().query(fileUri, null, null, null, null);
-            int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-            returnCursor.moveToFirst();
-            long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
 
-            AlertDialog dialog;
-            if (fileSizeToInt <= 60) {
+            // Using try/catch to make sure that this feature works on oneUI
+            // Skiping file size check in oneUI
+            // In oneUI fileSizeToInt always return null, so we're doing this
+            // workaround to until a new way to get the file size is found
+            try {
+                Cursor returnCursor =
+                        getContext().getContentResolver().query(fileUri, null, null, null, null);
+                int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+                returnCursor.moveToFirst();
+                long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
+
+                AlertDialog dialog;
+                if (fileSizeToInt <= 60) {
+                    dialog = new AlertDialog.Builder(getContext())
+                            .setTitle("Upload new meme?")
+                            .setIcon(R.drawable.ic_upload)
+                            .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?" /*+ returnCursor.getString(nameIndex)*/)
+                            .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
+                            .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                            .create();
+
+                } else {
+                    dialog = new AlertDialog.Builder(getContext())
+                            .setTitle("Whoops!")
+                            .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
+                            .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
+                            .create();
+                }
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                dialog.show();
+            } catch (Exception e) {
+                // failed to check file size
+                AlertDialog dialog;
                 dialog = new AlertDialog.Builder(getContext())
                         .setTitle("Upload new meme?")
                         .setIcon(R.drawable.ic_upload)
@@ -131,19 +158,12 @@ public class NewPostFragment extends Fragment {
                         .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
                         .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
                         .create();
-
-            } else {
-                dialog = new AlertDialog.Builder(getContext())
-                        .setTitle("Whoops!")
-                        .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
-                        .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .create();
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+                dialog.show();
             }
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-            dialog.show();
-        } else {
-            Toast.makeText(getContext(), "Null", Toast.LENGTH_SHORT).show();
+
+
         }
     }
 
