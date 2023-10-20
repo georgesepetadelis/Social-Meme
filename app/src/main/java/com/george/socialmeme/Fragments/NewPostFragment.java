@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -32,12 +33,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Activities.RegisterActivity;
+import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UploadPostModel;
 import com.george.socialmeme.R;
@@ -54,8 +57,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import maes.tech.intentanim.CustomIntent;
@@ -87,7 +92,7 @@ public class NewPostFragment extends Fragment {
                         AlertDialog dialog = new AlertDialog.Builder(getContext())
                                 .setTitle("Upload new meme?")
                                 .setIcon(R.drawable.ic_upload)
-                                .setMessage("Are you sure you want to upload this file?\n" /*+ returnCursor.getString(nameIndex)*/)
+                                .setMessage("Are you sure you want to upload this file?\n" + getFileName(getContext(), returnUri))
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -116,54 +121,31 @@ public class NewPostFragment extends Fragment {
     void uploadIncomingFile() {
         Uri fileUri = HomeActivity.fileUri;
         if (fileUri != null) {
+            Cursor returnCursor =
+                    getContext().getContentResolver().query(fileUri, null, null, null, null);
+            int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            returnCursor.moveToFirst();
+            long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
 
-            // Using try/catch to make sure that this feature works on oneUI
-            // Skiping file size check in oneUI
-            // In oneUI fileSizeToInt always return null, so we're doing this
-            // workaround to until a new way to get the file size is found
-            try {
-                Cursor returnCursor =
-                        getContext().getContentResolver().query(fileUri, null, null, null, null);
-                int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-                returnCursor.moveToFirst();
-                long fileSizeToInt = returnCursor.getLong(sizeIndex) / 1024 / 1024;
-
-                AlertDialog dialog;
-                if (fileSizeToInt <= 60) {
-                    dialog = new AlertDialog.Builder(getContext())
-                            .setTitle("Upload new meme?")
-                            .setIcon(R.drawable.ic_upload)
-                            .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?" /*+ returnCursor.getString(nameIndex)*/)
-                            .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
-                            .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
-                            .create();
-
-                } else {
-                    dialog = new AlertDialog.Builder(getContext())
-                            .setTitle("Whoops!")
-                            .setMessage("Your file is larger than 60mb, please choose a smaller one!" /*+ "\nFile: " + result.getData().getData().getPath().toString()*/)
-                            .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
-                            .create();
-                }
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-                dialog.show();
-            } catch (Exception e) {
-                // failed to check file size
-                AlertDialog dialog;
+            AlertDialog dialog;
+            if (fileSizeToInt <= 60) {
                 dialog = new AlertDialog.Builder(getContext())
                         .setTitle("Upload new meme?")
                         .setIcon(R.drawable.ic_upload)
-                        .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?" /*+ returnCursor.getString(nameIndex)*/)
+                        .setMessage("Are you sure you want to upload this " + HomeActivity.IncomingPostType + "?\n" + getFileName(getContext(), fileUri))
                         .setPositiveButton("Yes", (dialogInterface, i) -> uploadPostToFirebase(fileUri, HomeActivity.IncomingPostType))
                         .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
                         .create();
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-                dialog.show();
+            } else {
+                dialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Whoops!")
+                        .setMessage("Your file is larger than 60mb, please choose a smaller one!")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> dialogInterface.dismiss())
+                        .create();
             }
-
-
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
+            dialog.show();
         }
     }
 

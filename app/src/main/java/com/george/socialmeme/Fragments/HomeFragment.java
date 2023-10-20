@@ -233,9 +233,7 @@ public class HomeFragment extends Fragment {
     }
 
     void loadRewardAd(Context context) {
-
         AdRequest adRequest = new AdRequest.Builder().build();
-
         RewardedAd.load(context, "ca-app-pub-9627755439548346/8245739492",
                 adRequest, new RewardedAdLoadCallback() {
                     @Override
@@ -249,12 +247,7 @@ public class HomeFragment extends Fragment {
                         super.onAdLoaded(rewardedAd);
                         mRewardedAd = rewardedAd;
 
-                        mRewardedAd.show(getActivity(), new OnUserEarnedRewardListener() {
-                            @Override
-                            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                                Log.i("AD REWARD", "wacthed_Ad");
-                            }
-                        });
+                        mRewardedAd.show(getActivity(), rewardItem -> Log.i("AD REWARD", "wacthed_Ad"));
 
                         mRewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override

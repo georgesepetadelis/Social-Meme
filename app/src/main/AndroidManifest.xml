@@ -22,7 +22,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <application
         android:allowBackup="false"
@@ -38,8 +40,9 @@
         tools:targetApi="s">
 
         <meta-data
+
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/sm_notifications" />
+            android:resource="@drawable/sm_notifications_1" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

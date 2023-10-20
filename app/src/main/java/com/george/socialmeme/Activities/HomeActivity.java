@@ -213,16 +213,6 @@ public class HomeActivity extends AppCompatActivity {
             });
 
             // Load default fragment
-            /*
-            if (fileUri != null && UploadNewPost) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewPostFragment()).commitAllowingStateLoss();
-                bottomNavBar.setItemSelected(R.id.new_post_fragment, true);
-            } else {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commitAllowingStateLoss();
-                bottomNavBar.setItemSelected(R.id.home_fragment, true);
-            }*/
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commitAllowingStateLoss();
             bottomNavBar.setItemSelected(R.id.home_fragment, true);
 
         }
@@ -321,10 +311,18 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         if(ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED)
+                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_MEDIA_IMAGES)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_MEDIA_VIDEO)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_MEDIA_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED)
         {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ActivityCompat.requestPermissions(HomeActivity.this, new String[] { Manifest.permission.POST_NOTIFICATIONS }, 201);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ActivityCompat.requestPermissions(HomeActivity.this, new String[] { Manifest.permission.POST_NOTIFICATIONS,
+                        Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                        201);
             }
         }
 

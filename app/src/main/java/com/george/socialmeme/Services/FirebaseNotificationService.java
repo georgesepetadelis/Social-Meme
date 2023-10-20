@@ -12,6 +12,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.george.socialmeme.Activities.PostActivity;
@@ -119,7 +120,8 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                 .setContentText(notificationBody)
                 .setChannelId("firebase_fcm")
                 .setLargeIcon(icon)
-                .setSmallIcon(R.drawable.sm_notifications)
+                .setStyle(new Notification.DecoratedCustomViewStyle())
+                .setSmallIcon(R.drawable.sm_notifications_1)
                 .setAutoCancel(true);
 
         notification.setContentIntent(pendingIntent);

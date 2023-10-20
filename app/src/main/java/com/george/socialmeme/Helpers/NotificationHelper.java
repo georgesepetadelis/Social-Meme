@@ -100,6 +100,8 @@ public class NotificationHelper {
                                     notification.put("postID", postID);
                                 }
 
+                                notification.put("userID", user.getUid());
+
                                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                                 firestore.collection("notifications")
                                         .document(notificationID).set(notification);
