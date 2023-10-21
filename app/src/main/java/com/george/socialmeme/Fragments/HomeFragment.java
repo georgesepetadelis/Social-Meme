@@ -51,10 +51,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ThreadLocalRandom;
 
 import maes.tech.intentanim.CustomIntent;
 import smartdevelop.ir.eram.showcaseviewlib.GuideView;
@@ -508,6 +505,11 @@ public class HomeFragment extends Fragment {
         if (HomeActivity.openNotification) {
 
             if (isAdded()) {
+
+                if (HomeActivity.notiUserId != null) {
+                    Toast.makeText(activity, "open", Toast.LENGTH_SHORT).show();
+                }
+
                 if (HomeActivity.notiPostId != null && HomeActivity.notiUserId == null) {
                     Intent intent = new Intent(activity, PostActivity.class);
                     intent.putExtra("post_id", HomeActivity.notiPostId);
@@ -521,7 +523,6 @@ public class HomeFragment extends Fragment {
                     CustomIntent.customType(getActivity(), "left-to-right");
                 }
             }
-
         }
     };
 
@@ -796,40 +797,6 @@ public class HomeFragment extends Fragment {
 
         filtersBtn.setOnClickListener(view13 -> showFiltersDialog());
 
-        // Display donate dialog (1 in 15 cases)
-        // except the user is singed in anonymously
-        if (!HomeActivity.singedInAnonymously) {
-            int randomNum = ThreadLocalRandom.current().nextInt(0, 15 + 1);
-            if (randomNum == 3) {
-                /*
-            AlertDialog donateDialog = new AlertDialog.Builder(getContext())
-                    .setTitle("Can you buy me a coffee?")
-                    .setMessage(getString(R.string.donate_msg))
-                    .setPositiveButton("Donate", (dialogInterface, i) ->
-                            openDonateURL())
-                    .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
-                    .setCancelable(false)
-                    .setIcon(R.drawable.ic_coffee)
-                    .create();
-            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-            donateDialog.show();*/
-            }
-        } else {/*
-            AlertDialog donateDialog = new AlertDialog.Builder(getContext())
-                    .setTitle("Can you buy me a coffee?")
-                    .setMessage(getString(R.string.donate_msg))
-                    .setPositiveButton("Donate", (dialogInterface, i) ->
-                            openDonateURL())
-                    .setNegativeButton("No, thanks", (dialogInterface, i) -> dialogInterface.dismiss())
-                    .setCancelable(false)
-                    .setIcon(R.drawable.ic_coffee)
-                    .create();
-            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            donateDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-            donateDialog.show();*/
-        }
-
         notificationsBtn.setOnClickListener(view12 -> {
             startActivity(new Intent(getActivity(), NotificationsActivity.class));
             CustomIntent.customType(getContext(), "left-to-right");
@@ -839,22 +806,6 @@ public class HomeFragment extends Fragment {
             startActivity(new Intent(getActivity(), SearchUserActivity.class));
             CustomIntent.customType(getContext(), "left-to-right");
         });
-
-        /*
-        SharedPreferences sharedPref = activity.getSharedPreferences("stories", Context.MODE_PRIVATE);
-        boolean showed = sharedPref.getBoolean("stories", false);
-
-        if (!showed) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle("Share your memes to stories")
-                    .setIcon(R.drawable.ic_instagram)
-                    .setCancelable(false)
-                    .setMessage("Now you can share meme images to instagram stories and share your memes outside the world of Social meme by clicking the share button on any image!")
-                    .setPositiveButton("OH, That's cool!", (dialogInterface, i) -> {
-                        sharedPref.edit().putBoolean("stories", true).apply();
-                        dialogInterface.dismiss();
-                    }).show();
-        }*/
 
         return view;
     }

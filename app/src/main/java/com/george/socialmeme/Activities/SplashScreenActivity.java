@@ -107,7 +107,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                     if (getIntent().getExtras() != null) {
                         Bundle extras = getIntent().getExtras();
-                        intent.putExtra("user_id", extras.getString("userID"));
+                        intent.putExtra("user_id", extras.getString("user_id"));
                         intent.putExtra("post_id", extras.getString("postID"));
                     }
 

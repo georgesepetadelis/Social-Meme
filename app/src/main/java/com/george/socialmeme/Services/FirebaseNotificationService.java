@@ -12,12 +12,10 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.george.socialmeme.Activities.PostActivity;
 import com.george.socialmeme.Activities.SplashScreenActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -44,26 +46,41 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         }
     }
 
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
+
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
         Map<String, String> dataMap = remoteMessage.getData();
-        remoteMessage.getNotification().getImageUrl();
 
-        String notificationTitle = remoteMessage.getNotification().getTitle();
-        String notificationBody = remoteMessage.getNotification().getBody();
+        String notificationTitle = dataMap.get("title");
+        String notificationBody = dataMap.get("body");
         String type = dataMap.get("type");
         String url = dataMap.get("url");
+        String imageUrl = dataMap.get("image");
+        String channelId = dataMap.get("channel_id");
 
         Intent homeIntent = new Intent(getApplicationContext(), SplashScreenActivity.class);
 
         if (type != null) {
             if (type.equals("user")) {
-                homeIntent = new Intent(getApplicationContext(), UserProfileActivity.class);
+                homeIntent = new Intent(getApplicationContext(), SplashScreenActivity.class);
                 String userID = dataMap.get("userID");
                 homeIntent.putExtra("user_id", userID);
-                //homeIntent.putExtra("allPosts", HomeActivity.savedPostsArrayList);
             } else if (type.equals("post")) {
                 homeIntent = new Intent(getApplicationContext(), PostActivity.class);
                 String postID = dataMap.get("postID");
@@ -72,15 +89,12 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
             }
         }
 
-        homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 100, homeIntent,
-                PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent;
 
         if (url != null) {
-            //HomeActivity.openURL(url);
             homeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             pendingIntent = PendingIntent.getActivity(this, 0,
-                    homeIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+                    homeIntent, PendingIntent.FLAG_IMMUTABLE);
         } else {
             homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getActivity(getApplicationContext(), 100, homeIntent,
@@ -114,12 +128,13 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         };
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(), icon_res);
+        Bitmap notImage = getBitmapFromURL(imageUrl);
 
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationBody)
-                .setChannelId("firebase_fcm")
-                .setLargeIcon(icon)
+                .setChannelId(channelId)
+                .setLargeIcon(notImage != null ? notImage : icon)
                 .setStyle(new Notification.DecoratedCustomViewStyle())
                 .setSmallIcon(R.drawable.sm_notifications_1)
                 .setAutoCancel(true);

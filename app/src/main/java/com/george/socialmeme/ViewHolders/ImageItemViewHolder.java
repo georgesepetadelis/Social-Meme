@@ -329,9 +329,17 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
             if (postAuthorID != null) {
                 if (postAuthorID.equals(user.getUid())) {
-                    int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
-                    if (selectedItemId != R.id.my_profile_fragment) {
-                        HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+                    if (HomeActivity.bottomNavBar == null) {
+                        Intent intent = new Intent(context, UserProfileActivity.class);
+                        intent.putExtra("user_id", postAuthorID);
+                        intent.putExtra("username", username.getText().toString());
+                        context.startActivity(intent);
+                        CustomIntent.customType(context, "left-to-right");
+                    } else {
+                        int selectedItemId = HomeActivity.bottomNavBar.getSelectedItemId();
+                        if (selectedItemId != R.id.my_profile_fragment) {
+                            HomeActivity.bottomNavBar.setItemSelected(R.id.my_profile_fragment, true);
+                        }
                     }
                 } else {
                     Intent intent = new Intent(context, UserProfileActivity.class);

@@ -57,7 +57,7 @@ import maes.tech.intentanim.CustomIntent;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    public static String userID;
+    public String userID = null;
     public static String username;
     public static boolean currentUserFollowsThisUser;
     private final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
@@ -78,7 +78,6 @@ public class UserProfileActivity extends AppCompatActivity {
     PostRecyclerAdapter recyclerAdapter;
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
-
     void sendNotificationToUser(String notificationType) {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -424,7 +423,11 @@ public class UserProfileActivity extends AppCompatActivity {
 
                     // clearing HomeFragment.postModelArrayList
                     // so we can update it with our new data
-                    HomeFragment.postModelArrayList.clear();
+                    if (HomeFragment.postModelArrayList != null) {
+                        HomeFragment.postModelArrayList.clear();
+                    } else {
+                        HomeFragment.postModelArrayList = new ArrayList<>();
+                    }
 
                     for (DataSnapshot postSnapshot : snapshot.child("posts").getChildren()) {
 
@@ -754,7 +757,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     badge3.setAlpha(.3F);
                 }
 
-                if (totalLikes >= 100000 || userID.equals("HMQ6OPjzhuSsdQy848N1L0XNztH3")) {
+                if (totalLikes >= 100000) {
                     crown.setVisibility(View.VISIBLE);
                 }
 
@@ -935,9 +938,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
         } else {
 
+
             FirebaseCallback firebaseCallback = (profilePictureURL, userFollowsLoggedInUser, followingCurrentUser) -> {
                 // Save current user data to avoid
-                // loading data from the same user again later
+                // loading data for the same user again later
                 UserModel userModel = new UserModel();
                 userModel.setUserID(userID);
                 userModel.setFollowers(followersCounter.getText().toString());
