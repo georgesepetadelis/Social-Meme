@@ -65,7 +65,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
     public TextView username, like_counter_tv, commentsCount, followBtn;
     public CircleImageView profilePicture;
     public HashMap<String, CommentModel> comments;
-    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn, enterFullScreenBtn;
+    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn, enterFullScreenBtn, saveBtn;
     public boolean isPostLiked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -117,6 +117,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
         followBtnView = itemView.findViewById(R.id.follow_btn_img);
         followBtn = itemView.findViewById(R.id.textView81);
         enterFullScreenBtn = itemView.findViewById(R.id.enter_fullscreen_btn);
+        saveBtn = itemView.findViewById(R.id.imageButton25);
 
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, username, commentsCount, context, postID));
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
@@ -127,6 +128,16 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
         } else {
             followBtnView.setVisibility(View.GONE);
         }
+
+        if (HomeActivity.singedInAnonymously) {
+            saveBtn.setVisibility(View.GONE);
+        }
+
+        saveBtn.setOnClickListener(v -> {
+            saveBtn.setEnabled(false);
+            saveBtn.setAlpha(0.5f);
+            saveVideoToDeviceStorage();
+        });
 
         // Check if logged-in user follows post author
         // to hide follow btn

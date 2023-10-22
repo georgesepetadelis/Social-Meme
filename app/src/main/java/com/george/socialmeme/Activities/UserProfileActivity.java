@@ -614,14 +614,13 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         ArrayList<PostModel> allPosts = HomeFragment.postModelArrayList;
+        //Collections.reverse(allPosts);
 
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
         layoutManager = new LinearLayoutManager(UserProfileActivity.this);
-
-        if (allPosts == null) {
-            allPosts = HomeFragment.postModelArrayList;
-        }
+        //layoutManager.setReverseLayout(true);
+        //layoutManager.setStackFromEnd(true);
 
         recyclerView = findViewById(R.id.recyclerView_user_profile);
         recyclerView.setAdapter(recyclerAdapter);
@@ -705,7 +704,7 @@ public class UserProfileActivity extends AppCompatActivity {
         if (HomeFragment.postModelArrayList != null) {
             if (!HomeFragment.postModelArrayList.isEmpty()) {
 
-                Collections.reverse(allPosts);
+                //Collections.reverse(allPosts);
 
                 ArrayList<String> loadedPostsID = new ArrayList<>();
 

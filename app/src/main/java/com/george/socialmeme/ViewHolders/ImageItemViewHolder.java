@@ -87,7 +87,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
     public String postID, postImageURL, postAuthorID;
     public TextView username, like_counter_tv, commentsCount, followBtn;
     public ImageView postImg, likeImg;
-    public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn;
+    public ImageButton like_btn, show_comments_btn, showPostOptionsButton, shareBtn, saveBtn;
     public ProgressBar loadingProgressBar;
     public CircleImageView profileImage;
     public boolean isPostLiked;
@@ -306,6 +306,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         followBtnView = itemView.findViewById(R.id.follow_btn_view);
         openCommentsView = itemView.findViewById(R.id.openCommentsViewImageItem);
         likeImg = itemView.findViewById(R.id.like_img);
+        saveBtn = itemView.findViewById(R.id.imageButton23);
 
         likeImg.setVisibility(View.GONE);
 
@@ -322,6 +323,16 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             followBtnView.setVisibility(View.GONE);
             openUserProfileView.setEnabled(false);
         }
+
+        if (HomeActivity.singedInAnonymously) {
+            saveBtn.setVisibility(View.GONE);
+        }
+
+        saveBtn.setOnClickListener(v -> {
+            saveBtn.setEnabled(false);
+            saveBtn.setAlpha(0.5f);
+            savePictureToDeviceStorage();
+        });
 
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, username));
 

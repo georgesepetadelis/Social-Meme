@@ -80,33 +80,35 @@ public class NotificationHelper {
                     }
                 }
 
-                // Find user token from DB
-                // and add notification to Firestore
-                for (DataSnapshot userSnap : snapshot.getChildren()) {
-                    if (userSnap.child("name").getValue(String.class) != null) {
-                        if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
-                            if (userSnap.child("fcm_token").exists()) {
-                                // Add notification to Firestore to send
-                                // push notification from back-end
-                                Map<String, Object> notification = new HashMap<>();
-                                notification.put("token", userSnap.child("fcm_token").getValue(String.class));
-                                notification.put("title", notification_title[0]);
-                                notification.put("message", notification_message[0]);
-                                notification.put("not_type", notificationType);
+                if (!username.getText().toString().equals(AuthHelper.getCurrentUser().getDisplayName())) {
+                    // Find user token from DB
+                    // and add notification to Firestore
+                    for (DataSnapshot userSnap : snapshot.getChildren()) {
+                        if (userSnap.child("name").getValue(String.class) != null) {
+                            if (userSnap.child("name").getValue(String.class).equals(username.getText().toString())) {
+                                if (userSnap.child("fcm_token").exists()) {
+                                    // Add notification to Firestore to send
+                                    // push notification from back-end
+                                    Map<String, Object> notification = new HashMap<>();
+                                    notification.put("token", userSnap.child("fcm_token").getValue(String.class));
+                                    notification.put("title", notification_title[0]);
+                                    notification.put("message", notification_message[0]);
+                                    notification.put("not_type", notificationType);
 
-                                if (notificationType.equals("follow")) {
+                                    if (notificationType.equals("follow")) {
+                                        notification.put("userID", user.getUid());
+                                    } else {
+                                        notification.put("postID", postID);
+                                    }
+
                                     notification.put("userID", user.getUid());
-                                } else {
-                                    notification.put("postID", postID);
+
+                                    FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                                    firestore.collection("notifications")
+                                            .document(notificationID).set(notification);
                                 }
-
-                                notification.put("userID", user.getUid());
-
-                                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                                firestore.collection("notifications")
-                                        .document(notificationID).set(notification);
+                                break;
                             }
-                            break;
                         }
                     }
                 }

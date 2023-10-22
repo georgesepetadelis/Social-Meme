@@ -79,7 +79,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
     public View openProfileView, openCommentsView;
     public TextView username, like_counter_tv, commentsCount, postTitle, postContentText, followBtn;
     public CircleImageView profilePicture;
-    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn;
+    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn, saveBtn;
     public boolean isPostLiked;
     public ConstraintLayout followBtnView;
 
@@ -100,6 +100,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         postContentText = itemView.findViewById(R.id.textView80);
         followBtnView = itemView.findViewById(R.id.follow_btn_view);
         followBtn = itemView.findViewById(R.id.textView81);
+        saveBtn = itemView.findViewById(R.id.imageButton24);
 
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, username, commentsCount, context, postID));
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
@@ -111,6 +112,20 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         } else {
             followBtnView.setVisibility(View.GONE);
         }
+
+        if (HomeActivity.singedInAnonymously) {
+            saveBtn.setVisibility(View.GONE);
+        }
+
+        saveBtn.setOnClickListener(v -> {
+            saveBtn.setEnabled(false);
+            saveBtn.setAlpha(0.5f);
+            try {
+                saveTextAsImageToDevice();
+            } catch (IOException e) {
+                Toast.makeText(activity, "Error saving file", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Check if logged-in user follows post author
         // to hide follow btn
@@ -354,7 +369,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void saveTextAsImageToDevice() throws IOException {
+    public void saveTextAsImageToDevice() throws IOException {
         changePostInfoVisibilityForBitmap(View.INVISIBLE);
         Bitmap bmp = createBitmapFromView(container);
         File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -364,6 +379,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         fos.close();
         scanFile(context, Uri.fromFile(file));
         Toast.makeText(context, "Meme saved to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        postOptionsButton.setVisibility(View.VISIBLE);
         sendNotification(context, username, postModel.getId(), "meme_saved", "");
     }
 

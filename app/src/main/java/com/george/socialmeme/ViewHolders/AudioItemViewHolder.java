@@ -61,7 +61,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profilePicture;
     public AudioPlayerView audioPlayerView;
     public TextView likesCounter, usernameTV, commentsCounter, audioName, followBtn;
-    public ImageButton playBtn, shareBtn, likeBtn, postOptionsBtn;
+    public ImageButton playBtn, shareBtn, likeBtn, postOptionsBtn, saveBtn;
     public View openCommentsView, openUserProfileView;
     public ProgressBar audioViewProgressBar;
     public boolean isAudioPlaying, isPostLiked;
@@ -87,6 +87,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         isAudioPlaying = false;
         followBtnView = itemView.findViewById(R.id.follow_btn_img);
         followBtn = itemView.findViewById(R.id.textView81);
+        saveBtn = itemView.findViewById(R.id.imageButton26);
 
         postOptionsBtn.setOnClickListener(view -> showPostOptionsBottomSheet());
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, usernameTV, commentsCounter, context, postID));
@@ -124,6 +125,16 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
                 }
             });
         }
+
+        if (HomeActivity.singedInAnonymously) {
+            saveBtn.setVisibility(View.GONE);
+        }
+
+        saveBtn.setOnClickListener(v -> {
+            saveBtn.setEnabled(false);
+            saveBtn.setAlpha(0.5f);
+            saveAudioFileToDeviceStorage();
+        });
 
         playBtn.setOnClickListener(view -> {
             isAudioPlaying = !isAudioPlaying;

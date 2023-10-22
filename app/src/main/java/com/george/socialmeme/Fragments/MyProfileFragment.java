@@ -666,6 +666,7 @@ public class MyProfileFragment extends Fragment {
         postModelArrayList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView_my_profile);
         layoutManager = new LinearLayoutManager(getContext());
+
         recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, getContext(), getActivity());
 
         recyclerView.setAdapter(recyclerAdapter);
@@ -711,15 +712,9 @@ public class MyProfileFragment extends Fragment {
             someActivityResultLauncher.launch(intent);
         });
 
-        if (!HomeActivity.appStarted && HomeFragment.postModelArrayList != null) {
-            HomeActivity.appStarted = true;
-            Collections.reverse(HomeFragment.postModelArrayList);
-        }
-
         if (!HomeActivity.singedInAnonymously && HomeFragment.postModelArrayList != null) {
 
             ArrayList<PostModel> reversedPosts = HomeFragment.postModelArrayList;
-            if (HomeFragment.refreshed) Collections.reverse(reversedPosts);
 
             ArrayList<String> loadedPostsID = new ArrayList<>();
             int postsCount = 0;

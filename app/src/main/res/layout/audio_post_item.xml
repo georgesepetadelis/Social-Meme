@@ -16,6 +16,18 @@
         android:layout_height="match_parent"
         android:background="?attr/cardBackgroundColor">
 
+        <ImageButton
+            android:id="@+id/imageButton26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_round_card_bg"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/audioView"
+            app:srcCompat="@drawable/ic_download_q" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/follow_btn_img"
             android:layout_width="120dp"
@@ -158,6 +170,7 @@
             app:layout_constraintTop_toTopOf="@+id/imageButton19" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout6"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"

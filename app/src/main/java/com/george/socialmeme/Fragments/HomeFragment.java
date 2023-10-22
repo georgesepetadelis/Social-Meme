@@ -505,11 +505,6 @@ public class HomeFragment extends Fragment {
         if (HomeActivity.openNotification) {
 
             if (isAdded()) {
-
-                if (HomeActivity.notiUserId != null) {
-                    Toast.makeText(activity, "open", Toast.LENGTH_SHORT).show();
-                }
-
                 if (HomeActivity.notiPostId != null && HomeActivity.notiUserId == null) {
                     Intent intent = new Intent(activity, PostActivity.class);
                     intent.putExtra("post_id", HomeActivity.notiPostId);
