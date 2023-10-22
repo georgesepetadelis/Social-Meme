@@ -1,20 +1,9 @@
 package com.george.socialmeme.Activities;
 
-import static android.app.PendingIntent.getActivity;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.FileProvider;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -25,6 +14,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.cardview.widget.CardView;
 
 import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.R;
@@ -116,7 +110,7 @@ public class SettingsActivity extends AppCompatActivity {
         SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
         nightModeSwitch.setChecked(isNightModeEnabled());
 
-        website_tv.setOnClickListener(view -> openURL("https://mypersonalwebsite-60614.web.app/"));
+        website_tv.setOnClickListener(view -> openURL("https://sepetadelhs.rf.gd"));
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
         instagram.setOnClickListener(view -> openURL("https://www.instagram.com/sepetadelhsss/"));
         github.setOnClickListener(view -> openURL("https://github.com/georgesepetadelis/Social-Meme"));
