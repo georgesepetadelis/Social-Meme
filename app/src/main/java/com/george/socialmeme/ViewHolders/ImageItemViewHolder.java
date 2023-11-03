@@ -359,6 +359,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
                     context.startActivity(intent);
                     CustomIntent.customType(context, "left-to-right");
                 }
+            } else {
+                Toast.makeText(activity, "Can't open this profile!", Toast.LENGTH_SHORT).show();
             }
 
         });

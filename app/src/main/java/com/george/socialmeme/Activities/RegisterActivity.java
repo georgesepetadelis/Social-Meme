@@ -1,27 +1,22 @@
 package com.george.socialmeme.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.developer.kalert.KAlertDialog;
 import com.george.socialmeme.R;
-import com.github.loadingview.LoadingDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.w3c.dom.Text;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -55,9 +50,9 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email.trim(), password).addOnSuccessListener(authResult -> {
             FirebaseUser user = mAuth.getCurrentUser();
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(username).build();
+                    .setDisplayName(username.trim()).build();
             user.updateProfile(profileUpdates);
-            addUserToRealTimeDB(username, email.replace(".", ","));
+            addUserToRealTimeDB(username.trim(), email.replace(".", ","));
         }).addOnFailureListener(e -> {
             progressDialog.hide();
             SmartDialogBox.showErrorDialog(RegisterActivity.this, e.getLocalizedMessage(), "OK");

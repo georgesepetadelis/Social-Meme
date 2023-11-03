@@ -1,7 +1,5 @@
 package com.george.socialmeme.Activities;
 
-import static java.security.AccessController.getContext;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -35,7 +33,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -226,7 +223,6 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (!snapshot.child(user.getUid()).exists()) {
-
                         usersRef.child(user.getUid()).child("id").setValue(user.getUid());
                         usersRef.child(user.getUid()).child("name").setValue(user.getDisplayName());
                         usersRef.child(user.getUid()).child("profileImgUrl").setValue(user.getPhotoUrl().toString());
@@ -240,7 +236,6 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                     }
-
                 }
 
                 @Override

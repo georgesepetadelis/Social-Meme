@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.george.socialmeme.Activities.UserProfileActivity;
 import com.george.socialmeme.R;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import maes.tech.intentanim.CustomIntent;
 
@@ -27,6 +29,7 @@ public class CommentItemViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profilePicture;
     public TextView usernameTV, commentContent;
     public ImageButton deleteCommentBtn;
+    public HashMap<String, String> mentionedUsers;
     public View openProfile;
 
     public CommentItemViewHolder(@NonNull View itemView) {
@@ -51,12 +54,12 @@ public class CommentItemViewHolder extends RecyclerView.ViewHolder {
 
         });
 
+        /*
         commentContent.setOnClickListener(v -> copyCommentToClipboard());
         commentContent.setOnLongClickListener(v -> {
             copyCommentToClipboard();
             return true;
-        });
-
+        });*/
     }
 
     void copyCommentToClipboard() {

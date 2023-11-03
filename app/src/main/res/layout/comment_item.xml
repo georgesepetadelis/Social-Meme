@@ -46,8 +46,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Comment text"
-            android:background="?selectableItemBackground"
-            android:focusable="true"
             android:textColor="?attr/textFillColor"
             android:textSize="18sp"
             android:textStyle="bold"

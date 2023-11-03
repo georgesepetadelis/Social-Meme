@@ -1,18 +1,30 @@
 package com.george.socialmeme.Models;
 
+import java.util.HashMap;
+
 public class CommentModel {
     String author, postID, authorProfilePictureURL, commentText, commentID, authorUsername;
+    HashMap<String, String> mentionedUsers;
 
-    public CommentModel(String author, String postID, String authorProfilePictureURL, String commentText, String commentID, String authorUsername) {
+    public CommentModel(HashMap<String, String> mentionedUsers, String author, String postID, String authorProfilePictureURL, String commentText, String commentID, String authorUsername) {
         this.author = author;
         this.postID = postID;
         this.authorProfilePictureURL = authorProfilePictureURL;
         this.commentText = commentText;
         this.commentID = commentID;
         this.authorUsername = authorUsername;
+        this.mentionedUsers = mentionedUsers;
     }
 
     public CommentModel() {
+    }
+
+    public HashMap<String, String> getMentionedUsers() {
+        return mentionedUsers;
+    }
+
+    public void setMentionedUsers(HashMap<String, String> mentionedUsers) {
+        this.mentionedUsers = mentionedUsers;
     }
 
     public String getCommentID() {

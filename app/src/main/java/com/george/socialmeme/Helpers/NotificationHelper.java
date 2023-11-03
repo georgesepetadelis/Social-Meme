@@ -49,6 +49,15 @@ public class NotificationHelper {
                             String postAuthorID = snap.child("id").getValue().toString();
                             usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate);
 
+                            if (notificationType.equals("mention")) {
+                                notification_title[0] = user.getDisplayName() + " mentioned you!";
+                                notification_message[0] = user.getDisplayName() + " mentioned you in a comment!";
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("title").setValue(notification_title[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("type").setValue("mention");
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("date").setValue(currentDate + "  " + currentHour + ":" + currentMinutes);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("message").setValue(notification_message[0]);
+                                usersRef.child(postAuthorID).child("notifications").child(notificationID).child("post_id").setValue(postID);
+                            }
                             if (notificationType.equals("like")) {
                                 notification_title[0] = "New like";
                                 notification_message[0] = user.getDisplayName() + " liked your post";

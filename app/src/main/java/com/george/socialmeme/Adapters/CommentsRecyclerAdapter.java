@@ -4,6 +4,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +22,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Helpers.PostHelper;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.CommentItemViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
@@ -59,6 +75,9 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
         viewHolder.usernameTV.setText(commentsList.get(position).getAuthorUsername());
         viewHolder.commentContent.setText(commentsList.get(position).getCommentText());
         viewHolder.userID = commentsList.get(position).getAuthor();
+        viewHolder.mentionedUsers = commentsList.get(position).getMentionedUsers();
+
+        HashMap<String, String> mentionedUsers = commentsList.get(position).getMentionedUsers();
 
         if (context != null) {
             viewHolder.context = this.context;
@@ -104,6 +123,68 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter {
 
         });
 
+        // check for mentioned users
+        if (mentionedUsers != null && viewHolder.commentContent.getText().toString().contains("@")) {
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            ArrayList<String> mentionUsersToString = new ArrayList<>();
+            ArrayList<String> ids = new ArrayList<>();
+            SpannableStringBuilder spannable = new SpannableStringBuilder(viewHolder.commentContent.getText().toString());
+
+            mentionedUsers.forEach((uid, unmame) -> {
+                mentionUsersToString.add(unmame);
+                ids.add(uid);
+            });
+
+            HashMap<Integer, Integer> mentionIndexes = PostHelper.findNameIndices(mentionUsersToString,
+                    viewHolder.commentContent.getText().toString());
+
+            final int[] i = {0};
+            if (!mentionIndexes.isEmpty()) {
+                mentionIndexes.forEach((start, end) -> {
+                    final int currentIndex = i[0]; // Capture the current index
+                    i[0] = i[0] + 1;
+                    rootRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.child(ids.get(currentIndex)).exists()) {
+                                spannable.setSpan(
+                                        new ForegroundColorSpan(Color.BLUE),
+                                        start,
+                                        end,
+                                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                                );
+
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(@NonNull View widget) {
+                                        Intent intent = new Intent(context, UserProfileActivity.class);
+                                        intent.putExtra("user_id", ids.get(currentIndex));
+                                        context.startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void updateDrawState(TextPaint ds) {
+                                        super.updateDrawState(ds);
+                                        ds.setUnderlineText(false);
+                                    }
+                                };
+                                spannable.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                viewHolder.commentContent.setText(spannable);
+                                viewHolder.commentContent.setMovementMethod(LinkMovementMethod.getInstance());
+                                viewHolder.commentContent.setHighlightColor(Color.TRANSPARENT);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle error
+                        }
+                    });
+                });
+            }
+
+        }
     }
 
     @Override

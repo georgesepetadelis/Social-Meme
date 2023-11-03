@@ -37,10 +37,40 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostHelper {
+
+    public static ArrayList<String> extractMentionedUsers(String input) {
+        ArrayList<String> mentionedUsers = new ArrayList<>();
+        // pattern captures emojis and usernames containing emojis.
+        Pattern pattern = Pattern.compile("@([_\\p{L}\\p{N}\\p{M}']+\\s*(?:[\\p{L}\\p{N}\\p{M}']+|\\p{So})+)"); // \\p{So} represents emojis
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            String username = matcher.group(1);
+            mentionedUsers.add(username);
+        }
+        return mentionedUsers;
+    }
+
+    public static HashMap<Integer, Integer> findNameIndices(ArrayList<String> names, String text) {
+        HashMap<Integer, Integer> result = new HashMap<>();
+        for (String name : names) {
+            int startIndex = 0;
+            while (startIndex != -1) {
+                startIndex = text.indexOf(name, startIndex);
+                if (startIndex != -1) {
+                    int endIndex = startIndex + name.length() - 1;
+                    result.put(startIndex, endIndex + 1);
+                    startIndex++;
+                }
+            }
+        }
+        return result;
+    }
 
     public static void showCommentsDialog(HashMap<String, CommentModel> comments_, TextView username, TextView commentsCount, Context context, String postID) {
 
@@ -100,6 +130,7 @@ public class PostHelper {
 
                 ProgressBar progressBar = dialogView.findViewById(R.id.addCommentProgressBar);
                 progressBar.setVisibility(View.VISIBLE);
+
                 addCommentBtn.setVisibility(View.INVISIBLE);
 
                 String commendID = rootRef.push().getKey();
@@ -122,35 +153,75 @@ public class PostHelper {
                 int newCurrentCommentsCountToInt = Integer.parseInt(currentCommentsCountToString) + 1;
                 commentsCount.setText(String.valueOf(newCurrentCommentsCountToInt));
 
-                // Add comment to Firebase Real-Time database
-                rootRef.child("posts").child(postID).child("comments").child(commendID).setValue(commentModel)
-                        .addOnSuccessListener(unused -> {
+                ArrayList<String> tempNames = new ArrayList<>();
+                for (String name : extractMentionedUsers(commentET.getText().toString())) {
+                    tempNames.add(name);
+                }
 
-                            // Add comment to RecyclerView
-                            commentModelArrayList.add(commentModel);
-                            adapter.notifyDataSetChanged();
-                            adapter.notifyItemInserted(commentModelArrayList.size() - 1);
-
-                            progressBar.setVisibility(View.GONE);
-                            addCommentBtn.setVisibility(View.VISIBLE);
-                            commentET.setText("");
-
-                            // Hide no comments warning message if is visible
-                            if (commentModelArrayList.size() == 1) {
-                                noCommentsMsg.setVisibility(View.GONE);
+                DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+                usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        HashMap<String, String> mentionedUsers = new HashMap<>();
+                        for (DataSnapshot user : snapshot.getChildren()) {
+                            if (user.child("name").exists()) {
+                                if (tempNames.contains(user.child("name").getValue(String.class))) {
+                                    String currentUserID = user.child("id").getValue(String.class);
+                                    String username = user.child("name").getValue(String.class);
+                                    mentionedUsers.put(currentUserID, username);
+                                }
                             }
+                        }
+                        commentModel.setMentionedUsers(mentionedUsers);
 
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            addCommentBtn.setVisibility(View.VISIBLE);
+                        commentModel.getMentionedUsers().forEach((uid, name) -> {
+                            NotificationHelper.sendNotification(context, username, postID, "mention", "");
                         });
 
-                if (!username.getText().toString().equals(user.getDisplayName())) {
-                    sendNotification(context, username, postID, "comment_added",
-                            commentET.getText().toString());
-                }
+                        rootRef.child("posts").child(postID).child("comments")
+                                .child(commentModel.getCommentID()).setValue(commentModel)
+                                .addOnSuccessListener(unused -> {
+
+                                    // Add comment to RecyclerView
+                                    commentModelArrayList.add(commentModel);
+                                    adapter.notifyDataSetChanged();
+                                    adapter.notifyItemInserted(commentModelArrayList.size() - 1);
+
+                                    progressBar.setVisibility(View.GONE);
+                                    addCommentBtn.setVisibility(View.VISIBLE);
+                                    commentET.setText("");
+
+                                    // Hide no comments warning message if is visible
+                                    if (commentModelArrayList.size() == 1) {
+                                        noCommentsMsg.setVisibility(View.GONE);
+                                    }
+
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(context, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.GONE);
+                                    addCommentBtn.setVisibility(View.VISIBLE);
+                                });
+
+                        if (!username.getText().toString().equals(user.getDisplayName())) {
+                            sendNotification(context, username, postID, "comment_added",
+                                    commentET.getText().toString());
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+                /*
+                findNameIndices(extractMentionedUsers(commentET.getText().toString()), commentET.getText().toString())
+                        .forEach((start, end) -> {
+                            Toast.makeText(context, "Start " + start + " end " + end, Toast.LENGTH_SHORT).show();
+                        });*/
 
             } else {
                 Toast.makeText(context, "Please write a comment", Toast.LENGTH_SHORT).show();
