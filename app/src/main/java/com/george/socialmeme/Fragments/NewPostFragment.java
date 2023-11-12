@@ -310,6 +310,7 @@ public class NewPostFragment extends Fragment {
                         postsRef.child(postId).child("postType").setValue(type);
                         postsRef.child(postId).child("joke_title").setValue(jokeTitleEditText.getText().toString());
                         postsRef.child(postId).child("joke_content").setValue(jokeContentEditText.getText().toString());
+                        postsRef.child(postId).child("AuthorID").setValue(user.getUid());
 
                         if (user.getPhotoUrl() != null) {
                             postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
@@ -406,6 +407,8 @@ public class NewPostFragment extends Fragment {
                                         postsRef.child(postId).child("authorProfilePictureURL").setValue("none");
                                     }
 
+                                    postsRef.child(postId).child("AuthorID").setValue(user.getUid());
+
                                     PostModel postModel = new PostModel();
                                     postModel.setId(postId);
                                     postModel.setAuthorID(user.getUid());
@@ -481,6 +484,7 @@ public class NewPostFragment extends Fragment {
                         postsRef.child(postId).child("likes").setValue("0");
                         postsRef.child(postId).child("id").setValue(postId);
                         postsRef.child(postId).child("postType").setValue(type);
+                        postsRef.child(postId).child("AuthorID").setValue(user.getUid());
 
                         if (user.getPhotoUrl() != null) {
                             postsRef.child(postId).child("authorProfilePictureURL").setValue(user.getPhotoUrl().toString());
