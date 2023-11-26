@@ -1,20 +1,17 @@
 package com.george.socialmeme.Activities;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.widget.ImageButton;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
 
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,8 +51,8 @@ public class AllUserPostsActivity extends AppCompatActivity {
         PostRecyclerAdapter adapter = new PostRecyclerAdapter(postModelArrayList, AllUserPostsActivity.this, AllUserPostsActivity.this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(AllUserPostsActivity.this);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
+        //layoutManager.setStackFromEnd(true);
+        //layoutManager.setReverseLayout(true);
 
         RecyclerView recyclerView = findViewById(R.id.allUserPostsRecyclerView);
         recyclerView.setAdapter(adapter);
