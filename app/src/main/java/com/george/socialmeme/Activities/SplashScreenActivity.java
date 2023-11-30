@@ -82,6 +82,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         // Animate text
         TextView appLogo = findViewById(R.id.textView16);
+        TextView sm = findViewById(R.id.textView16);
         YoYo.with(Techniques.FadeIn).duration(1200).repeat(0).playOn(appLogo);
 
         new Handler().postDelayed(() -> {
@@ -151,11 +152,20 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                     HomeActivity.openNotification = true;
 
+                    YoYo.with(Techniques.Pulse)
+                            .onEnd(animator -> YoYo.with(Techniques.FadeOut)
+                                    .duration(500)
+                                    .repeat(0)
+                                    .playOn(sm))
+                            .duration(300)
+                            .repeat(0)
+                            .playOn(sm);
+
                 }
             } else {
                 startActivity(new Intent(SplashScreenActivity.this, NoInternetConnectionActivity.class));
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
             }
-        }, 2000);
+        }, 2200);
     }
 }

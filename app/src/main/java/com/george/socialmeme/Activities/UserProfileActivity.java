@@ -299,6 +299,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
 
             refreshLayout.setRefreshing(true);
+            HomeActivity.lastHomePosition = -1;
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser user = mAuth.getCurrentUser();

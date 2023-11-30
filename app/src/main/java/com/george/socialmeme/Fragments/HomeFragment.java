@@ -2,6 +2,7 @@ package com.george.socialmeme.Fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
+import static com.george.socialmeme.Activities.HomeActivity.goUp;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -87,7 +88,7 @@ public class HomeFragment extends Fragment {
     PostRecyclerAdapter recyclerAdapter;
     LoadingDialog progressDialog;
     ProgressBar progressBar;
-    RecyclerView recyclerView;
+    public static RecyclerView recyclerView;
     ImageButton notificationsBtn, searchUserBtn;
     View openNotificationsView;
 
@@ -528,6 +529,7 @@ public class HomeFragment extends Fragment {
 
         if (HomeActivity.showLoadingScreen) {
             filtersBtn.setVisibility(View.INVISIBLE);
+            HomeActivity.goUp.setVisibility(View.INVISIBLE);
         }
 
         if (refreshDataFromDB) {
@@ -633,6 +635,7 @@ public class HomeFragment extends Fragment {
                             new Handler().postDelayed(() -> {
 
                                 filtersBtn.setVisibility(View.INVISIBLE);
+                                HomeActivity.goUp.setVisibility(View.INVISIBLE);
                                 int appVersionCode = BuildConfig.VERSION_CODE;
                                 int latestAppVersion = Integer.parseInt(snapshot.child("latest_version_code").getValue(String.class));
                                 if (appVersionCode < latestAppVersion) {
@@ -655,6 +658,7 @@ public class HomeFragment extends Fragment {
 
                                         notificationsBtn.setEnabled(true);
                                         filtersBtn.setVisibility(View.VISIBLE);
+                                        HomeActivity.goUp.setVisibility(View.VISIBLE);
                                         HomeActivity.bottomNavBar.setVisibility(View.VISIBLE);
                                         swipeRefreshLayout.setEnabled(true);
                                         HomeActivity.showLoadingScreen = false;
@@ -692,6 +696,24 @@ public class HomeFragment extends Fragment {
             }
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (HomeActivity.lastHomePosition != -1) {
+            int savedPosition = HomeActivity.lastHomePosition;
+            //recyclerView.scrollToPosition(savedPosition);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        if (layoutManager != null) {
+            HomeActivity.lastHomePosition = layoutManager.findFirstCompletelyVisibleItemPosition() + 1;
+        }
     }
 
     @Override
@@ -771,6 +793,19 @@ public class HomeFragment extends Fragment {
                 // Avoid data reload on every scroll
                 if (layoutManager.findFirstVisibleItemPosition() == 0) {
                     swipeRefreshLayout.setEnabled(true);
+                }
+
+                int totalRecyclerViewItems = recyclerView.getAdapter().getItemCount();
+                if ((totalRecyclerViewItems - layoutManager.findFirstVisibleItemPosition()) < 5) {
+                    YoYo.with(Techniques.FadeOut)
+                            .duration(600)
+                            .onEnd(animator -> goUp.setVisibility(View.INVISIBLE))
+                            .playOn(goUp);
+                } else {
+                    YoYo.with(Techniques.FadeIn)
+                            .duration(600)
+                            .onEnd(animator -> goUp.setVisibility(View.VISIBLE))
+                            .playOn(goUp);
                 }
             }
         });

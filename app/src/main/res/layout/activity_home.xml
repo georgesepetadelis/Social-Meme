@@ -17,6 +17,7 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="0dp"
         android:background="#E1E1E1" >
+
     </FrameLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -32,7 +33,24 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         app:elevation="12dp"
+        android:visibility="gone"
         app:icon="@drawable/ic_filter"
+        app:iconTint="@color/white" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/go_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_nav"
+        android:layout_marginStart="23dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:elevation="12dp"
+        app:icon="@drawable/ic_up"
         app:iconTint="@color/white" />
 
     <com.ismaeldivita.chipnavigation.ChipNavigationBar

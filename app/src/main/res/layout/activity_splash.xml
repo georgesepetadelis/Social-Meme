@@ -13,7 +13,25 @@
         android:id="@+id/splash_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/sm_splash" />
+        android:src="?attr/background" />
+
+    <View
+        android:id="@+id/view16"
+        android:layout_width="217dp"
+        android:layout_height="255dp"
+        android:background="@color/main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view17"
+        android:layout_width="235dp"
+        android:layout_height="258dp"
+        android:background="#6A00B7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.github.mmin18.widget.RealtimeBlurView
         android:layout_width="match_parent"
@@ -60,5 +78,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="gone" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

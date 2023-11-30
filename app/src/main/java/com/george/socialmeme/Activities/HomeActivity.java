@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
@@ -76,6 +77,9 @@ public class HomeActivity extends AppCompatActivity {
     public static boolean UploadNewPost = false;
     public static String IncomingPostType;
     public static Uri fileUri;
+    public static Fragment savedHomeFragmentInstance;
+    public static int lastHomePosition = -1;
+    public static ExtendedFloatingActionButton goUp;
 
     public static boolean isInstagramInstalled(PackageManager packageManager) {
         try {
@@ -193,14 +197,17 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.home_fragment:
                         selectedFragment = new HomeFragment();
                         filtersBtn.setVisibility(View.VISIBLE);
+                        goUp.setVisibility(View.VISIBLE);
                         break;
                     case R.id.new_post_fragment:
                         selectedFragment = new NewPostFragment();
                         filtersBtn.setVisibility(View.INVISIBLE);
+                        goUp.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.my_profile_fragment:
                         selectedFragment = new MyProfileFragment();
                         filtersBtn.setVisibility(View.INVISIBLE);
+                        goUp.setVisibility(View.INVISIBLE);
                         break;
                 }
 
@@ -350,6 +357,15 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(HomeActivity.this, NewsActivity.class));
             CustomIntent.customType(HomeActivity.this, "fadein-to-fadeout");
         }*/
+
+        goUp = findViewById(R.id.go_up);
+        goUp.setOnClickListener(v -> {
+            RecyclerView homeRecyclerView = HomeFragment.recyclerView;
+            if (homeRecyclerView != null) {
+                int totalItems = homeRecyclerView.getAdapter().getItemCount();
+                homeRecyclerView.smoothScrollToPosition(totalItems);
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
 

@@ -311,6 +311,7 @@ public class MyProfileFragment extends Fragment {
         postModelArrayList = new ArrayList<>();
 
         refreshLayout.setRefreshing(true);
+        HomeActivity.lastHomePosition = -1;
 
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference();
 
