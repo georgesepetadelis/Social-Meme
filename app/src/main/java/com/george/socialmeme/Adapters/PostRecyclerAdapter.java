@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -14,6 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ablanco.zoomy.DoubleTapListener;
+import com.ablanco.zoomy.TapListener;
+import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
 import com.george.socialmeme.Activities.HomeActivity;
 import com.george.socialmeme.Models.PostModel;
@@ -410,6 +414,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onSuccess() {
                     imageViewHolder.loadingProgressBar.setVisibility(View.GONE);
+                    Zoomy.Builder builder = new Zoomy.Builder(activity)
+                            .enableImmersiveMode(false)
+                            .doubleTapListener(v -> imageViewHolder.doubleTapLike())
+                            .target(imageViewHolder.postImg);
+                    builder.register();
                 }
 
                 @Override

@@ -285,6 +285,47 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    public void doubleTapLike() {
+        Random rand = new Random();
+        int randomInt = rand.nextInt(4); // 0-3
+
+        switch (randomInt) {
+            case 0:
+                likeImg.setImageResource(R.drawable.like_image1);
+                break;
+            case 1:
+                likeImg.setImageResource(R.drawable.like_image2);
+                break;
+            case 2:
+                likeImg.setImageResource(R.drawable.like_image3);
+                break;
+            case 3:
+                likeImg.setImageResource(R.drawable.like_image4);
+        }
+
+        likeImg.setVisibility(View.VISIBLE);
+
+        YoYo.with(Techniques.FadeOutUp)
+                .duration(700)
+                .repeat(0)
+                .playOn(likeImg);
+
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK));
+
+        if (!isPostLiked) {
+            isPostLiked = true;
+            like_btn.setImageResource(R.drawable.ic_like_filled);
+            likesRef.child(postID).child(user.getUid()).setValue("true");
+            updateLikesToDB(postID, true);
+
+            if (!user.getUid().equals(postAuthorID)) {
+                sendNotification(context, username, postModel.getId(), "like", "");
+            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     public ImageItemViewHolder(@NonNull View itemView) {
         super(itemView);
 
@@ -368,71 +409,6 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         openUserProfileView.setOnLongClickListener(view -> {
             copyUsernameToClipboard();
             return true;
-        });
-
-        postImg.setOnTouchListener(new View.OnTouchListener() {
-            private final GestureDetector gestureDetector = new GestureDetector(activity, new GestureDetector.SimpleOnGestureListener() {
-
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onDoubleTap(MotionEvent e) {
-
-                    Random rand = new Random();
-                    int randomInt = rand.nextInt(4); // 0-3
-
-                    switch (randomInt) {
-                        case 0:
-                            likeImg.setImageResource(R.drawable.like_image1);
-                            break;
-                        case 1:
-                            likeImg.setImageResource(R.drawable.like_image2);
-                            break;
-                        case 2:
-                            likeImg.setImageResource(R.drawable.like_image3);
-                            break;
-                        case 3:
-                            likeImg.setImageResource(R.drawable.like_image4);
-                    }
-
-                    likeImg.setVisibility(View.VISIBLE);
-
-                    YoYo.with(Techniques.FadeOutUp)
-                            .duration(700)
-                            .repeat(0)
-                            .playOn(likeImg);
-
-                    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.EFFECT_DOUBLE_CLICK));
-
-                    if (!isPostLiked) {
-                        isPostLiked = true;
-                        like_btn.setImageResource(R.drawable.ic_like_filled);
-                        likesRef.child(postID).child(user.getUid()).setValue("true");
-                        updateLikesToDB(postID, true);
-
-                        if (!user.getUid().equals(postAuthorID)) {
-                            sendNotification(context, username, postModel.getId(), "like", "");
-                        }
-                    }
-
-                    return super.onDoubleTap(e);
-                }
-
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onSingleTapConfirmed(MotionEvent event) {
-                    Log.d("onSingleTapConfirmed", "onSingleTap");
-                    return false;
-                }
-            });
-
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                gestureDetector.onTouchEvent(event);
-                return true;
-            }
         });
 
         // Check if logged-in user follows post author

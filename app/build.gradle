@@ -13,8 +13,8 @@ android {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 34
-        versionCode 50
-        versionName "v2.5.0"
+        versionCode 51
+        versionName "v2.5.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation 'io.github.imablanco:zoomy:1.0.0'
     implementation 'com.android.support:multidex:1.0.3'
 
     implementation 'com.github.mmin18:realtimeblurview:1.2.1'

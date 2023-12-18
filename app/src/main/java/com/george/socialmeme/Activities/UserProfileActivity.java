@@ -1,5 +1,6 @@
 package com.george.socialmeme.Activities;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -25,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.developer.kalert.KAlertDialog;
 import com.esc861.screenshotlistener.ScreenshotListener;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
@@ -33,6 +36,7 @@ import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
+import com.github.mmin18.widget.RealtimeBlurView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,7 +75,9 @@ public class UserProfileActivity extends AppCompatActivity {
     ImageView badge1, badge2, badge3, verify_badge, crown;
     TextView totalmemes, owner_tv, username_tv, followersCounter, followingCounter, totalLikesCounter, goldTrophiesCount, silverTrophiesCount, bronzeTrophiesCount, userFollowsCurrentUserTextView;
     ImageButton badges, backBtn, postsOfTheMonthInfo;
-    CircleImageView profilePicture;
+    CircleImageView profilePicture, fullscreenProfilePicture;
+    RealtimeBlurView fullscreenBg;
+    boolean isProfilePictureFullScreen = false;
     Button followBtn, showAllPostsButton;
     View showFollowersView, showFollowingUsersView;
     ArrayList<PostModel> postModelArrayList;
@@ -532,6 +538,68 @@ public class UserProfileActivity extends AppCompatActivity {
         return sharedPref.getBoolean("dark_mode", false);
     }
 
+    void toggleUserProfilePictureFullScreen(boolean hide) {
+        fullscreenProfilePicture.setImageDrawable(profilePicture.getDrawable());
+        if (isProfilePictureFullScreen || hide) {
+            YoYo.with(Techniques.ZoomOut)
+                    .duration(300)
+                    .withListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(@NonNull Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(@NonNull Animator animation) {
+                            YoYo.with(Techniques.FadeOut).duration(300).playOn(fullscreenBg);
+                            isProfilePictureFullScreen = false;
+                            fullscreenProfilePicture.setVisibility(View.GONE);
+                            fullscreenBg.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(@NonNull Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(@NonNull Animator animation) {
+
+                        }
+                    })
+                    .playOn(fullscreenProfilePicture);
+        } else {
+            isProfilePictureFullScreen = true;
+            fullscreenBg.setVisibility(View.VISIBLE);
+            fullscreenProfilePicture.setVisibility(View.VISIBLE);
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(300)
+                    .withListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(@NonNull Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(@NonNull Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(@NonNull Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(@NonNull Animator animation) {
+
+                        }
+                    })
+                    .playOn(fullscreenProfilePicture);
+            YoYo.with(Techniques.FadeIn).duration(300).playOn(fullscreenBg);
+        }
+    }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -567,6 +635,11 @@ public class UserProfileActivity extends AppCompatActivity {
         verify_badge.setVisibility(View.GONE);
         crown = findViewById(R.id.crown);
         crown.setVisibility(View.GONE);
+
+        fullscreenProfilePicture = findViewById(R.id.fullscreen_profile_picture);
+        fullscreenBg = findViewById(R.id.blur_bg_fullscreen);
+        fullscreenProfilePicture.setVisibility(View.GONE);
+        fullscreenBg.setVisibility(View.GONE);
 
         owner_tv = findViewById(R.id.owner);
         owner_tv.setVisibility(View.GONE);
@@ -674,6 +747,14 @@ public class UserProfileActivity extends AppCompatActivity {
             intent.putExtra("userID", userID);
             startActivity(intent);
             CustomIntent.customType(UserProfileActivity.this, "left-to-right");
+        });
+
+        fullscreenProfilePicture.setOnClickListener(v -> toggleUserProfilePictureFullScreen(true));
+        fullscreenBg.setOnClickListener(v -> toggleUserProfilePictureFullScreen(true));
+        profilePicture.setOnClickListener(v -> toggleUserProfilePictureFullScreen(false));
+        profilePicture.setOnLongClickListener(v -> {
+            toggleUserProfilePictureFullScreen(false);
+            return true;
         });
 
         showFollowersView.setOnClickListener(v -> {

@@ -576,9 +576,28 @@
                     app:layout_constraintStart_toEndOf="@+id/textView20"
                     app:layout_constraintTop_toTopOf="@+id/textView20" />
 
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <com.github.mmin18.widget.RealtimeBlurView
+            android:id="@+id/blur_bg_fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:realtimeBlurRadius="30dp"
+            app:realtimeOverlayColor="#8000" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/fullscreen_profile_picture"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="88dp"
+            android:src="@drawable/user"
+            app:civ_border_color="#FF000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
