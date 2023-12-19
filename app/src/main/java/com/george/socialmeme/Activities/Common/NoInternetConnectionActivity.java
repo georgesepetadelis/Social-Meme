@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,9 +7,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
+import com.george.socialmeme.Activities.Auth.WelcomeActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

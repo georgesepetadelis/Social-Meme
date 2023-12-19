@@ -37,11 +37,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
-import com.george.socialmeme.Activities.AllUserPostsActivity;
-import com.george.socialmeme.Activities.FollowerInfoActivity;
-import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
-import com.george.socialmeme.Activities.SettingsActivity;
+import com.george.socialmeme.Activities.Profile.AllUserPostsActivity;
+import com.george.socialmeme.Activities.Profile.FollowerInfoActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Feed.PostsOfTheMonthActivity;
+import com.george.socialmeme.Activities.Account.SettingsActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;

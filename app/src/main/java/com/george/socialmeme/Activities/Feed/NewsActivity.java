@@ -1,10 +1,9 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Feed;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import com.george.socialmeme.R;

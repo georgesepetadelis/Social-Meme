@@ -15,7 +15,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -33,14 +32,12 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.developer.kalert.KAlertDialog;
-import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.RegisterActivity;
-import com.george.socialmeme.BuildConfig;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Auth.RegisterActivity;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UploadPostModel;
 import com.george.socialmeme.R;
@@ -57,10 +54,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import maes.tech.intentanim.CustomIntent;

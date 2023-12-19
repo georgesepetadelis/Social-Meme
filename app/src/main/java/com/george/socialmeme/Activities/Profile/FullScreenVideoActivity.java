@@ -1,11 +1,10 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Profile;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -15,7 +14,6 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.analytics.AnalyticsListener;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
-import com.potyvideo.library.AndExoPlayerView;
 
 import maes.tech.intentanim.CustomIntent;
 

@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Account;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;

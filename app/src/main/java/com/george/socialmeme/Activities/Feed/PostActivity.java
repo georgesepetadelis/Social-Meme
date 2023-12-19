@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Feed;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

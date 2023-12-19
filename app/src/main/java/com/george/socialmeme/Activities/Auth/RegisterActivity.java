@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.claudylab.smartdialogbox.SmartDialogBox;
 import com.developer.kalert.KAlertDialog;
+import com.george.socialmeme.Activities.Legal.PrivacyPolicyActivity;
+import com.george.socialmeme.Activities.Profile.SelectProfileImageActivity;
+import com.george.socialmeme.Activities.Legal.TermsActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

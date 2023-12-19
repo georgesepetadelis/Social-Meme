@@ -13,12 +13,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
-import com.google.firebase.firestore.auth.User;
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

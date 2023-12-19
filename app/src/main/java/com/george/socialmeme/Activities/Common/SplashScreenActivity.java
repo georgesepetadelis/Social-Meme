@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Common;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.george.socialmeme.Activities.Auth.WelcomeActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

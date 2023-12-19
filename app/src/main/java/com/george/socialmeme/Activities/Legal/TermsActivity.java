@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Legal;
 
 import androidx.appcompat.app.AppCompatActivity;
 

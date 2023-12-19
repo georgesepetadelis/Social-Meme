@@ -14,8 +14,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.george.socialmeme.Activities.PostActivity;
-import com.george.socialmeme.Activities.SplashScreenActivity;
+import com.george.socialmeme.Activities.Feed.PostActivity;
+import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.HomeActivity"
+    tools:context=".Activities.Feed.HomeActivity"
     android:alpha="5"
     android:background="#C5C5C5">
 

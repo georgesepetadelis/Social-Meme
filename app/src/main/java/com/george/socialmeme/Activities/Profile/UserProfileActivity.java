@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Profile;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
@@ -30,6 +30,9 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.developer.kalert.KAlertDialog;
 import com.esc861.screenshotlistener.ScreenshotListener;
+import com.george.socialmeme.Activities.Common.SplashScreenActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Feed.PostsOfTheMonthActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Adapters.RecommendedUserRecyclerAdapter;
 import com.george.socialmeme.Fragments.HomeFragment;

@@ -5,10 +5,9 @@ import android.content.Intent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.george.socialmeme.Activities.PostsOfTheMonthActivity;
+import com.george.socialmeme.Activities.Feed.PostsOfTheMonthActivity;
 import com.george.socialmeme.R;
 
 import maes.tech.intentanim.CustomIntent;

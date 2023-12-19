@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.george.socialmeme.Activities.HomeActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.Adapters.CommentsRecyclerAdapter;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.Models.PostModel;

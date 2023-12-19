@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.R;
 
 import maes.tech.intentanim.CustomIntent;

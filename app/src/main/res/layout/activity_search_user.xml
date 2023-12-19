@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/background"
-    tools:context=".Activities.SearchUserActivity">
+    tools:context=".Activities.Feed.SearchUserActivity">
 
     <View
         android:id="@+id/view14"

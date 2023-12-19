@@ -13,9 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.PostActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Feed.PostActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.Models.NotificationModel;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +25,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.List;
 

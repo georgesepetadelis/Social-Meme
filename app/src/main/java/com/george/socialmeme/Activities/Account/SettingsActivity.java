@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Account;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,6 +20,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Legal.PrivacyPolicyActivity;
+import com.george.socialmeme.Activities.Common.SplashScreenActivity;
+import com.george.socialmeme.Activities.Legal.TermsActivity;
+import com.george.socialmeme.Activities.Auth.WelcomeActivity;
 import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;

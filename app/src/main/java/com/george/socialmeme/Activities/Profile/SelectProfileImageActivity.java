@@ -1,4 +1,4 @@
-package com.george.socialmeme.Activities;
+package com.george.socialmeme.Activities.Profile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.firebase.auth.FirebaseAuth;

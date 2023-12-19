@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.R;
 
 import java.util.HashMap;

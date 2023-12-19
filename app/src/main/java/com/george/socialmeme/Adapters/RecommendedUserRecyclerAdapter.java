@@ -9,11 +9,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.george.socialmeme.Activities.HomeActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
-import com.george.socialmeme.ViewHolders.CommentItemViewHolder;
 import com.george.socialmeme.ViewHolders.RecommendedUserViewHolder;
 import com.squareup.picasso.Picasso;
 

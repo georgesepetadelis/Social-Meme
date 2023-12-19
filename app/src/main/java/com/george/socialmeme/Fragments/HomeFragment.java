@@ -1,10 +1,10 @@
 package com.george.socialmeme.Fragments;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
-import static com.george.socialmeme.Activities.HomeActivity.goUp;
-import static com.george.socialmeme.Activities.HomeActivity.lastHomePosition;
-import static com.george.socialmeme.Activities.HomeActivity.postListToRestore;
+import static com.george.socialmeme.Activities.Feed.HomeActivity.filtersBtn;
+import static com.george.socialmeme.Activities.Feed.HomeActivity.goUp;
+import static com.george.socialmeme.Activities.Feed.HomeActivity.lastHomePosition;
+import static com.george.socialmeme.Activities.Feed.HomeActivity.postListToRestore;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -38,11 +38,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.NotificationsActivity;
-import com.george.socialmeme.Activities.PostActivity;
-import com.george.socialmeme.Activities.SearchUserActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Feed.NotificationsActivity;
+import com.george.socialmeme.Activities.Feed.PostActivity;
+import com.george.socialmeme.Activities.Feed.SearchUserActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Models.PostModel;

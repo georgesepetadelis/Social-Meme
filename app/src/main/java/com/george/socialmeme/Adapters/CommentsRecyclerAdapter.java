@@ -22,7 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.Helpers.PostHelper;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.R;

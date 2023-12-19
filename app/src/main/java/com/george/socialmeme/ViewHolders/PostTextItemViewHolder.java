@@ -45,8 +45,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.george.socialmeme.Activities.HomeActivity;
-import com.george.socialmeme.Activities.UserProfileActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Models.CommentModel;
 import com.george.socialmeme.Models.PostModel;

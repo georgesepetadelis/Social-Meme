@@ -40,7 +40,6 @@
         tools:targetApi="s">
 
         <meta-data
-
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/sm_notifications_1" />
 
@@ -63,46 +62,46 @@
         </provider>
 
         <activity
-            android:name=".Activities.SearchUserActivity"
+            android:name=".Activities.Feed.SearchUserActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.NewsActivity"
+            android:name=".Activities.Feed.NewsActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.PostActivity"
+            android:name=".Activities.Feed.PostActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.TermsActivity"
+            android:name=".Activities.Legal.TermsActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.FullScreenVideoActivity"
+            android:name=".Activities.Profile.FullScreenVideoActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.NoInternetConnectionActivity"
+            android:name=".Activities.Common.NoInternetConnectionActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.AllUserPostsActivity"
+            android:name=".Activities.Profile.AllUserPostsActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.PostsOfTheMonthActivity"
+            android:name=".Activities.Feed.PostsOfTheMonthActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.UserProfileActivity"
+            android:name=".Activities.Profile.UserProfileActivity"
             android:exported="true" />
         <activity
-            android:name=".Activities.FollowerInfoActivity"
+            android:name=".Activities.Profile.FollowerInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.NotificationsActivity"
+            android:name=".Activities.Feed.NotificationsActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.PrivacyPolicyActivity"
+            android:name=".Activities.Legal.PrivacyPolicyActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.WelcomeActivity"
+            android:name=".Activities.Auth.WelcomeActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.AccountSettingsActivity"
+            android:name=".Activities.Account.AccountSettingsActivity"
             android:exported="false" />
 
         <meta-data
@@ -113,21 +112,21 @@
             android:value="firebase_fcm" />
 
         <activity
-            android:name=".Activities.SettingsActivity"
+            android:name=".Activities.Account.SettingsActivity"
             android:exported="false" />
-        <activity android:name=".Activities.SelectProfileImageActivity" />
+        <activity android:name=".Activities.Profile.SelectProfileImageActivity" />
         <activity
-            android:name=".Activities.HomeActivity"
+            android:name=".Activities.Feed.HomeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:exported="true" />
         <activity
-            android:name=".Activities.RegisterActivity"
+            android:name=".Activities.Auth.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.LoginActivity"
+            android:name=".Activities.Auth.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.SplashScreenActivity"
+            android:name=".Activities.Common.SplashScreenActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:exported="true">
 

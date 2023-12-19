@@ -8,7 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.george.socialmeme.Activities.HomeActivity;
+import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.BuildConfig;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
