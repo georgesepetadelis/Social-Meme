@@ -306,6 +306,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
             refreshLayout.setRefreshing(true);
             HomeActivity.lastHomePosition = -1;
+            HomeActivity.postListToRestore = null;
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser user = mAuth.getCurrentUser();

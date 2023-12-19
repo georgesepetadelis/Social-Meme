@@ -3,6 +3,8 @@ package com.george.socialmeme.Fragments;
 import static android.content.Context.MODE_PRIVATE;
 import static com.george.socialmeme.Activities.HomeActivity.filtersBtn;
 import static com.george.socialmeme.Activities.HomeActivity.goUp;
+import static com.george.socialmeme.Activities.HomeActivity.lastHomePosition;
+import static com.george.socialmeme.Activities.HomeActivity.postListToRestore;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -701,9 +703,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (HomeActivity.lastHomePosition != -1) {
+        if (HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
             int savedPosition = HomeActivity.lastHomePosition;
-            //recyclerView.scrollToPosition(savedPosition);
+            recyclerView.scrollToPosition(savedPosition -1);
+            postModelArrayList.clear();
+            postModelArrayList.addAll(postListToRestore);
+            recyclerAdapter.notifyDataSetChanged();
         }
     }
 
@@ -713,6 +718,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         if (layoutManager != null) {
             HomeActivity.lastHomePosition = layoutManager.findFirstCompletelyVisibleItemPosition() + 1;
+            postListToRestore = randomArrayList;
         }
     }
 
@@ -746,14 +752,17 @@ public class HomeFragment extends Fragment {
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
         searchUserBtn = view.findViewById(R.id.searchPersonButton);
 
-        randomArrayList = new ArrayList<PostModel>();
+        if (postListToRestore == null) {
+            randomArrayList = new ArrayList<PostModel>();
+        } else {
+            randomArrayList = postListToRestore;
+        }
 
         notificationsBtn = view.findViewById(R.id.notificationsButton);
         recyclerView = view.findViewById(R.id.home_recycler_view);
         progressDialog = LoadingDialog.Companion.get(getActivity());
         openNotificationsView = view.findViewById(R.id.view18);
         progressBar = view.findViewById(R.id.home_progress_bar);
-
         postModelArrayList = new ArrayList<>();
         filteredPostsArrayList = new ArrayList<>();
 
@@ -823,7 +832,12 @@ public class HomeFragment extends Fragment {
             view.findViewById(R.id.constraintLayout2).setVisibility(View.VISIBLE);
         }
 
-        getAllPostsFromDB(false, view, swipeRefreshLayout);
+        if (lastHomePosition == -1 || postListToRestore == null) {
+            getAllPostsFromDB(false, view, swipeRefreshLayout);
+        } else {
+            recyclerAdapter.notifyDataSetChanged();
+        }
+
 
         filtersBtn.setOnClickListener(view13 -> showFiltersDialog());
 

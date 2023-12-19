@@ -80,6 +80,7 @@ public class HomeActivity extends AppCompatActivity {
     public static Fragment savedHomeFragmentInstance;
     public static int lastHomePosition = -1;
     public static ExtendedFloatingActionButton goUp;
+    public static ArrayList<PostModel> postListToRestore;
 
     public static boolean isInstagramInstalled(PackageManager packageManager) {
         try {
