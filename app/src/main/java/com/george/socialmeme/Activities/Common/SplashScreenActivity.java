@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -35,7 +34,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     public boolean isInternetConnectionAvailable() {
         ConnectivityManager cm = (ConnectivityManager) SplashScreenActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     void initializeNightModeSharedPref() {
@@ -61,6 +60,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             finish();
         }
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
