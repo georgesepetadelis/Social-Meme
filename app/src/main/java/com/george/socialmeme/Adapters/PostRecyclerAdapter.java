@@ -410,8 +410,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             Picasso.get().load(postList.get(position).getImgUrl()).into(imageViewHolder.postImg, new Callback() {
                 @Override
                 public void onSuccess() {
+                    imageViewHolder.loadingProgressBar.setVisibility(View.GONE);
                     if (!HomeActivity.singedInAnonymously) {
-                        imageViewHolder.loadingProgressBar.setVisibility(View.GONE);
                         Zoomy.Builder builder = new Zoomy.Builder(activity)
                                 .enableImmersiveMode(false)
                                 .doubleTapListener(v -> imageViewHolder.doubleTapLike())
