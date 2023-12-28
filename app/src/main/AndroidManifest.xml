@@ -104,6 +104,9 @@
             android:name=".Activities.Account.AccountSettingsActivity"
             android:exported="false" />
 
+        <activity android:name=".Activities.Account.AppearanceSettingsActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9627755439548346~7996414717" />
