@@ -45,6 +45,7 @@ import com.george.socialmeme.Activities.Feed.SearchUserActivity;
 import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.BuildConfig;
+import com.george.socialmeme.Helpers.AppHelper;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
@@ -309,7 +310,8 @@ public class HomeFragment extends Fragment {
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.child("show_full_ads").getValue(String.class).equals("enabled")) {
+                    if (snapshot.child("show_full_ads").getValue(String.class).equals("enabled")
+                            || !AppHelper.isAppInstalledFromPlayStore(context)) {
                         checkForDailyAd(context);
                     }
                 }
@@ -337,7 +339,9 @@ public class HomeFragment extends Fragment {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     String date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
-                    if (sharedPref.getString("last_ad", "none").equals(null) || sharedPref.getString("last_ad", "none").equals("none") ||
+                    if (!AppHelper.isAppInstalledFromPlayStore(context) ||
+                            sharedPref.getString("last_ad", "none").equals(null) ||
+                            sharedPref.getString("last_ad", "none").equals("none") ||
                             !sharedPref.getString("last_ad", "none").equals(date)) {
                         editor.putString("last_ad", date);
                         editor.apply();
