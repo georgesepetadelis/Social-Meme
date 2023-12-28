@@ -112,8 +112,8 @@ public class SettingsActivity extends AppCompatActivity {
         CardView terms = findViewById(R.id.cardView11);
         ImageButton instagram = findViewById(R.id.instagram_button);
         ImageButton github = findViewById(R.id.github_button);
-        SwitchCompat nightModeSwitch = findViewById(R.id.switch1);
-        nightModeSwitch.setChecked(isNightModeEnabled());
+        CardView appearanceSettings = findViewById(R.id.cardView9);
+        //nightModeSwitch.setChecked(isNightModeEnabled());
 
         website_tv.setOnClickListener(view -> openURL("https://sepetadelhs.rf.gd"));
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
@@ -134,9 +134,10 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        nightModeSwitch.setOnClickListener(view -> {
+        appearanceSettings.setOnClickListener(view -> {
 
-            new AlertDialog.Builder(this)
+            startActivity(new Intent(SettingsActivity.this, AppearanceSettingsActivity.class));
+            /* new AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setTitle("Restart required")
                     .setMessage("You need to restart Social Meme to apply new settings")
@@ -146,7 +147,7 @@ public class SettingsActivity extends AppCompatActivity {
                         updateNightModeState(false);
                     })
                     .show();
-
+        */
         });
 
         terms.setOnClickListener(v -> {
