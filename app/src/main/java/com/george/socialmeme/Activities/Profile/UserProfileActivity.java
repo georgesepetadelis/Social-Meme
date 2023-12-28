@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Profile;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -537,11 +539,6 @@ public class UserProfileActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
     void toggleUserProfilePictureFullScreen(boolean hide) {
         fullscreenProfilePicture.setImageDrawable(profilePicture.getDrawable());
         if (isProfilePictureFullScreen || hide) {
@@ -622,7 +619,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(UserProfileActivity.this)) {
             setTheme(R.style.AppTheme_Base_Night);
         }
         super.onCreate(savedInstanceState);

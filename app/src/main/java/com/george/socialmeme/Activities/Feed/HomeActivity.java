@@ -1,5 +1,8 @@
 package com.george.socialmeme.Activities.Feed;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+import static com.george.socialmeme.Helpers.AppHelper.updateNightModeState;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -31,6 +34,7 @@ import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
+import com.george.socialmeme.Helpers.SaverHelper;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
 import com.george.socialmeme.R;
@@ -155,11 +159,6 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-    }
-
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
     }
 
     boolean newFeaturesViewed() {
@@ -311,7 +310,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(HomeActivity.this)) {
             // Using force apply because HomeActivity contains fragments
             Resources.Theme theme = super.getTheme();
             theme.applyStyle(R.style.AppTheme_Base_Night, true);
@@ -450,32 +449,11 @@ public class HomeActivity extends AppCompatActivity {
                 },
                 formError -> Toast.makeText(HomeActivity.this, "Error: " + formError.getMessage(), Toast.LENGTH_SHORT).show());
 
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && !isNightModeEnabled() && !askForEnableNightMode) {
-
-            // System dark mode is enabled
-            // ask user to enable in-app night mode
-            AlertDialog alertDialog = new AlertDialog.Builder(HomeActivity.this)
-                    .setCancelable(false)
-                    .setTitle("Enable app night mode?")
-                    .setIcon(R.drawable.moon)
-                    .setMessage("Social Meme detected that you have enabled night mode on your device. " +
-                            "You want to enable night mode in Social Meme too?")
-                    .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        enableNightMode();
-                        finish();
-                        startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
-                    })
-                    .setNegativeButton("No, thanks", (dialogInterface, i) -> {
-                        askForNightModeSharedPrefEditor.putBoolean("asked_night_mode_enable", true);
-                        askForNightModeSharedPrefEditor.apply();
-                        dialogInterface.dismiss();
-
-                    }).create();
-
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.custom_dialog_background);
-            alertDialog.show();
-
+        SaverHelper saverHelper = new SaverHelper(HomeActivity.this, "theme_mode");
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+                && saverHelper.getSaverValue("theme_mode", "none").equals("none")) {
+            updateNightModeState(true, HomeActivity.this);
+            saverHelper.setSaverValue("theme_mode", "System theme");
         }
 
     }

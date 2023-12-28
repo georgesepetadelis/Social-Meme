@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Profile;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageButton;
@@ -43,14 +45,9 @@ public class FollowerInfoActivity extends AppCompatActivity {
         CustomIntent.customType(FollowerInfoActivity.this, "right-to-left");
     }
 
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(FollowerInfoActivity.this)) {
             setTheme(R.style.AppTheme_Base_Night);
         }
         super.onCreate(savedInstanceState);

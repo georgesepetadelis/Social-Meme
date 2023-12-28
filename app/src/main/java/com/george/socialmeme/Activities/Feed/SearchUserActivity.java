@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Feed;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -60,14 +62,9 @@ public class SearchUserActivity extends AppCompatActivity {
 
     }
 
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(SearchUserActivity.this)) {
             setTheme(R.style.AppTheme_Base_Night);
         }
         super.onCreate(savedInstanceState);

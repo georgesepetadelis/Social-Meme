@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Feed;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
@@ -19,14 +21,9 @@ public class NewsActivity extends AppCompatActivity {
         CustomIntent.customType(NewsActivity.this, "fadein-to-fadeout");
     }
 
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(NewsActivity.this)) {
             setTheme(R.style.AppTheme_Base_Night);
         }
         super.onCreate(savedInstanceState);

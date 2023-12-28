@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Common;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -46,11 +48,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -66,7 +63,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(SplashScreenActivity.this)) {
             Resources.Theme theme = super.getTheme();
             theme.applyStyle(R.style.AppTheme_Base_Night, true);
             // Update status bar color

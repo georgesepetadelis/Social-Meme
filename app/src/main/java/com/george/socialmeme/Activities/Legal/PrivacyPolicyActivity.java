@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Legal;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
@@ -19,14 +21,9 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
         CustomIntent.customType(PrivacyPolicyActivity.this, "right-to-left");
     }
 
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(PrivacyPolicyActivity.this)) {
             setTheme(R.style.AppTheme_Base_Night);
         }
         super.onCreate(savedInstanceState);

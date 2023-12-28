@@ -21,9 +21,10 @@
     </string>
 
     <string-array name="theme_mode_array">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>Auto</item>
+        <item>Light mode</item>
+        <item>Night mode</item>
+        <item>System theme</item>
+        <item>Time based</item>
     </string-array>
 
     <string name="terms">

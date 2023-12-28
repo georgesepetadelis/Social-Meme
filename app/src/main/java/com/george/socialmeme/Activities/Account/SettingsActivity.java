@@ -1,5 +1,8 @@
 package com.george.socialmeme.Activities.Account;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+import static com.george.socialmeme.Helpers.AppHelper.updateNightModeState;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +11,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +32,8 @@ import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.Activities.Legal.TermsActivity;
 import com.george.socialmeme.Activities.Auth.WelcomeActivity;
 import com.george.socialmeme.BuildConfig;
+import com.george.socialmeme.Helpers.AppHelper;
+import com.george.socialmeme.Helpers.SaverHelper;
 import com.george.socialmeme.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -39,34 +47,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import maes.tech.intentanim.CustomIntent;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
+    boolean initSelection = true;
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
         CustomIntent.customType(SettingsActivity.this, "right-to-left");
-    }
-
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
-    }
-
-    void updateNightModeState(boolean restartNow) {
-
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-        editor.putBoolean("dark_mode", !isNightModeEnabled());
-        editor.apply();
-
-        if (restartNow) {
-            finish();
-            Intent intent = new Intent(SettingsActivity.this, SplashScreenActivity.class);
-            startActivity(intent);
-        }
-
     }
 
     void openURL(String URL) {
@@ -78,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(SettingsActivity.this)) {
             setTheme(R.style.AppTheme_Base_Night);
         }
 
@@ -112,8 +101,19 @@ public class SettingsActivity extends AppCompatActivity {
         CardView terms = findViewById(R.id.cardView11);
         ImageButton instagram = findViewById(R.id.instagram_button);
         ImageButton github = findViewById(R.id.github_button);
-        CardView appearanceSettings = findViewById(R.id.cardView9);
-        //nightModeSwitch.setChecked(isNightModeEnabled());
+
+        SaverHelper themeSaverHelper = new SaverHelper(SettingsActivity.this, "theme_mode");
+
+        Spinner themeModeSpinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> themeModeAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.theme_mode_array,
+                android.R.layout.simple_spinner_item
+        );
+        themeModeSpinner.setAdapter(themeModeAdapter);
+        themeModeSpinner.setOnItemSelectedListener(this);
+        themeModeSpinner.setSelection(themeModeAdapter.getPosition(
+                themeSaverHelper.getSaverValue("theme_mode", "Light")));
 
         website_tv.setOnClickListener(view -> openURL("https://sepetadelhs.rf.gd"));
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
@@ -123,8 +123,12 @@ public class SettingsActivity extends AppCompatActivity {
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("show_donate").getValue(String.class).equals("disabled")) {
-                    donateButton.setVisibility(View.INVISIBLE);
+                if (!AppHelper.isAppInstalledFromPlayStore(SettingsActivity.this)
+                        || snapshot.child("show_donate").getValue(String.class).equals("enabled")) {
+                    // if app is not installed from play store show the button
+                    donateButton.setVisibility(View.VISIBLE);
+                } else {
+                    donateButton.setVisibility(View.GONE);
                 }
             }
 
@@ -132,22 +136,6 @@ public class SettingsActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-
-        appearanceSettings.setOnClickListener(view -> {
-
-            startActivity(new Intent(SettingsActivity.this, AppearanceSettingsActivity.class));
-            /* new AlertDialog.Builder(this)
-                    .setCancelable(false)
-                    .setTitle("Restart required")
-                    .setMessage("You need to restart Social Meme to apply new settings")
-                    .setPositiveButton("Restart now", (dialogInterface, i) -> updateNightModeState(true))
-                    .setNegativeButton("Later", (dialogInterface, i) -> {
-                        dialogInterface.dismiss();
-                        updateNightModeState(false);
-                    })
-                    .show();
-        */
         });
 
         terms.setOnClickListener(v -> {
@@ -230,6 +218,33 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         backBtn.setOnClickListener(v -> onBackPressed());
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        if (initSelection) {
+            initSelection = false;
+        } else {
+            SaverHelper saverHelper = new SaverHelper(SettingsActivity.this, "theme_mode");
+            String themeMode = parent.getItemAtPosition(position).toString();
+            saverHelper.setSaverValue("theme_mode", themeMode);
+            updateNightModeState(themeMode.equals("Night mode"), SettingsActivity.this);
+
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("Restart required")
+                    .setMessage("The changes will take affect when you restart the app")
+                    .setPositiveButton("Okay", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                    })
+                    .show();
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 }

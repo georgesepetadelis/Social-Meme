@@ -356,15 +356,6 @@ public class HomeFragment extends Fragment {
         });
 
     }
-
-    void openDonateURL() {
-        if (isAdded()) {
-            Uri uri = Uri.parse("https://PayPal.me/GSepetadelis");
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
-        }
-    }
-
     void showFiltersDialog() {
 
         Dialog dialog = new Dialog(getActivity());
@@ -733,17 +724,10 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        AdView mAdView = view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-
         if (HomeActivity.singedInAnonymously) {
             // Disable bottom nav options on anonymous mode
             HomeActivity.bottomNavBar.setItemEnabled(R.id.new_post_fragment, false);
             HomeActivity.bottomNavBar.setItemEnabled(R.id.my_profile_fragment, false);
-        }
-
-        if (isAdded() && HomeActivity.show_banners) {
-            mAdView.loadAd(adRequest);
         }
 
         if (!HomeActivity.showLoadingScreen) {
@@ -826,9 +810,11 @@ public class HomeFragment extends Fragment {
 
         // Refresh posts
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            swipeRefreshLayout.setRefreshing(true);
-            getAllPostsFromDB(true, view, swipeRefreshLayout);
-            swipeRefreshLayout.setRefreshing(false);
+            if (!HomeActivity.singedInAnonymously) {
+                swipeRefreshLayout.setRefreshing(true);
+                getAllPostsFromDB(true, view, swipeRefreshLayout);
+                swipeRefreshLayout.setRefreshing(false);
+            }
         });
 
         if (HomeActivity.showLoadingScreen) {

@@ -1,5 +1,7 @@
 package com.george.socialmeme.Activities.Account;
 
+import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
+
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -41,11 +43,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
         CustomIntent.customType(AccountSettingsActivity.this, "right-to-left");
-    }
-
-    boolean isNightModeEnabled() {
-        SharedPreferences sharedPref = getSharedPreferences("dark_mode", MODE_PRIVATE);
-        return sharedPref.getBoolean("dark_mode", false);
     }
 
     void updateUsernameOnUserPosts(String oldName, String newName) {
@@ -110,7 +107,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (isNightModeEnabled()) {
+        if (isNightModeEnabled(AccountSettingsActivity.this)) {
             Resources.Theme theme = super.getTheme();
             theme.applyStyle(R.style.AppTheme_Base_Night, true);
         }
