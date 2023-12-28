@@ -703,12 +703,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
-            int savedPosition = HomeActivity.lastHomePosition;
-            recyclerView.scrollToPosition(savedPosition -1);
-            postModelArrayList.clear();
-            postModelArrayList.addAll(postListToRestore);
-            recyclerAdapter.notifyDataSetChanged();
+        if (!HomeActivity.singedInAnonymously && HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
+            if (postListToRestore.size() - lastHomePosition <= 2) {
+                recyclerView.scrollToPosition(postListToRestore.size());
+            } else {
+                int savedPosition = HomeActivity.lastHomePosition;
+                recyclerView.scrollToPosition(savedPosition -1);
+                postModelArrayList.clear();
+                postModelArrayList.addAll(postListToRestore);
+                recyclerAdapter.notifyDataSetChanged();
+            }
+
         }
     }
 
@@ -716,7 +721,7 @@ public class HomeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        if (layoutManager != null) {
+        if (layoutManager != null && !HomeActivity.singedInAnonymously) {
             HomeActivity.lastHomePosition = layoutManager.findFirstCompletelyVisibleItemPosition() + 1;
             postListToRestore = randomArrayList;
         }

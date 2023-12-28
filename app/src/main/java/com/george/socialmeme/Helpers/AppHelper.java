@@ -5,6 +5,10 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class AppHelper {
     public static boolean isNightModeEnabled(Context context) {
         SharedPreferences sharedPref = context.getSharedPreferences("dark_mode", MODE_PRIVATE);
