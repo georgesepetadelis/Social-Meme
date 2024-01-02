@@ -1,6 +1,7 @@
 package com.george.socialmeme.Fragments;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.george.socialmeme.Activities.Feed.HomeActivity.allPostsSaved;
 import static com.george.socialmeme.Activities.Feed.HomeActivity.filtersBtn;
 import static com.george.socialmeme.Activities.Feed.HomeActivity.goUp;
 import static com.george.socialmeme.Activities.Feed.HomeActivity.lastHomePosition;
@@ -51,7 +52,6 @@ import com.george.socialmeme.R;
 import com.github.loadingview.LoadingDialog;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment {
 
     private InterstitialAd mInterstitialAd;
 
-    public static ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray, randomArrayList;
+    public static ArrayList<PostModel> postModelArrayList, filteredPostsArrayList, notSuffledPostsArray, randomArrayList, allPostsList;
 
     public static boolean refreshed = false;
     PostRecyclerAdapter recyclerAdapter;
@@ -499,6 +499,10 @@ public class HomeFragment extends Fragment {
     FirebaseCallback callback = () -> {
 
         Collections.reverse(HomeFragment.postModelArrayList);
+        allPostsList = new ArrayList<>();
+        allPostsList.addAll(postModelArrayList);
+        allPostsSaved.addAll(postModelArrayList);
+        allPostsList = allPostsSaved;
 
         if (HomeActivity.openNotification) {
 
@@ -698,12 +702,14 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        allPostsList = new ArrayList<>();
+        allPostsList.addAll(postModelArrayList);
         if (!HomeActivity.singedInAnonymously && HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
             if (postListToRestore.size() - lastHomePosition <= 2) {
                 recyclerView.scrollToPosition(postListToRestore.size());
             } else {
                 int savedPosition = HomeActivity.lastHomePosition;
-                recyclerView.scrollToPosition(savedPosition -1);
+                recyclerView.scrollToPosition(savedPosition - 1);
                 postModelArrayList.clear();
                 postModelArrayList.addAll(postListToRestore);
                 recyclerAdapter.notifyDataSetChanged();

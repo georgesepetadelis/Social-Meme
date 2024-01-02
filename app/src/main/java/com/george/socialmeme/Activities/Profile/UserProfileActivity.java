@@ -8,7 +8,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -688,8 +687,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-        ArrayList<PostModel> allPosts = HomeFragment.postModelArrayList;
-
         ArrayList<PostModel> postModelArrayList = new ArrayList<>();
         recyclerAdapter = new PostRecyclerAdapter(postModelArrayList, UserProfileActivity.this, UserProfileActivity.this);
         layoutManager = new LinearLayoutManager(UserProfileActivity.this);
@@ -789,7 +786,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 ArrayList<String> loadedPostsID = new ArrayList<>();
 
                 int totalLoadedPosts = 0;
-                for (PostModel post : HomeFragment.postModelArrayList) {
+                for (PostModel post : HomeActivity.allPostsSaved) {
                     if (totalLoadedPosts < 5) {
                         if (post.getAuthorID() != null) {
                             if (post.getAuthorID().equals(userID) && !loadedPostsID.contains(post.getId())) {
@@ -804,7 +801,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 ArrayList<String> loadedPostsID1 = new ArrayList<>();
                 // Calculate total likes
                 int totalLikes = 0;
-                for (PostModel postModel : HomeFragment.postModelArrayList) {
+                for (PostModel postModel : HomeActivity.allPostsSaved) {
                     if (postModel.getAuthorID() != null) {
                         if (postModel.getAuthorID().equals(userID) && !loadedPostsID1.contains(postModel.getId())) {
                             loadedPostsID1.add(postModel.getId());

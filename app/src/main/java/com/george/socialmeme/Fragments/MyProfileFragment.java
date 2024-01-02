@@ -37,11 +37,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.developer.kalert.KAlertDialog;
-import com.george.socialmeme.Activities.Profile.AllUserPostsActivity;
-import com.george.socialmeme.Activities.Profile.FollowerInfoActivity;
+import com.george.socialmeme.Activities.Account.SettingsActivity;
 import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.Activities.Feed.PostsOfTheMonthActivity;
-import com.george.socialmeme.Activities.Account.SettingsActivity;
+import com.george.socialmeme.Activities.Profile.AllUserPostsActivity;
+import com.george.socialmeme.Activities.Profile.FollowerInfoActivity;
 import com.george.socialmeme.Adapters.PostRecyclerAdapter;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
@@ -715,27 +715,30 @@ public class MyProfileFragment extends Fragment {
 
         if (!HomeActivity.singedInAnonymously && HomeFragment.postModelArrayList != null) {
 
-            ArrayList<PostModel> reversedPosts = HomeFragment.postModelArrayList;
+            ArrayList<PostModel> reversedPosts = HomeActivity.allPostsSaved;
+            if (reversedPosts == null || reversedPosts.isEmpty()) {
+                reversedPosts = HomeFragment.postModelArrayList;
+            }
 
             ArrayList<String> loadedPostsID = new ArrayList<>();
             int postsCount = 0;
-                for (PostModel post : reversedPosts) {
-                    if (postsCount <= 4) {
-                        if (post.getName() != null) {
-                            if (post.getName().equals(user.getDisplayName()) && !loadedPostsID.contains(post.getId())) {
-                                loadedPostsID.add(post.getId());
-                                postModelArrayList.add(post);
-                                postsCount++;
-                            }
+            for (PostModel post : reversedPosts) {
+                if (postsCount <= 4) {
+                    if (post.getName() != null) {
+                        if (post.getName().equals(user.getDisplayName()) && !loadedPostsID.contains(post.getId())) {
+                            loadedPostsID.add(post.getId());
+                            postModelArrayList.add(post);
+                            postsCount++;
                         }
                     }
                 }
+            }
 
             Collections.reverse(postModelArrayList);
 
             ArrayList<String> loadedPostsID1 = new ArrayList<>();
             int totalLikes = 0;
-            for (PostModel post : HomeFragment.postModelArrayList) {
+            for (PostModel post : reversedPosts) {
                 if (post.getName() != null) {
                     if (post.getName().equals(user.getDisplayName()) && !loadedPostsID1.contains(post.getId())) {
                         loadedPostsID1.add(post.getId());

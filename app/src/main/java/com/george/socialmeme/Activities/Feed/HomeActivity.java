@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,7 +85,7 @@ public class HomeActivity extends AppCompatActivity {
     public static Fragment savedHomeFragmentInstance;
     public static int lastHomePosition = -1;
     public static ExtendedFloatingActionButton goUp;
-    public static ArrayList<PostModel> postListToRestore;
+    public static ArrayList<PostModel> postListToRestore, allPostsSaved;
 
     public static boolean isInstagramInstalled(PackageManager packageManager) {
         try {
@@ -319,17 +318,18 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        if(ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.POST_NOTIFICATIONS)
+        allPostsSaved = new ArrayList<>();
+
+        if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_MEDIA_VIDEO)
                         != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_MEDIA_AUDIO)
-                        != PackageManager.PERMISSION_GRANTED)
-        {
+                        != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                ActivityCompat.requestPermissions(HomeActivity.this, new String[] { Manifest.permission.POST_NOTIFICATIONS,
-                        Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO,
+                ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.POST_NOTIFICATIONS,
+                                Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                         201);
             }
@@ -454,6 +454,10 @@ public class HomeActivity extends AppCompatActivity {
                 && saverHelper.getSaverValue("theme_mode", "none").equals("none")) {
             updateNightModeState(true, HomeActivity.this);
             saverHelper.setSaverValue("theme_mode", "System theme");
+            // restart activity in order the theme to be applied
+            finish();
+            startActivity(new Intent(HomeActivity.this, SplashScreenActivity.class));
+
         }
 
     }
