@@ -123,13 +123,13 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, username));
 
-        if (!HomeActivity.singedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.signedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         } else {
             followBtnView.setVisibility(View.GONE);
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             saveBtn.setVisibility(View.GONE);
         }
 
@@ -196,7 +196,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             openProfileView.setEnabled(false);
         }
 

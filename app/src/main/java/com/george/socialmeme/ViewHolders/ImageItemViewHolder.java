@@ -357,12 +357,12 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, username, commentsCount, context, postID));
         shareBtn.setOnClickListener(view -> showShareOptions());
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             followBtnView.setVisibility(View.GONE);
             openUserProfileView.setEnabled(false);
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             saveBtn.setVisibility(View.GONE);
         }
 

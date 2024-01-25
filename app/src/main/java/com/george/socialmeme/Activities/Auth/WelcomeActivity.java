@@ -16,7 +16,7 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        HomeActivity.singedInAnonymously = false;
+        HomeActivity.signedInAnonymously = false;
         finish();
         CustomIntent.customType(WelcomeActivity.this, "right-to-left");
     }
@@ -30,7 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
         Button login_anonymously = findViewById(R.id.button3);
 
         login_anonymously.setOnClickListener(view -> {
-            HomeActivity.singedInAnonymously = true;
+            HomeActivity.signedInAnonymously = true;
             startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
             CustomIntent.customType(WelcomeActivity.this, "fadein-to-fadeout");
         });

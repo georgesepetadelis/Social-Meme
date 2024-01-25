@@ -93,7 +93,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, usernameTV, commentsCounter, context, postID));
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, usernameTV));
 
-        if (!HomeActivity.singedInAnonymously && !usernameTV.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.signedInAnonymously && !usernameTV.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         } else {
             followBtnView.setVisibility(View.GONE);
@@ -126,7 +126,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             saveBtn.setVisibility(View.GONE);
         }
 

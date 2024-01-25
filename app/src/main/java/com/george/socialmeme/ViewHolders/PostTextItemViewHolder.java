@@ -107,13 +107,13 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, username));
         shareBtn.setOnClickListener(v -> showShareOptions());
 
-        if (!HomeActivity.singedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.signedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         } else {
             followBtnView.setVisibility(View.GONE);
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             saveBtn.setVisibility(View.GONE);
         }
 
@@ -185,7 +185,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             openProfileView.setEnabled(false);
         }
 

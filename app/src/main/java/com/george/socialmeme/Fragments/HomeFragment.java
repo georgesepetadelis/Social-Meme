@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment {
 
     void appShowCase() {
 
-        if (isAdded() && !HomeActivity.singedInAnonymously) {
+        if (isAdded() && !HomeActivity.signedInAnonymously) {
             SharedPreferences sharedPref = getContext().getSharedPreferences("app_showcase", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -572,7 +572,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        if (!HomeActivity.singedInAnonymously) {
+                        if (!HomeActivity.signedInAnonymously) {
                             if (!snapshot.child("users").child(user.getUid()).child("fcm_token").exists()) {
                                 FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
@@ -586,7 +586,7 @@ public class HomeFragment extends Fragment {
 
                             if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
 
-                                if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                if (!HomeActivity.signedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                     HomeActivity.userHasPosts = true;
                                 }
 
@@ -598,7 +598,7 @@ public class HomeFragment extends Fragment {
                                     model.setCommentsCount("0");
                                 }
 
-                                if (!HomeActivity.singedInAnonymously && user.getUid() != null) {
+                                if (!HomeActivity.signedInAnonymously && user.getUid() != null) {
                                     // Show post in recycler adapter only if the user is not blocked
                                     if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                             .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
@@ -704,7 +704,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         allPostsList = new ArrayList<>();
         allPostsList.addAll(postModelArrayList);
-        if (!HomeActivity.singedInAnonymously && HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
+        if (!HomeActivity.signedInAnonymously && HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
             if (postListToRestore.size() - lastHomePosition <= 2) {
                 recyclerView.scrollToPosition(postListToRestore.size());
             } else {
@@ -722,7 +722,7 @@ public class HomeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        if (layoutManager != null && !HomeActivity.singedInAnonymously) {
+        if (layoutManager != null && !HomeActivity.signedInAnonymously) {
             HomeActivity.lastHomePosition = layoutManager.findFirstCompletelyVisibleItemPosition() + 1;
             postListToRestore = randomArrayList;
         }
@@ -734,7 +734,7 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             // Disable bottom nav options on anonymous mode
             HomeActivity.bottomNavBar.setItemEnabled(R.id.new_post_fragment, false);
             HomeActivity.bottomNavBar.setItemEnabled(R.id.my_profile_fragment, false);
@@ -772,7 +772,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        if (!HomeActivity.singedInAnonymously) {
+        if (!HomeActivity.signedInAnonymously) {
 
             usernameLoadingScreen.setText(user.getDisplayName());
             if (user.getPhotoUrl() != null) {
@@ -820,7 +820,7 @@ public class HomeFragment extends Fragment {
 
         // Refresh posts
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (!HomeActivity.singedInAnonymously) {
+            if (!HomeActivity.signedInAnonymously) {
                 swipeRefreshLayout.setRefreshing(true);
                 getAllPostsFromDB(true, view, swipeRefreshLayout);
                 swipeRefreshLayout.setRefreshing(false);

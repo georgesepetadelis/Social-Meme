@@ -569,7 +569,7 @@ public class NewPostFragment extends Fragment {
             uploadIncomingFile();
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             new AlertDialog.Builder(getContext())
                     .setTitle("Sign in required")
                     .setMessage("You need to login to upload memes!")
@@ -580,7 +580,7 @@ public class NewPostFragment extends Fragment {
                     })
                     .setNegativeButton("Later", (dialog, which) -> {
                         getActivity().finish();
-                        HomeActivity.singedInAnonymously = true;
+                        HomeActivity.signedInAnonymously = true;
                         startActivity(new Intent(getActivity(), HomeActivity.class));
                         CustomIntent.customType(getActivity(), "fadein-to-fadeout");
                         dialog.dismiss();
