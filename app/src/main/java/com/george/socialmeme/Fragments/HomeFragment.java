@@ -642,15 +642,27 @@ public class HomeFragment extends Fragment {
                                 if (appVersionCode < latestAppVersion) {
 
                                     if (getActivity() != null) {
-                                        new AlertDialog.Builder(getActivity())
-                                                .setTitle("Update required.")
-                                                .setCancelable(false)
-                                                .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                                .setPositiveButton("Update", (dialogInterface, i) -> {
-                                                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                                    startActivity(intent);
-                                                }).show();
+                                            new AlertDialog.Builder(getActivity())
+                                                    .setTitle("Update required.")
+                                                    .setCancelable(false)
+                                                    .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                    .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        startActivity(intent);
+                                                    }).show();
+                                        /*else {
+                                                new AlertDialog.Builder(getActivity())
+                                                        .setTitle("Update required.")
+                                                        .setCancelable(false)
+                                                        .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                        .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                            Uri uri = Uri.parse("https://github.com/georgesepetadelis/Social-Meme");
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                            startActivity(intent);
+                                                        }).show();
+                                        }*/
+
                                     }
 
                                 } else {
