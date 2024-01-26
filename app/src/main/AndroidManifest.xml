@@ -29,10 +29,11 @@
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:icon="@drawable/sm_logo_winter"
+        android:icon="@mipmap/ic_launcher_winter"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/app_logo"
+        android:roundIcon="@mipmap/ic_launcher_winter"
+
         android:supportsRtl="true"
         android:theme="@style/Theme.SocialMeme"
         tools:ignore="DataExtractionRules"
@@ -103,10 +104,6 @@
         <activity
             android:name=".Activities.Account.AccountSettingsActivity"
             android:exported="false" />
-
-        <activity android:name=".Activities.Account.AppearanceSettingsActivity"
-            android:exported="false" />
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9627755439548346~7996414717" />
