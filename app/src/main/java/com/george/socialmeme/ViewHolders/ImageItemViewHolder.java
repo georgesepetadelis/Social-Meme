@@ -370,6 +370,9 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             saveBtn.setEnabled(false);
             saveBtn.setAlpha(0.5f);
             savePictureToDeviceStorage();
+            saveBtn.setEnabled(true);
+            saveBtn.setAlpha(1.0f);
+
         });
 
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, username));
@@ -582,7 +585,8 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         postImg.buildDrawingCache();
         Bitmap bmp = postImg.getDrawingCache();
         File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File file = new File(storageLoc, postID + ".jpg");
+
+        File file = new File(storageLoc + "/Social Meme", postID + ".jpg");
 
         try {
             FileOutputStream fos = new FileOutputStream(file);

@@ -48,6 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -137,6 +138,8 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
             saveBtn.setEnabled(false);
             saveBtn.setAlpha(0.5f);
             saveVideoToDeviceStorage();
+            saveBtn.setEnabled(true);
+            saveBtn.setAlpha(1.0f);
         });
 
         // Check if logged-in user follows post author
@@ -326,7 +329,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
         request.setTitle("Downloading " + username.getText().toString() + " post");
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, postID + ".mp4");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Social Meme" + File.separator + postID + ".mp4");
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
         Toast.makeText(context, "Download started...", Toast.LENGTH_SHORT).show();
