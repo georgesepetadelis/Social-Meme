@@ -2,13 +2,13 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.0.5   | :white_check_mark: |
-| < 2.0   | :x:                |
+| 2.5.x   | :white_check_mark: |
+| < 2.4.x  | :x:               |
+
+Social Meme may force you to update to the latest version by options such as sideloading the application or by Google Play Store
 
 ## Reporting a Vulnerability
 
