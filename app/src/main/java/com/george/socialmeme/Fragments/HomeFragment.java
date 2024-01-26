@@ -39,6 +39,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.Activities.Feed.NotificationsActivity;
 import com.george.socialmeme.Activities.Feed.PostActivity;
@@ -743,6 +744,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        Context context = this.getContext();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -758,6 +760,10 @@ public class HomeFragment extends Fragment {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null && !HomeActivity.signedInAnonymously){
+            Toast.makeText(context, "You have been banned from Social Meme. ", Toast.LENGTH_LONG).show();
+        }
 
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
@@ -786,7 +792,13 @@ public class HomeFragment extends Fragment {
 
         if (!HomeActivity.signedInAnonymously) {
 
-            usernameLoadingScreen.setText(user.getDisplayName());
+            if (user.getDisplayName() == null && !HomeActivity.signedInAnonymously){
+                Toast.makeText(context, "You have been banned from Social Meme. ", Toast.LENGTH_LONG).show();
+            }
+            else {
+                usernameLoadingScreen.setText(user.getDisplayName());
+            }
+
             if (user.getPhotoUrl() != null) {
                 Picasso.get().load(user.getPhotoUrl().toString()).into(view.findViewById(R.id.my_profile_image), new Callback() {
                     @Override

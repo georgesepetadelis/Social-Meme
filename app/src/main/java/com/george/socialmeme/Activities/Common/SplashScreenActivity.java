@@ -108,7 +108,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 .setTitle("It's panic time!")
                                 .setMessage("Your account is disabled for violating Terms Of Service!\n Please go and host a party for it, just remember to invite us!")
                                 .setPositiveButton("OK", (dialogInterface, i) -> {
-                                    auth.signOut();
                                     System.exit(0);
                                     finish();
                                 })
