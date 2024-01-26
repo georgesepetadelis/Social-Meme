@@ -761,9 +761,9 @@ public class HomeFragment extends Fragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        if (user == null && !HomeActivity.signedInAnonymously){
+        /*if (user == null && !HomeActivity.signedInAnonymously){
             Toast.makeText(context, "You have been banned from Social Meme. ", Toast.LENGTH_LONG).show();
-        }
+        }*/
 
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
@@ -793,7 +793,14 @@ public class HomeFragment extends Fragment {
         if (!HomeActivity.signedInAnonymously) {
 
             if (user.getDisplayName() == null && !HomeActivity.signedInAnonymously){
-                Toast.makeText(context, "You have been banned from Social Meme. ", Toast.LENGTH_LONG).show();
+                new AlertDialog.Builder(context)
+                        .setTitle("It's panic time!")
+                        .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
+                        .setPositiveButton("OK", (dialogInterface, i) -> {
+                            System.exit(0);
+                        })
+                        .show();
+
             }
             else {
                 usernameLoadingScreen.setText(user.getDisplayName());

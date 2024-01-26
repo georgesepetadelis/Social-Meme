@@ -87,10 +87,36 @@ public class SplashScreenActivity extends AppCompatActivity {
         TextView sm = findViewById(R.id.textView16);
         YoYo.with(Techniques.FadeIn).duration(1200).repeat(0).playOn(appLogo);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        // Check disabled status
+        try {
+            user.reload();
+        } catch (Exception e){
+            isUserDisabled = true;
+            new AlertDialog.Builder(SplashScreenActivity.this)
+                    .setTitle("It's panic time!")
+                    .setMessage("Your account is disabled for violating\nTerms Of Service!\nPlease go and host a party for it, just remember to invite us!")
+                    .setPositiveButton("OK", (dialogInterface, i) -> {
+                        System.exit(0);
+                        finish();
+                    })
+                    .show();
+        }
+
+        if (isUserDisabled){
+            new AlertDialog.Builder(SplashScreenActivity.this)
+                    .setTitle("It's panic time!")
+                    .setMessage("Your account is disabled for violating\nTerms Of Service!\nPlease go and host a party for it, just remember to invite us!")
+                    .setPositiveButton("OK", (dialogInterface, i) -> {
+                        auth.signOut();
+                        System.exit(0);
+                        finish();
+                    })
+                    .show();
+        }
         new Handler().postDelayed(() -> {
 
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            FirebaseUser user = auth.getCurrentUser();
 
             if (isInternetConnectionAvailable()) {
 
