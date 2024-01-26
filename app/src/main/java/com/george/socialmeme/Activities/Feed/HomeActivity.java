@@ -61,8 +61,8 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public static Activity activity;
-    public static boolean singedInAnonymously = false;
+    public Activity activity; // Non-static activity to avoid StaticFieldLeak
+    public static boolean signedInAnonymously = false;
     public static boolean showLoadingScreen;
     public static boolean appStarted;
     public static boolean watched_ad;
@@ -225,7 +225,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if (!singedInAnonymously && user != null) {
+        if (!signedInAnonymously && user != null) {
             user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
                     .setTitle("Error")
                     .setMessage(e.getMessage())
@@ -397,7 +397,7 @@ public class HomeActivity extends AppCompatActivity {
         Intent updateServiceIntent = new Intent(this, UpdateService.class);
         startService(updateServiceIntent);
 
-        if (!singedInAnonymously) {
+        if (!signedInAnonymously) {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             FirebaseUser user = auth.getCurrentUser();
 
@@ -408,7 +408,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if (singedInAnonymously) {
+        if (signedInAnonymously) {
             String loginKey = ref.push().getKey();
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
