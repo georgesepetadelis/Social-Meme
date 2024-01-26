@@ -3,6 +3,7 @@ package com.george.socialmeme.Activities.Common;
 import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,7 +33,7 @@ import maes.tech.intentanim.CustomIntent;
 public class SplashScreenActivity extends AppCompatActivity {
 
     public boolean startedURL = false;
-
+    public boolean isUserDisabled = false;
     public boolean isInternetConnectionAvailable() {
         ConnectivityManager cm = (ConnectivityManager) SplashScreenActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -47,6 +48,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             editor.apply();
         }
     }
+
 
     @Override
     protected void onResume() {
@@ -97,6 +99,33 @@ public class SplashScreenActivity extends AppCompatActivity {
                     CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                 } else {
 
+                    // Check disabled status
+                    try {
+                        user.reload();
+                    } catch (Exception e){
+                        isUserDisabled = true;
+                        new AlertDialog.Builder(SplashScreenActivity.this)
+                                .setTitle("It's panic time!")
+                                .setMessage("Your account is disabled for violating Terms Of Service!\n Please go and host a party for it, just remember to invite us!")
+                                .setPositiveButton("OK", (dialogInterface, i) -> {
+                                    auth.signOut();
+                                    System.exit(0);
+                                    finish();
+                                })
+                                .show();
+                    }
+
+                    if (isUserDisabled){
+                        new AlertDialog.Builder(SplashScreenActivity.this)
+                                .setTitle("It's panic time!")
+                                .setMessage("Your account is disabled for violating Terms Of Service!\n Please go and host a party for it, just remember to invite us!")
+                                .setPositiveButton("OK", (dialogInterface, i) -> {
+                                    auth.signOut();
+                                    System.exit(0);
+                                    finish();
+                                })
+                                .show();
+                    }
                     if (user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
                         startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                         CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
