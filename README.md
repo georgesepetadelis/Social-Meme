@@ -1,6 +1,11 @@
+<p align="center">
+  <img src="app/src/main/res/drawable/app_logo.png" width="128"/>
+</p>
 
-# Social Meme
-Unleash your humor, connect through laughter!
+<h1><p align="center">
+  Social Meme
+</p></h1>
+<p align="center">Unleash your humor, connect through laughter!</p>
 
 ## Enhanced Features for Memelovers
 
