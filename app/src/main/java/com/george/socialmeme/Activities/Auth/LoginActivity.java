@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
             finish();
-            HomeActivity.singedInAnonymously = false;
+            HomeActivity.signedInAnonymously = false;
             HomeActivity.showLoadingScreen = true;
         }).addOnFailureListener(e -> {
             progressDialog.hide();
@@ -250,7 +250,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             CustomIntent.customType(LoginActivity.this, "left-to-right");
             HomeActivity.showLoadingScreen = true;
-            HomeActivity.singedInAnonymously = false;
+            HomeActivity.signedInAnonymously = false;
 
         } else {
             SmartDialogBox.showErrorDialog(LoginActivity.this, errorMsg.getLocalizedMessage(), "OK");
