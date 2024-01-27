@@ -445,7 +445,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
 
-                            if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                            if (!HomeActivity.signedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                 HomeActivity.userHasPosts = true;
                             }
 
@@ -457,7 +457,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 postModel.setCommentsCount("0");
                             }
 
-                            if (!HomeActivity.singedInAnonymously) {
+                            if (!HomeActivity.signedInAnonymously) {
                                 // Show post in recycler adapter only if the user is not blocked
                                 if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {

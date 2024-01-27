@@ -107,24 +107,29 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, username));
         shareBtn.setOnClickListener(v -> showShareOptions());
 
-        if (!HomeActivity.singedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.signedInAnonymously && !username.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         } else {
             followBtnView.setVisibility(View.GONE);
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             saveBtn.setVisibility(View.GONE);
         }
 
         saveBtn.setOnClickListener(v -> {
-            saveBtn.setEnabled(false);
-            saveBtn.setAlpha(0.5f);
+            saveBtn.setVisibility(View.GONE);
             try {
                 saveTextAsImageToDevice();
+                saveBtn.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 Toast.makeText(activity, "Error saving file", Toast.LENGTH_SHORT).show();
             }
+            saveBtn.setVisibility(View.VISIBLE);
+            shareBtn.setVisibility(View.VISIBLE); // Workaround for the share button being disappeared after the download button is triggered
+            saveBtn.setAlpha(1.0f);
+            saveBtn.setEnabled(true);
+
         });
 
         // Check if logged-in user follows post author
@@ -185,7 +190,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             openProfileView.setEnabled(false);
         }
 
@@ -373,9 +378,9 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         changePostInfoVisibilityForBitmap(View.INVISIBLE);
         Bitmap bmp = createBitmapFromView(container);
         File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File file = new File(storageLoc, postID + ".png");
+        File file = new File(storageLoc + "/Social Meme", postID + ".jpg");
         FileOutputStream fos = new FileOutputStream(file);
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
         fos.close();
         scanFile(context, Uri.fromFile(file));
         Toast.makeText(context, "Meme saved to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();

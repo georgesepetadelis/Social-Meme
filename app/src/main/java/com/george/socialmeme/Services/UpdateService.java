@@ -21,6 +21,7 @@ public class UpdateService extends Service {
     private DatabaseReference mDatabaseReference;
     private Handler handler;
 
+    public HomeActivity homeActivity;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -45,7 +46,8 @@ public class UpdateService extends Service {
                             int latestVersionOnDb = Integer.parseInt(value);
 
                             if (appVersionCode < latestVersionOnDb) {
-                                HomeActivity.showUpdateDialog();
+
+                                homeActivity.showUpdateDialog();
                                 updateFound[0] = true;
                                 stopSelf(); // sometimes not stopping so we're using updateFound
                             }

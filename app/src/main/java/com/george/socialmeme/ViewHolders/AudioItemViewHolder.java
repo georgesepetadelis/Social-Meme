@@ -48,6 +48,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.hugomatilla.audioplayerview.AudioPlayerView;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -93,7 +94,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, usernameTV, commentsCounter, context, postID));
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, usernameTV));
 
-        if (!HomeActivity.singedInAnonymously && !usernameTV.getText().toString().equals(user.getDisplayName())) {
+        if (!HomeActivity.signedInAnonymously && !usernameTV.getText().toString().equals(user.getDisplayName())) {
             followBtnView.setVisibility(View.VISIBLE);
         } else {
             followBtnView.setVisibility(View.GONE);
@@ -126,7 +127,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             saveBtn.setVisibility(View.GONE);
         }
 
@@ -134,6 +135,8 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
             saveBtn.setEnabled(false);
             saveBtn.setAlpha(0.5f);
             saveAudioFileToDeviceStorage();
+            saveBtn.setEnabled(true);
+            saveBtn.setAlpha(1.0f);
         });
 
         playBtn.setOnClickListener(view -> {
@@ -325,7 +328,8 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, postID + ".mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Social Meme" + File.separator + postID + ".mp3");
+
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
 

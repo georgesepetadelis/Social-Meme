@@ -390,7 +390,7 @@ public class MyProfileFragment extends Fragment {
 
                     if (postSnapshot.child("name").getValue(String.class) != null /*&& postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())*/ && !postSnapshot.child("reported").exists()) {
 
-                        if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                        if (!HomeActivity.signedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                             HomeActivity.userHasPosts = true;
                         }
 
@@ -402,7 +402,7 @@ public class MyProfileFragment extends Fragment {
                             postModel.setCommentsCount("0");
                         }
 
-                        if (!HomeActivity.singedInAnonymously) {
+                        if (!HomeActivity.signedInAnonymously) {
                             if (postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                 postModelArrayList.add(postModel);
                             }
@@ -463,7 +463,7 @@ public class MyProfileFragment extends Fragment {
         String email = "none";
         String finalEmail;
 
-        if (!HomeActivity.singedInAnonymously) {
+        if (!HomeActivity.signedInAnonymously) {
             email = user.getEmail();
         }
 
@@ -628,10 +628,10 @@ public class MyProfileFragment extends Fragment {
 
         }
 
-        if (!HomeActivity.singedInAnonymously) username.setText(user.getDisplayName());
+        if (!HomeActivity.signedInAnonymously) username.setText(user.getDisplayName());
         else {
             getActivity().finish();
-            HomeActivity.singedInAnonymously = true;
+            HomeActivity.signedInAnonymously = true;
             startActivity(new Intent(getActivity(), HomeActivity.class));
             CustomIntent.customType(getActivity(), "fadein-to-fadeout");
         }
@@ -713,7 +713,7 @@ public class MyProfileFragment extends Fragment {
             someActivityResultLauncher.launch(intent);
         });
 
-        if (!HomeActivity.singedInAnonymously && HomeFragment.postModelArrayList != null) {
+        if (!HomeActivity.signedInAnonymously && HomeFragment.postModelArrayList != null) {
 
             ArrayList<PostModel> reversedPosts = HomeActivity.allPostsSaved;
             if (reversedPosts == null || reversedPosts.isEmpty()) {

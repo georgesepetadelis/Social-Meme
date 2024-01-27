@@ -39,6 +39,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.Activities.Feed.NotificationsActivity;
 import com.george.socialmeme.Activities.Feed.PostActivity;
@@ -106,7 +107,7 @@ public class HomeFragment extends Fragment {
 
     void appShowCase() {
 
-        if (isAdded() && !HomeActivity.singedInAnonymously) {
+        if (isAdded() && !HomeActivity.signedInAnonymously) {
             SharedPreferences sharedPref = getContext().getSharedPreferences("app_showcase", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -572,7 +573,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        if (!HomeActivity.singedInAnonymously) {
+                        if (!HomeActivity.signedInAnonymously) {
                             if (!snapshot.child("users").child(user.getUid()).child("fcm_token").exists()) {
                                 FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
@@ -586,7 +587,7 @@ public class HomeFragment extends Fragment {
 
                             if (postSnapshot.child("name").getValue(String.class) != null && !postSnapshot.child("reported").exists()) {
 
-                                if (!HomeActivity.singedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
+                                if (!HomeActivity.signedInAnonymously && postSnapshot.child("name").getValue(String.class).equals(user.getDisplayName())) {
                                     HomeActivity.userHasPosts = true;
                                 }
 
@@ -598,7 +599,7 @@ public class HomeFragment extends Fragment {
                                     model.setCommentsCount("0");
                                 }
 
-                                if (!HomeActivity.singedInAnonymously && user.getUid() != null) {
+                                if (!HomeActivity.signedInAnonymously && user.getUid() != null) {
                                     // Show post in recycler adapter only if the user is not blocked
                                     if (!snapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                             .child("blockedUsers").child(postSnapshot.child("name").getValue(String.class)).exists()) {
@@ -642,15 +643,27 @@ public class HomeFragment extends Fragment {
                                 if (appVersionCode < latestAppVersion) {
 
                                     if (getActivity() != null) {
-                                        new AlertDialog.Builder(getActivity())
-                                                .setTitle("Update required.")
-                                                .setCancelable(false)
-                                                .setMessage("For security reasons having the latest version is required to use Social Meme")
-                                                .setPositiveButton("Update", (dialogInterface, i) -> {
-                                                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                                    startActivity(intent);
-                                                }).show();
+                                            new AlertDialog.Builder(getActivity())
+                                                    .setTitle("Update required.")
+                                                    .setCancelable(false)
+                                                    .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                    .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        startActivity(intent);
+                                                    }).show();
+                                        /*else {
+                                                new AlertDialog.Builder(getActivity())
+                                                        .setTitle("Update required.")
+                                                        .setCancelable(false)
+                                                        .setMessage("For security reasons having the latest version is required to use Social Meme")
+                                                        .setPositiveButton("Update", (dialogInterface, i) -> {
+                                                            Uri uri = Uri.parse("https://github.com/georgesepetadelis/Social-Meme");
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                            startActivity(intent);
+                                                        }).show();
+                                        }*/
+
                                     }
 
                                 } else {
@@ -704,7 +717,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         allPostsList = new ArrayList<>();
         allPostsList.addAll(postModelArrayList);
-        if (!HomeActivity.singedInAnonymously && HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
+        if (!HomeActivity.signedInAnonymously && HomeActivity.lastHomePosition != -1 && postListToRestore != null) {
             if (postListToRestore.size() - lastHomePosition <= 2) {
                 recyclerView.scrollToPosition(postListToRestore.size());
             } else {
@@ -722,7 +735,7 @@ public class HomeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        if (layoutManager != null && !HomeActivity.singedInAnonymously) {
+        if (layoutManager != null && !HomeActivity.signedInAnonymously) {
             HomeActivity.lastHomePosition = layoutManager.findFirstCompletelyVisibleItemPosition() + 1;
             postListToRestore = randomArrayList;
         }
@@ -731,10 +744,11 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        Context context = this.getContext();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        if (HomeActivity.singedInAnonymously) {
+        if (HomeActivity.signedInAnonymously) {
             // Disable bottom nav options on anonymous mode
             HomeActivity.bottomNavBar.setItemEnabled(R.id.new_post_fragment, false);
             HomeActivity.bottomNavBar.setItemEnabled(R.id.my_profile_fragment, false);
@@ -746,6 +760,10 @@ public class HomeFragment extends Fragment {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
+
+        /*if (user == null && !HomeActivity.signedInAnonymously){
+            Toast.makeText(context, "You have been banned from Social Meme. ", Toast.LENGTH_LONG).show();
+        }*/
 
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.root_view);
         TextView usernameLoadingScreen = view.findViewById(R.id.textView40);
@@ -772,9 +790,28 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        if (!HomeActivity.singedInAnonymously) {
+        if (!HomeActivity.signedInAnonymously) {
 
-            usernameLoadingScreen.setText(user.getDisplayName());
+            if (user.getDisplayName() == null && !HomeActivity.signedInAnonymously){
+                AlertDialog alertDialog = new AlertDialog.Builder(context)
+                        .setTitle("It's panic time!")
+                        .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", (dialogInterface, i) -> {
+                            System.exit(0);
+
+                        })
+                        .show();
+                // Set a longer duration for the dialog to stay open (10 seconds)
+                new Handler().postDelayed(() -> {
+                    alertDialog.dismiss(); // Dismiss the dialog after the specified time
+                }, 10000); // 10000 milliseconds = 10 seconds
+
+            }
+            else {
+                usernameLoadingScreen.setText(user.getDisplayName());
+            }
+
             if (user.getPhotoUrl() != null) {
                 Picasso.get().load(user.getPhotoUrl().toString()).into(view.findViewById(R.id.my_profile_image), new Callback() {
                     @Override
@@ -820,7 +857,7 @@ public class HomeFragment extends Fragment {
 
         // Refresh posts
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (!HomeActivity.singedInAnonymously) {
+            if (!HomeActivity.signedInAnonymously) {
                 swipeRefreshLayout.setRefreshing(true);
                 getAllPostsFromDB(true, view, swipeRefreshLayout);
                 swipeRefreshLayout.setRefreshing(false);

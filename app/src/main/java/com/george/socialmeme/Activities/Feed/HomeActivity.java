@@ -33,6 +33,7 @@ import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Fragments.MyProfileFragment;
 import com.george.socialmeme.Fragments.NewPostFragment;
+import com.george.socialmeme.Helpers.AppHelper;
 import com.george.socialmeme.Helpers.SaverHelper;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.Models.UserModel;
@@ -61,8 +62,8 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public static Activity activity;
-    public static boolean singedInAnonymously = false;
+    public Activity activity; // Non-static activity to avoid StaticFieldLeak
+    public static boolean signedInAnonymously = false;
     public static boolean showLoadingScreen;
     public static boolean appStarted;
     public static boolean watched_ad;
@@ -225,7 +226,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if (!singedInAnonymously && user != null) {
+        if (!signedInAnonymously && user != null) {
             user.reload().addOnFailureListener(e -> new AlertDialog.Builder(HomeActivity.this)
                     .setTitle("Error")
                     .setMessage(e.getMessage())
@@ -250,20 +251,36 @@ public class HomeActivity extends AppCompatActivity {
 
     };
 
-    public static void showUpdateDialog() {
+    public void showUpdateDialog() {
         if (filtersBtn.getContext() != null) {
 
-            // Display update dialog from update service
-            new android.app.AlertDialog.Builder(filtersBtn.getContext())
-                    .setTitle("A new update just released!")
-                    .setCancelable(false)
-                    .setMessage("For security reasons having the latest version is required to use Social Meme")
-                    .setPositiveButton("Update", (dialogInterface, i) -> {
-                        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        filtersBtn.getContext().startActivity(intent);
-                    }).show();
-            Toast.makeText(filtersBtn.getContext(), "New update available", Toast.LENGTH_SHORT).show();
+
+            if (AppHelper.isAppInstalledFromPlayStore(this)){ // Check whether app is installed from Google Play - if not, the update button will redirect to github releases
+                // Display update dialog from update service
+                new android.app.AlertDialog.Builder(filtersBtn.getContext())
+                        .setTitle("A new update just released!")
+                        .setCancelable(false)
+                        .setMessage("For security reasons having the latest version is required to use Social Meme")
+                        .setPositiveButton("Update", (dialogInterface, i) -> {
+                            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            filtersBtn.getContext().startActivity(intent);
+                        }).show();
+                Toast.makeText(filtersBtn.getContext(), "New update available!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                new android.app.AlertDialog.Builder(filtersBtn.getContext())
+                        .setTitle("A new update just released!")
+                        .setCancelable(false)
+                        .setMessage("For security reasons having the latest version is required to use Social Meme")
+                        .setPositiveButton("Update", (dialogInterface, i) -> {
+                            Uri uri = Uri.parse("https://github.com/georgesepetadelis/Social-Meme/");
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            filtersBtn.getContext().startActivity(intent);
+                        }).show();
+                Toast.makeText(filtersBtn.getContext(), "New update available!", Toast.LENGTH_SHORT).show();
+            }
+
 
             // Kill update service after displaying update dialog
             Intent updateServiceIntent = new Intent(filtersBtn.getContext(), UpdateService.class);
@@ -397,7 +414,7 @@ public class HomeActivity extends AppCompatActivity {
         Intent updateServiceIntent = new Intent(this, UpdateService.class);
         startService(updateServiceIntent);
 
-        if (!singedInAnonymously) {
+        if (!signedInAnonymously) {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             FirebaseUser user = auth.getCurrentUser();
 
@@ -408,7 +425,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if (singedInAnonymously) {
+        if (signedInAnonymously) {
             String loginKey = ref.push().getKey();
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
