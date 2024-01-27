@@ -90,30 +90,42 @@ public class SplashScreenActivity extends AppCompatActivity {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         // Check disabled status
-        try {
-            user.reload();
-        } catch (Exception e){
-            isUserDisabled = true;
-            new AlertDialog.Builder(SplashScreenActivity.this)
-                    .setTitle("It's panic time!")
-                    .setMessage("Your account is disabled for violating\nTerms Of Service!\nPlease go and host a party for it, just remember to invite us!")
-                    .setPositiveButton("OK", (dialogInterface, i) -> {
-                        System.exit(0);
-                        finish();
-                    })
-                    .show();
+
+        if (user != null){
+            user.reload().addOnFailureListener(e -> {
+                if (e.getMessage().contains("disabled")){
+                    isUserDisabled = true;
+                    AlertDialog alertDialog = new AlertDialog.Builder(this)
+                            .setTitle("It's panic time!")
+                            .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialogInterface, i) -> {
+                                System.exit(0);
+
+                            })
+                            .show();
+                    // Set a longer duration for the dialog to stay open (10 seconds)
+                    new Handler().postDelayed(() -> {
+                        alertDialog.dismiss(); // Dismiss the dialog after the specified time
+                    }, 10000); // 10000 milliseconds = 10 seconds
+                }
+            });
         }
 
         if (isUserDisabled){
-            new AlertDialog.Builder(SplashScreenActivity.this)
+            AlertDialog alertDialog = new AlertDialog.Builder(this)
                     .setTitle("It's panic time!")
-                    .setMessage("Your account is disabled for violating\nTerms Of Service!\nPlease go and host a party for it, just remember to invite us!")
+                    .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
+                    .setCancelable(false)
                     .setPositiveButton("OK", (dialogInterface, i) -> {
-                        auth.signOut();
                         System.exit(0);
-                        finish();
+
                     })
                     .show();
+            // Set a longer duration for the dialog to stay open (10 seconds)
+            new Handler().postDelayed(() -> {
+                alertDialog.dismiss(); // Dismiss the dialog after the specified time
+            }, 10000); // 10000 milliseconds = 10 seconds
         }
         new Handler().postDelayed(() -> {
 
@@ -125,32 +137,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                     CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
                 } else {
 
-                    // Check disabled status
-                    try {
-                        user.reload();
-                    } catch (Exception e){
-                        isUserDisabled = true;
-                        new AlertDialog.Builder(SplashScreenActivity.this)
-                                .setTitle("It's panic time!")
-                                .setMessage("Your account is disabled for violating Terms Of Service!\n Please go and host a party for it, just remember to invite us!")
-                                .setPositiveButton("OK", (dialogInterface, i) -> {
-                                    System.exit(0);
-                                    finish();
-                                })
-                                .show();
-                    }
-
-                    if (isUserDisabled){
-                        new AlertDialog.Builder(SplashScreenActivity.this)
-                                .setTitle("It's panic time!")
-                                .setMessage("Your account is disabled for violating Terms Of Service!\n Please go and host a party for it, just remember to invite us!")
-                                .setPositiveButton("OK", (dialogInterface, i) -> {
-                                    auth.signOut();
-                                    System.exit(0);
-                                    finish();
-                                })
-                                .show();
-                    }
                     if (user.getDisplayName() == null || user.getDisplayName().isEmpty()) {
                         startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                         CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
