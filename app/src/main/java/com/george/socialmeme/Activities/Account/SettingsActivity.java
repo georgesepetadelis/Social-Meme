@@ -4,12 +4,18 @@ import static com.george.socialmeme.Helpers.AppHelper.isNightModeEnabled;
 import static com.george.socialmeme.Helpers.AppHelper.updateNightModeState;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,14 +29,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 
 import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.Activities.Legal.PrivacyPolicyActivity;
-import com.george.socialmeme.Activities.Common.SplashScreenActivity;
 import com.george.socialmeme.Activities.Legal.TermsActivity;
 import com.george.socialmeme.Activities.Auth.WelcomeActivity;
+import com.george.socialmeme.Activities.Profile.UserProfileActivity;
 import com.george.socialmeme.BuildConfig;
 import com.george.socialmeme.Helpers.AppHelper;
 import com.george.socialmeme.Helpers.SaverHelper;
@@ -50,6 +55,7 @@ import maes.tech.intentanim.CustomIntent;
 public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     boolean initSelection = true;
+    TextView madeBy, credit1;
 
     @Override
     public void onBackPressed() {
@@ -62,6 +68,57 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         Uri uri = Uri.parse(URL);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
+    }
+
+    void AddNameColors() {
+        SpannableStringBuilder spannable1 = new SpannableStringBuilder("Made by @George Sepetadelis");
+        spannable1.setSpan(
+                new ForegroundColorSpan(Color.BLUE),
+                9, 27,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        );
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                openURL("https://sepetadelhs.rf.gd");
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+        };
+
+        spannable1.setSpan(clickableSpan, 8, 27, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableStringBuilder spannable2 = new SpannableStringBuilder("Thanks @ChocolateAdventurouz for cotributing!");
+        spannable2.setSpan(
+                new ForegroundColorSpan(Color.BLUE),
+                8, 28,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        );
+
+        ClickableSpan clickableSpan2 = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                openURL("https://chocolateadventurouz.rf.gd");
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+        };
+        spannable2.setSpan(clickableSpan2, 7, 28, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        madeBy.setText(spannable1);
+        credit1.setText(spannable2);
+
+        madeBy.setMovementMethod(LinkMovementMethod.getInstance());
+        credit1.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
@@ -89,9 +146,9 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
 
         ImageButton backBtn = findViewById(R.id.imageButton);
         TextView username = findViewById(R.id.textView49);
-        TextView website_tv = findViewById(R.id.textView3);
+        TextView website_tv = findViewById(R.id.made_by);
         TextView version = findViewById(R.id.textView33);
-        version.setText("App version: " + BuildConfig.VERSION_NAME);
+        version.setText("Codename: " + BuildConfig.VERSION_NAME);
         CardView account_settings = findViewById(R.id.cardView2);
         Button logout = findViewById(R.id.button);
         CardView bugReport = findViewById(R.id.cardView3);
@@ -101,6 +158,11 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         CardView terms = findViewById(R.id.cardView11);
         ImageButton instagram = findViewById(R.id.instagram_button);
         ImageButton github = findViewById(R.id.github_button);
+
+        madeBy = findViewById(R.id.made_by);
+        credit1 = findViewById(R.id.credits_1);
+
+        AddNameColors();
 
         SaverHelper themeSaverHelper = new SaverHelper(SettingsActivity.this, "theme_mode");
 
@@ -115,7 +177,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         themeModeSpinner.setSelection(themeModeAdapter.getPosition(
                 themeSaverHelper.getSaverValue("theme_mode", "Light")));
 
-        website_tv.setOnClickListener(view -> openURL("https://sepetadelhs.rf.gd"));
+        //website_tv.setOnClickListener(view -> openURL("https://sepetadelhs.rf.gd"));
         donateButton.setOnClickListener(view -> openURL("https://PayPal.me/GSepetadelis"));
         instagram.setOnClickListener(view -> openURL("https://www.instagram.com/sepetadelhsss/"));
         github.setOnClickListener(view -> openURL("https://github.com/georgesepetadelis/Social-Meme"));

@@ -111,13 +111,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
 
         if (isUserDisabled){
-            AlertDialog alertDialog = new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this)
                     .setTitle("It's panic time!")
                     .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
                     .setCancelable(false)
                     .setPositiveButton("OK", (dialogInterface, i) -> {
-                        System.exit(0);
-
+                        startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
                     })
                     .show();
         }
@@ -127,14 +126,19 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (isInternetConnectionAvailable()) {
 
                 if (isUserDisabled) {
-                    Toast.makeText(this, "Horray! You have been banned from Social Meme!", Toast.LENGTH_LONG);
+                    new AlertDialog.Builder(this)
+                            .setTitle("It's panic time!")
+                            .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialogInterface, i) -> {
+                                startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
+                            })
+                            .show();
                 } else {
-
-
                     initializeNightModeSharedPref();
                     HomeActivity.showLoadingScreen = true;
                     if (!isUserDisabled){
-                        Intent intent = new Intent(SplashScreenActivity.this, WelcomeActivity.class);
+                        Intent intent = new Intent(SplashScreenActivity.this, HomeActivity.class);
 
                         if (getIntent().getExtras() != null) {
                             Bundle extras = getIntent().getExtras();
