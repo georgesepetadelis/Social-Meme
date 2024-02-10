@@ -792,25 +792,7 @@ public class HomeFragment extends Fragment {
 
         if (!HomeActivity.signedInAnonymously) {
 
-            if (user.getDisplayName() == null && !HomeActivity.signedInAnonymously){
-                AlertDialog alertDialog = new AlertDialog.Builder(context)
-                        .setTitle("It's panic time!")
-                        .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", (dialogInterface, i) -> {
-                            System.exit(0);
-
-                        })
-                        .show();
-                // Set a longer duration for the dialog to stay open (10 seconds)
-                new Handler().postDelayed(() -> {
-                    alertDialog.dismiss(); // Dismiss the dialog after the specified time
-                }, 10000); // 10000 milliseconds = 10 seconds
-
-            }
-            else {
-                usernameLoadingScreen.setText(user.getDisplayName());
-            }
+            usernameLoadingScreen.setText(user.getDisplayName());
 
             if (user.getPhotoUrl() != null) {
                 Picasso.get().load(user.getPhotoUrl().toString()).into(view.findViewById(R.id.my_profile_image), new Callback() {
