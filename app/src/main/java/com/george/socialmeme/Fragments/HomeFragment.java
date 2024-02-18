@@ -790,7 +790,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        if (!HomeActivity.signedInAnonymously) {
+        if (!HomeActivity.signedInAnonymously && user != null) {
 
             usernameLoadingScreen.setText(user.getDisplayName());
 
