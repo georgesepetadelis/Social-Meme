@@ -17,7 +17,6 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,15 +33,102 @@ import maes.tech.intentanim.CustomIntent;
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
 
-    public boolean startedURL = false;
-    public boolean isUserDisabled = false;
-    public boolean isInternetConnectionAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) SplashScreenActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private boolean startedURL = false;
+    private boolean isUserDisabled = false;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (startedURL) {
+            startActivity(new Intent(this, SplashScreenActivity.class));
+            finish();
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initializeUI();
+        checkUserStatus();
+        delayedAction();
+    }
+
+    private void initializeUI() {
+        if (isNightModeEnabled(this)) {
+            applyNightMode();
+        } else {
+            updateStatusBarColor();
+        }
+
+        setContentView(R.layout.activity_splash);
+
+        TextView appLogo = findViewById(R.id.textView16);
+        TextView sm = findViewById(R.id.textView16);
+        YoYo.with(Techniques.FadeIn).duration(1200).repeat(0).playOn(appLogo);
+    }
+
+    private void applyNightMode() {
+        Resources.Theme theme = super.getTheme();
+        theme.applyStyle(R.style.AppTheme_Base_Night, true);
+        updateStatusBarColor();
+    }
+
+    private void updateStatusBarColor() {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.BLACK);
+    }
+
+    private void checkUserStatus() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            user.reload().addOnFailureListener(e -> {
+                if (e.getMessage().contains("disabled")) {
+                    showDisabledUserDialog();
+                }
+            });
+        }
+    }
+
+    private void showDisabledUserDialog() {
+        isUserDisabled = true;
+        new AlertDialog.Builder(this)
+                .setTitle("It's panic time!")
+                .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
+                .setCancelable(false)
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    startActivity(new Intent(this, WelcomeActivity.class));
+                })
+                .show();
+    }
+
+    private void delayedAction() {
+        new Handler().postDelayed(() -> {
+            if (isInternetConnectionAvailable()) {
+                handleInternetConnection();
+            } else {
+                startActivity(new Intent(this, NoInternetConnectionActivity.class));
+                CustomIntent.customType(this, "fadein-to-fadeout");
+            }
+        }, 2200);
+    }
+
+    private boolean isInternetConnectionAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-    void initializeNightModeSharedPref() {
+    private void handleInternetConnection() {
+        if (isUserDisabled) {
+            showDisabledUserDialog();
+        } else {
+            initializeNightModeSharedPref();
+            navigateToHomeActivity();
+        }
+    }
+
+    private void initializeNightModeSharedPref() {
         SharedPreferences sharedPref = getSharedPreferences("dark_mode", Context.MODE_PRIVATE);
         if (!sharedPref.contains("dark_mode")) {
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -51,162 +137,54 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
+    private void navigateToHomeActivity() {
+        HomeActivity.showLoadingScreen = true;
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            if (getIntent().getExtras() != null) {
+                Bundle extras = getIntent().getExtras();
+                String notificationURL = extras.getString("url");
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (startedURL) {
-            Intent intent = new Intent(SplashScreenActivity.this, SplashScreenActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    }
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        if (isNightModeEnabled(SplashScreenActivity.this)) {
-            Resources.Theme theme = super.getTheme();
-            theme.applyStyle(R.style.AppTheme_Base_Night, true);
-            // Update status bar color
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.BLACK);
-        } else {
-            // Update status bar color
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.BLACK);
-        }
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-
-        // Animate text
-        TextView appLogo = findViewById(R.id.textView16);
-        TextView sm = findViewById(R.id.textView16);
-        YoYo.with(Techniques.FadeIn).duration(1200).repeat(0).playOn(appLogo);
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-        // Check disabled status
-
-        if (user != null){
-            user.reload().addOnFailureListener(e -> {
-                if (e.getMessage().contains("disabled")){
-                    isUserDisabled = true;
-                    AlertDialog alertDialog = new AlertDialog.Builder(this)
-                            .setTitle("It's panic time!")
-                            .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
-                            .setCancelable(false)
-                            .setPositiveButton("OK", (dialogInterface, i) -> {
-                                System.exit(0);
-
-                            })
-                            .show();
-                }
-            });
-        }
-
-        if (isUserDisabled){
-            new AlertDialog.Builder(this)
-                    .setTitle("It's panic time!")
-                    .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", (dialogInterface, i) -> {
-                        startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
-                    })
-                    .show();
-        }
-        new Handler().postDelayed(() -> {
-
-
-            if (isInternetConnectionAvailable()) {
-
-                if (isUserDisabled) {
-                    new AlertDialog.Builder(this)
-                            .setTitle("It's panic time!")
-                            .setMessage("Your account is disabled for violating Terms Of Service!\n\nPlease go and host a party for it, just remember to invite us!")
-                            .setCancelable(false)
-                            .setPositiveButton("OK", (dialogInterface, i) -> {
-                                startActivity(new Intent(SplashScreenActivity.this, WelcomeActivity.class));
-                            })
-                            .show();
+                if (notificationURL != null) {
+                    Uri uri = Uri.parse(notificationURL);
+                    Intent intent1 = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent1);
+                    startedURL = true;
                 } else {
-                    initializeNightModeSharedPref();
-                    HomeActivity.showLoadingScreen = true;
-                    if (!isUserDisabled){
-                        Intent intent = new Intent(SplashScreenActivity.this, HomeActivity.class);
 
-                        if (getIntent().getExtras() != null) {
-                            Bundle extras = getIntent().getExtras();
-                            intent.putExtra("user_id", extras.getString("user_id"));
-                            intent.putExtra("post_id", extras.getString("postID"));
-                        }
+                    Intent intent2 = getIntent();
+                    String action = intent2.getAction();
+                    String type = intent2.getType();
 
-                        if (getIntent().getExtras() != null) {
-                            Bundle extras = getIntent().getExtras();
-                            String notificationURL = extras.getString("url");
-
-                            if (notificationURL != null) {
-                                Uri uri = Uri.parse(notificationURL);
-                                Intent intent1 = new Intent(Intent.ACTION_VIEW, uri);
-                                startActivity(intent1);
-                                startedURL = true;
-                            } else {
-
-                                Intent intent2 = getIntent();
-                                String action = intent2.getAction();
-                                String type = intent2.getType();
-
-                                if (Intent.ACTION_SEND.equals(action) && type != null) {
-                                    if (type.startsWith("video/")) {
-                                        HomeActivity.IncomingPostType = "video";
-                                        HomeActivity.UploadNewPost = true;
-                                        HomeActivity.fileUri = intent2.getParcelableExtra(Intent.EXTRA_STREAM);
-                                    } else if (type.startsWith("image/")) {
-                                        HomeActivity.IncomingPostType = "image";
-                                        HomeActivity.UploadNewPost = true;
-                                        HomeActivity.fileUri = intent2.getParcelableExtra(Intent.EXTRA_STREAM);
-                                    }
-                                }
-
-                                startActivity(intent);
-                                CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                                finish();
-                            }
-
-                        } else {
-                            startActivity(intent);
-                            CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
-                            finish();
+                    if (Intent.ACTION_SEND.equals(action) && type != null) {
+                        if (type.startsWith("video/")) {
+                            HomeActivity.IncomingPostType = "video";
+                            HomeActivity.UploadNewPost = true;
+                            HomeActivity.fileUri = intent2.getParcelableExtra(Intent.EXTRA_STREAM);
+                        } else if (type.startsWith("image/")) {
+                            HomeActivity.IncomingPostType = "image";
+                            HomeActivity.UploadNewPost = true;
+                            HomeActivity.fileUri = intent2.getParcelableExtra(Intent.EXTRA_STREAM);
                         }
                     }
-                    else {
-                        Intent intent = new Intent(SplashScreenActivity.this, WelcomeActivity.class);
-                        startActivity(intent);
-                    }
 
-
-
-                    HomeActivity.openNotification = true;
-
-                    YoYo.with(Techniques.Pulse)
-                            .onEnd(animator -> YoYo.with(Techniques.FadeOut)
-                                    .duration(500)
-                                    .repeat(0)
-                                    .playOn(sm))
-                            .duration(300)
-                            .repeat(0)
-                            .playOn(sm);
-
+                    startActivity(intent);
+                    CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                    finish();
                 }
             } else {
-                startActivity(new Intent(SplashScreenActivity.this, NoInternetConnectionActivity.class));
+                startActivity(intent);
                 CustomIntent.customType(SplashScreenActivity.this, "fadein-to-fadeout");
+                finish();
             }
-        }, 2200);
+
+            startActivity(intent);
+            CustomIntent.customType(this, "fadein-to-fadeout");
+            finish();
+        } else {
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            startActivity(intent);
+        }
     }
 }

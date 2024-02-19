@@ -148,7 +148,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         TextView username = findViewById(R.id.textView49);
         TextView website_tv = findViewById(R.id.made_by);
         TextView version = findViewById(R.id.textView33);
-        version.setText("Codename: " + BuildConfig.VERSION_NAME);
+        version.setText("App version: " + BuildConfig.VERSION_NAME);
         CardView account_settings = findViewById(R.id.cardView2);
         Button logout = findViewById(R.id.button);
         CardView bugReport = findViewById(R.id.cardView3);
