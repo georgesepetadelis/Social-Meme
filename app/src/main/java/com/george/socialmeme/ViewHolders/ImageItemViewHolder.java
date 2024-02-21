@@ -586,6 +586,10 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
         Bitmap bmp = postImg.getDrawingCache();
         File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
+        if (!new File(storageLoc + "/Social Meme").exists()) {
+            new File(storageLoc + "/Social Meme").mkdir();
+        }
+
         File file = new File(storageLoc + "/Social Meme", postID + ".jpg");
 
         try {
