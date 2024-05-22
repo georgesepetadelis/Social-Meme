@@ -12,11 +12,19 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.analytics.AnalyticsCollector;
+import androidx.media3.exoplayer.analytics.AnalyticsListener;
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ablanco.zoomy.Zoomy;
 import com.bumptech.glide.Glide;
 import com.george.socialmeme.Activities.Feed.HomeActivity;
+import com.george.socialmeme.Activities.Profile.FullScreenVideoActivity;
+import com.george.socialmeme.Fragments.HomeFragment;
 import com.george.socialmeme.Models.PostModel;
 import com.george.socialmeme.R;
 import com.george.socialmeme.ViewHolders.AudioItemViewHolder;
@@ -24,10 +32,8 @@ import com.george.socialmeme.ViewHolders.ImageItemViewHolder;
 import com.george.socialmeme.ViewHolders.PostTextItemViewHolder;
 import com.george.socialmeme.ViewHolders.PostsOfTheMonthItemViewHolder;
 import com.george.socialmeme.ViewHolders.VideoItemViewHolder;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.analytics.AnalyticsListener;
+
+import com.google.android.exoplayer2.Player;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -322,13 +328,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter {
             player.setMediaItem(mediaItem);
             player.prepare();
             videoViewHolder.andExoPlayerView.setPlayer(player);
-
-            player.addAnalyticsListener(new AnalyticsListener() {
-                @Override
-                public void onPlayerError(@NonNull EventTime eventTime, @NonNull PlaybackException error) {
-                    Log.i("EXOPLAYER_ERROR", "" + error.getMessage());
-                }
-            });
 
             videoViewHolder.postModel = postList.get(position);
             videoViewHolder.comments = postList.get(position).getComments();
