@@ -5,8 +5,8 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.5.x   | :white_check_mark: |
-| < 2.4.x  | :x:               |
+| 2.6.6.6   | :white_check_mark: |
+| =<"Chocolatey Donkey" (2.5.5) | :x:   |
 
 Social Meme may force you to update to the latest version by options such as sideloading the application or by Google Play Store
 
