@@ -153,6 +153,19 @@
                 app:layout_constraintStart_toEndOf="@+id/textView63"
                 app:layout_constraintTop_toTopOf="@+id/textView63"
                 app:srcCompat="@drawable/ic_share" />
+
+            <ImageButton
+                android:id="@+id/imageButton14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/ripple_round_card_bg"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView63"
+                app:layout_constraintStart_toEndOf="@+id/imageButton13"
+                app:layout_constraintTop_toTopOf="@+id/textView63"
+                app:layout_constraintVertical_bias="0.458"
+                app:srcCompat="@drawable/ic_clipboard" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
@@ -213,9 +226,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Loading title..."
             android:background="?selectableItemBackground"
             android:focusable="true"
+            android:text="Loading title..."
             android:textColor="?attr/textFillColor"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -229,10 +242,10 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:padding="10dp"
-            android:text="Loading text..."
             android:background="?selectableItemBackground"
             android:focusable="true"
+            android:padding="10dp"
+            android:text="Loading text..."
             android:textColor="?attr/textFillColor"
             android:textSize="20sp"
             android:textStyle="bold"

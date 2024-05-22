@@ -79,7 +79,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
     public View openProfileView, openCommentsView;
     public TextView username, like_counter_tv, commentsCount, postTitle, postContentText, followBtn;
     public CircleImageView profilePicture;
-    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn, saveBtn;
+    public ImageButton like_btn, postOptionsButton, shareBtn, commentsBtn, saveBtn, clipboardBtn;
     public boolean isPostLiked;
     public ConstraintLayout followBtnView;
 
@@ -101,7 +101,7 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
         followBtnView = itemView.findViewById(R.id.follow_btn_view);
         followBtn = itemView.findViewById(R.id.textView81);
         saveBtn = itemView.findViewById(R.id.imageButton24);
-
+        clipboardBtn = itemView.findViewById(R.id.imageButton14);
         openCommentsView.setOnClickListener(view -> showCommentsDialog(comments, username, commentsCount, context, postID));
         postOptionsButton.setOnClickListener(view -> showPostOptionsBottomSheet());
         followBtn.setOnClickListener(view -> followPostAuthor(context, postModel, followBtn, username));
@@ -131,6 +131,9 @@ public class PostTextItemViewHolder extends RecyclerView.ViewHolder {
             saveBtn.setEnabled(true);
 
         });
+
+        clipboardBtn.setOnClickListener(V -> {copyToClipboard(postContentText);}); // copy text button
+
 
         // Check if logged-in user follows post author
         // to hide follow btn
