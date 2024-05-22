@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -59,7 +60,7 @@ public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
     public PostModel postModel;
     public Context context;
-    public StyledPlayerView andExoPlayerView;
+    public PlayerView andExoPlayerView;
     public String postID, postAuthorID, videoURL;
     public ConstraintLayout openProfileView, followBtnView;
     public View openCommentsView;

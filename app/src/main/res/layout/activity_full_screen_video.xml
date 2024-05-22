@@ -4,58 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.Profile.FullScreenVideoActivity">
+    android:orientation="horizontal"
+    tools:context=".Activities.Profile.FullScreenVideoActivity"
+    android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/main"
-        android:elevation="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/full_screen_player"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <com.google.android.exoplayer2.ui.StyledPlayerView
+    <androidx.media3.ui.PlayerView
         android:id="@+id/full_screen_player"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar7"
+        app:layout_constraintTop_toTopOf="parent"
         app:resize_mode="fit"
-        app:show_buffering="when_playing" />
-
-    <ImageButton
-        android:id="@+id/imageButton21"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:background="@drawable/ripple_round_action_bar"
-        android:padding="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:elevation="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar7"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/toolbar7"
-        app:srcCompat="@drawable/ic_back_new" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Full-Screen video"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:elevation="13dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageButton21"
-        app:layout_constraintStart_toEndOf="@+id/imageButton21"
-        app:layout_constraintTop_toTopOf="@+id/imageButton21" />
+        app:show_buffering="when_playing"
+        app:use_controller="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

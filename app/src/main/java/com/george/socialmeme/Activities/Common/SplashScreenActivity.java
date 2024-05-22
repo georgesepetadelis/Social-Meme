@@ -27,6 +27,11 @@ import com.george.socialmeme.Activities.Feed.HomeActivity;
 import com.george.socialmeme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import maes.tech.intentanim.CustomIntent;
 
@@ -36,6 +41,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private boolean startedURL = false;
     private boolean isUserDisabled = false;
 
+    public DatabaseReference mDatabaseReference;
     @Override
     protected void onResume() {
         super.onResume();
@@ -53,6 +59,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         delayedAction();
     }
 
+    public void showUnavailableServiceDialog(){
+
+
+    }
     private void initializeUI() {
         if (isNightModeEnabled(this)) {
             applyNightMode();
@@ -63,7 +73,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         TextView appLogo = findViewById(R.id.textView16);
-        TextView sm = findViewById(R.id.textView16);
         YoYo.with(Techniques.FadeIn).duration(1200).repeat(0).playOn(appLogo);
     }
 
@@ -113,6 +122,39 @@ public class SplashScreenActivity extends AppCompatActivity {
         }, 2200);
     }
 
+    private boolean IsSMAvailable(){
+        mDatabaseReference.child("active_data").child("serviceActive").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue(boolean.class) == false){
+                    new AlertDialog.Builder(SplashScreenActivity.this)
+                            .setTitle("Social Meme is not available - Check for Updates.")
+                            .setMessage("Social Meme is not available at the moment. \n\nPlease check for any available updates and try again later.")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialogInterface, i) -> {
+                                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
+                                finish();
+                            }).show();
+
+                }
+                else if (dataSnapshot.getValue(boolean.class) == true){
+                    initializeNightModeSharedPref();
+                    navigateToHomeActivity();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+        return true;
+    }
+
+
     private boolean isInternetConnectionAvailable() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -120,12 +162,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void handleInternetConnection() {
-        if (isUserDisabled) {
-            showDisabledUserDialog();
-        } else {
-            initializeNightModeSharedPref();
-            navigateToHomeActivity();
-        }
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        IsSMAvailable();
     }
 
     private void initializeNightModeSharedPref() {

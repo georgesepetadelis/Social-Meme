@@ -590,7 +590,7 @@ public class ImageItemViewHolder extends RecyclerView.ViewHolder {
             new File(storageLoc + "/Social Meme").mkdir();
         }
 
-        File file = new File(storageLoc + "/Social Meme", postID + ".jpg");
+        File file = new File(storageLoc + "/Social Meme", postID + "-" + postAuthorID + ".jpg");
 
         try {
             FileOutputStream fos = new FileOutputStream(file);

@@ -13,8 +13,8 @@ android {
         applicationId "com.george.socialmeme"
         minSdk 26
         targetSdk 34
-        versionCode 57
-        versionName "Chocolatey Donkey"
+        versionCode 66
+        versionName "v2.6.6.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -70,35 +70,36 @@ dependencies {
 
     // Glide dependencies
     implementation 'com.github.bumptech.glide:glide:4.12.0'
-    implementation 'com.google.firebase:firebase-installations:17.1.4'
+    implementation 'com.google.firebase:firebase-installations:18.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'com.google.android.gms:play-services-ads-lite:20.6.0'
-    implementation 'androidx.core:core:1.12.0'
-    implementation 'com.google.firebase:firebase-inappmessaging-display:20.3.5'
-    implementation 'com.google.firebase:firebase-messaging:23.2.1'
-    implementation 'com.google.firebase:firebase-firestore:24.8.1'
-    implementation 'com.google.firebase:firebase-crashlytics:18.4.3'
-    implementation 'com.google.firebase:firebase-analytics:21.3.0'
+    implementation 'com.google.android.gms:play-services-ads-lite:23.1.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'com.google.firebase:firebase-inappmessaging-display:21.0.0'
+    implementation 'com.google.firebase:firebase-messaging:24.0.0'
+    implementation 'com.google.firebase:firebase-firestore:25.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:19.0.0'
+    implementation 'com.google.firebase:firebase-analytics:22.0.0'
+    implementation 'androidx.media3:media3-ui:1.3.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     // Firebase dependencies
-    implementation 'com.google.firebase:firebase-messaging-directboot:23.2.1'
-    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.firebase:firebase-messaging-directboot:24.0.0'
+    implementation 'com.google.android.gms:play-services-auth:21.1.1'
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
-    implementation 'com.google.firebase:firebase-auth:22.1.2'
-    implementation 'com.google.firebase:firebase-database:20.2.2'
-    implementation 'com.google.firebase:firebase-storage:20.2.1'
+    implementation 'com.google.firebase:firebase-auth:23.0.0'
+    implementation 'com.google.firebase:firebase-database:21.0.0'
+    implementation 'com.google.firebase:firebase-storage:21.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.firebaseui:firebase-ui-database:4.3.2'
 
     // Android dependencies
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.google.android.gms:play-services-ads:22.4.0'
+    implementation 'com.google.android.gms:play-services-ads:23.1.0'
 
     // Image loader
     implementation 'com.squareup.picasso:picasso:2.71828'
@@ -109,15 +110,13 @@ dependencies {
     // Custom navigation bar
     implementation 'com.github.ismaeldivita:chip-navigation-bar:1.4.0'
 
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     // ExoPlayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.17.1'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.17.1'
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.17.1'
-    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.17.1'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.17.1'
+    implementation 'androidx.media3:media3-exoplayer:1.3.1'
+    implementation 'androidx.media3:media3-exoplayer-dash:1.3.1'
+    implementation 'androidx.media3:media3-exoplayer-hls:1.3.1'
+    implementation 'androidx.media3:media3-exoplayer-smoothstreaming:1.3.1'
 
     // Blur view
     //implementation 'io.alterac.blurkit:blurkit:1.1.0'
@@ -138,7 +137,7 @@ dependencies {
     // Showcase
     implementation 'com.github.mreram:showcaseview:1.4.0'
 
-    implementation 'com.google.code.gson:gson:2.2.4'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
     // Zoom image library
     implementation 'io.github.imablanco:zoomy:1.0.0'
