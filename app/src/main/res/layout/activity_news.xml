@@ -36,10 +36,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="72dp"
-        android:text="Now you can..."
+        android:text="Changelog"
+        android:textColor="?attr/titleTextColor"
         android:textSize="27sp"
         android:textStyle="bold"
-        android:textColor="?attr/titleTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView35" />
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:padding="12dp"
-        android:text="1. Earn badges based on your total likes on your profile (more info in My Profile tab)"
+        android:text="- Proper Fullscreen Mode \n- Added Text Post Copy Button\n- Updated libraries &amp; Video Player \n- Misc. Service Improvements &amp; Bugfixes"
         android:textColor="@color/main"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -58,21 +58,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView37" />
-
-    <TextView
-        android:id="@+id/textView44"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:padding="12dp"
-
-        android:text="2. Search a user faster than ever with the new search screen added in this version"
-        android:textColor="@color/main"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
     <Button
         android:id="@+id/button6"
@@ -94,7 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="-5dp"
-        android:text="v2.2.8"
+        android:text="v2.6.6.6 - The last, but not yet 😎"
         android:textColor="?attr/titleTextColor"
         android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="@+id/textView35"
