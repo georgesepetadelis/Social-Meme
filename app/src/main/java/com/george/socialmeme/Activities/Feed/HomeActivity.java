@@ -60,6 +60,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import maes.tech.intentanim.CustomIntent;
+
 public class HomeActivity extends AppCompatActivity {
 
     public Activity activity; // Non-static activity to avoid StaticFieldLeak
@@ -138,7 +140,8 @@ public class HomeActivity extends AppCompatActivity {
 
                     String token = snapshot.child("fcm_token").getValue(String.class);
 
-                    String firestoreNotificationID = userRef.push().getKey();
+                    @NonNull String firestoreNotificationID = userRef.push().getKey();
+                    if (firestoreNotificationID == null){ return; }
                     Map<String, Object> notification = new HashMap<>();
                     notification.put("token", token);
                     notification.put("userID", user.getUid());
@@ -162,8 +165,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     boolean newFeaturesViewed() {
-        SharedPreferences sharedPref = getSharedPreferences("v2.2.7", MODE_PRIVATE);
-        return sharedPref.getBoolean("v2.2.7", false);
+        SharedPreferences sharedPref = getSharedPreferences("v2.6.6.6", MODE_PRIVATE);
+        return sharedPref.getBoolean("v2.6.6.6", false);
     }
 
     void enableNightMode() {
@@ -251,44 +254,22 @@ public class HomeActivity extends AppCompatActivity {
 
     };
 
-    public void showUpdateDialog() {
+    public static void showUpdateDialog() {
         if (filtersBtn.getContext() != null) {
 
-
-            if (AppHelper.isAppInstalledFromPlayStore(this)){ // Check whether app is installed from Google Play - if not, the update button will redirect to github releases
-                // Display update dialog from update service
-                new android.app.AlertDialog.Builder(filtersBtn.getContext())
-                        .setTitle("A new update just released!")
-                        .setCancelable(false)
-                        .setMessage("For security reasons having the latest version is required to use Social Meme")
-                        .setPositiveButton("Update", (dialogInterface, i) -> {
-                            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            filtersBtn.getContext().startActivity(intent);
-                        }).show();
-                Toast.makeText(filtersBtn.getContext(), "New update available!", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                new android.app.AlertDialog.Builder(filtersBtn.getContext())
-                        .setTitle("A new update just released!")
-                        .setCancelable(false)
-                        .setMessage("For security reasons having the latest version is required to use Social Meme")
-                        .setPositiveButton("Update", (dialogInterface, i) -> {
-                            Uri uri = Uri.parse("https://github.com/georgesepetadelis/Social-Meme/");
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            filtersBtn.getContext().startActivity(intent);
-                        }).show();
-                Toast.makeText(filtersBtn.getContext(), "New update available!", Toast.LENGTH_SHORT).show();
-            }
-
-
-            // Kill update service after displaying update dialog
-            Intent updateServiceIntent = new Intent(filtersBtn.getContext(), UpdateService.class);
-            filtersBtn.getContext().stopService(updateServiceIntent);
-
+            // Display update dialog from update service
+            new android.app.AlertDialog.Builder(filtersBtn.getContext())
+                    .setTitle("A new update just released!")
+                    .setCancelable(false)
+                    .setMessage("For security reasons having the latest version is required to use Social Meme")
+                    .setPositiveButton("Update", (dialogInterface, i) -> {
+                        Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.george.socialmeme");
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        filtersBtn.getContext().startActivity(intent);
+                    }).show();
+            Toast.makeText(filtersBtn.getContext(), "New update available", Toast.LENGTH_SHORT).show();
         }
     }
-
     public static void openURL(String url) {
         try {
             Uri uri = Uri.parse(url);
@@ -367,15 +348,15 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        /*
+
         if (!newFeaturesViewed()) {
-            SharedPreferences sharedPref = getSharedPreferences("v2.2.7", Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getSharedPreferences("v2.6.6.6", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean("v2.2.7", true);
+            editor.putBoolean("v2.6.6.6", true);
             editor.apply();
             startActivity(new Intent(HomeActivity.this, NewsActivity.class));
             CustomIntent.customType(HomeActivity.this, "fadein-to-fadeout");
-        }*/
+        }
 
         goUp = findViewById(R.id.go_up);
         goUp.setOnClickListener(v -> {
