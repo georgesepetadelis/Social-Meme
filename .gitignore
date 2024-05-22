@@ -15,3 +15,7 @@
 .cxx
 local.properties
 google-services.json
+app/release/app-release.apk
+app/release/app-release.aab
+app/release/output-metadata.json
+app/release
