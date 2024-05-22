@@ -328,7 +328,7 @@ public class AudioItemViewHolder extends RecyclerView.ViewHolder {
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Social Meme" + File.separator + postID + ".mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "Social Meme" + File.separator + postID + "-"+ postAuthorID + ".mp3");
 
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
