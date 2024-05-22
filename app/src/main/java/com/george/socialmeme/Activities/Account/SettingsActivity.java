@@ -93,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
 
         spannable1.setSpan(clickableSpan, 8, 27, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        SpannableStringBuilder spannable2 = new SpannableStringBuilder("Thanks @ChocolateAdventurouz for cotributing!");
+        SpannableStringBuilder spannable2 = new SpannableStringBuilder("Thanks @Karapatakis Aggelos for his Contribution");
         spannable2.setSpan(
                 new ForegroundColorSpan(Color.BLUE),
                 8, 28,
